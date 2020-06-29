@@ -4,11 +4,11 @@ This is the client for my kinda weird and probably not gonna be finished planet-
 
 ## Build instructions
 
-You must have these dependencies installed:
-    asio (may need to build it from source)
-    boost
-    jsoncpp
-and perhaps others.
+You must have these dependencies installed:  
+    asio (may need to build it from source)  
+    boost  
+    jsoncpp  
+and perhaps others.  
 
 ### Windows
 
