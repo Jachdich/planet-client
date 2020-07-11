@@ -31,10 +31,7 @@ void SectorCache::setSectorAt(int sx, int sy, Sector s) {
 }
 
 Sector * SectorCache::getSectorAt(int x, int y) {
-    long long index = (long long)x << 32 | y;
-    if (x < 0 || y < 0) {
-        index = 0;
-    }
+    long long index = (!(x < 0 || y < 0))*((long long)x << 32 | y);
     
     if (!secs[index].generated && !secs[index].requested) {
         getSectorFromNetwork(x, y);
