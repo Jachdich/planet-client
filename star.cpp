@@ -25,15 +25,13 @@ Star::Star(Json::Value root, int posInSector) {
 }
 
 void Star::draw(olc::PixelGameEngine * e, CamParams trx, int secOffsetX, int secOffsetY) {
-    if (radius * trx.zoom < 0.2 * randomDissapearChance) {
-        return;
+    if (radius * trx.zoom > 0.2 * randomDissapearChance) {
+        int ax = (this->x + secOffsetX) * trx.zoom + trx.tx;
+        int ay = (this->y + secOffsetY) * trx.zoom + trx.ty;
+        if (ax <= (WIDTH + radius) || ay <= (HEIGHT + radius) || ax >= (0 - radius) || ay >= (0 - radius)) {
+            e->FillCircle(ax, ay, this->radius * trx.zoom, this->colour);
+        }
     }
-    int ax = (this->x + secOffsetX) * trx.zoom + trx.tx;
-    int ay = (this->y + secOffsetY) * trx.zoom + trx.ty;
-    if (ax >= (WIDTH + radius) || ay >= (HEIGHT + radius) || ax <= (0 - radius) || ay <= (0 - radius)) {
-        return;
-    }
-    e->FillCircle(ax, ay, this->radius * trx.zoom, this->colour);
 }
 
 void Star::drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamParams trx) {
