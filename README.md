@@ -28,8 +28,8 @@ You need the server started too. For that go to https://github.com/Jachdich/plan
 
 ### Linker error mentioning jsoncpp
 
-You might have jsoncpp installed to a different location. It needs to be in `/usr/include/jsoncpp/json/` (or equivilent `include` directory). Some installs omit the final `json` which can break things, if that's the case for your install just `mkdir /tmp/json && mv /usr/include/jsoncpp/* /tmp/json && mv /tmp/json /usr/include/jsoncpp` or something else if your install is weird.
+You might have jsoncpp installed to a different location. It needs to be in `/usr/include/jsoncpp/json/` (or equivilent `include` directory). Some installs omit the `jsoncpp` which can break things, if that's the case for your install then refer to the instructions below.
 
-A fix for Arch based distros:
+A fix for Arch based distros and anyone else with the json issue:
 mkdir -p /usr/include/jsoncpp
 cp -r /usr/include/json /usr/include/jsoncpp
