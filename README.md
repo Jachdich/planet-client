@@ -1,3 +1,7 @@
+# important
+
+This is alpha level software, it probably doesn't work. I may commit broken code because I cba making a new branch. There are many many bugs, creating issues is much appreciated however if it's really really obvious then I probably know about it already.
+
 # planet-client
 
 This is the client for my kinda weird and probably not gonna be finished planet-game. IDK why anyone is here but if they are then here are some build instructions.
