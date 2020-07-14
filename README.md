@@ -1,3 +1,7 @@
+# important
+
+This is alpha level software, it probably doesn't work. I may commit broken code because I cba making a new branch. There are many many bugs, creating issues is much appreciated however if it's really really obvious then I probably know about it already.
+
 # planet-client
 
 This is the client for my kinda weird and probably not gonna be finished planet-game. IDK why anyone is here but if they are then here are some build instructions.
@@ -24,10 +28,12 @@ You need the server started too. For that go to https://github.com/Jachdich/plan
 
 ### Linker error mentioning jsoncpp
 
-Ugh IDK how to fix this but you might have jsoncpp installed to a different location. It needs to be in `/usr/include/jsoncpp/json/` (or equivilent `include` directory). Some installs omit the final `json` which can break things, if that's the case for your install just `mkdir /tmp/json && mv /usr/include/jsoncpp/* /tmp/json && mv /tmp/json /usr/include/jsoncpp` or something else if your install is weird.
+You might have jsoncpp installed to a different location. It needs to be in `/usr/include/jsoncpp/json/` (or equivilent `include` directory). Some installs omit the `jsoncpp` which can break things, if that's the case for your install then refer to the instructions below.
+
+A fix for Arch based distros and anyone else with the json issue:
+mkdir -p /usr/include/jsoncpp
+cp -r /usr/include/json /usr/include/jsoncpp
 
 ## olcPixelGameEngine
 
-This project uses the [olcPixelGameEngine](ggegeag). A copy of the olcPixelGameEngine licence can be found in `LICENCE-OLCPIXELGAMEENGINE.md`.
-
-
+This project uses the [olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine). A copy of the olcPixelGameEngine licence can be found at the top of the `olcPixelGameEngine.h` file.
