@@ -36,7 +36,7 @@ Star * Sector::getStarAt(int x, int y) {
 }
 
 void Sector::draw(olc::PixelGameEngine * e, CamParams trx) {
-    //e->DrawRect(this->x * this->r * trx.zoom + trx.tx, this->y * this->r * trx.zoom + trx.ty, r * trx.zoom, r * trx.zoom, olc::Pixel(255, 255, 255));
+    e->DrawRect(this->x * this->r * trx.zoom + trx.tx, this->y * this->r * trx.zoom + trx.ty, r * trx.zoom, r * trx.zoom, olc::Pixel(255, 255, 255));
     for (int i = 0; i < this->numStars; i++) {
         this->stars[i].draw(e, trx, x * r, y * r);
     }

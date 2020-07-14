@@ -60,6 +60,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     		selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
     	}
     	if (selectedPlanet->surface->generated) {
+			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), trx);
     		selectedPlanet->drawSurface(this, trx);
     	}
     }
@@ -116,6 +117,10 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     if (GetKey(olc::Key::L).bPressed) {
         std::cout << "L pressed\n";
     }
+	
+	if (GetKey(olc::Key::T).bPressed) {
+		loadSprites();
+	}
 
     if (GetKey(olc::Key::ESCAPE).bPressed) {
         if (planetView) {

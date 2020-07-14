@@ -32,6 +32,12 @@ Planet::Planet(Json::Value res, int posInStar) {
     this->posInStar = posInStar;
 }
 
+std::string toHexString(std::string initText, olc::Pixel colour) {
+	std::stringstream stream;
+	stream << initText << std::setfill('0') << std::setw(6) << std::hex << ((((colour.r << 8) | colour.g) << 8) | colour.b);
+	return stream.str();
+}
+
 void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {
     for (int ya = 0; ya < this->radius * 2; ya++) {
         for (int xa = 0; xa < this->radius * 2; xa++) {
@@ -66,6 +72,18 @@ void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {
             e->Draw(xc * trx.zoom + trx.tx, yc * trx.zoom + trx.ty, olc::Pixel(r, g, b));
         }
     }
+	int sx = (x + radius * 2) * trx.zoom + trx.tx;
+	int sy = (y - radius * 2) * trx.zoom + trx.ty;
+	e->DrawString(sx, sy, toHexString("baseColour: #", baseColour), baseColour);
+	e->DrawString(sx, sy += 10, "numColours: " + std::to_string(numColours), olc::Pixel(255, 255, 255));
+	for (int i = 0; i < numColours; i++) {
+		e->DrawString(sx, sy += 10, "Colour " + std::to_string(i) + ": " + toHexString("#", generationColours[i])
+		+ " Noise: " + std::to_string(generationNoise[i])
+		+ " ZVal: " + std::to_string(generationZValues[i])
+		+ " Chance: " + std::to_string(generationChances[i])
+		
+		, generationColours[i]);
+	}
 }
 
 void Planet::loadSurface(int secX, int secY, int starPos, int planetPos) {
@@ -86,5 +104,5 @@ void Planet::loadSurface(int secX, int secY, int starPos, int planetPos) {
 }
 
 void Planet::drawSurface(olc::PixelGameEngine * e, CamParams trx) {
-    surface->draw(e, trx, this);
+    surface->draw(e, trx);
 }

@@ -50,7 +50,7 @@ void handleNetwork(tcp::socket * sock, SectorCache * cache) {
             	Sector * s = cache->getSectorAt(totalJSON["requests"][i]["secX"].asInt(), totalJSON["requests"][i]["secY"].asInt());
             	Star * star= &s->stars[totalJSON["requests"][i]["starPos"].asInt()];
             	Planet * p = &star->planets[totalJSON["requests"][i]["planetPos"].asInt()];
-            	PlanetSurface * surf = new PlanetSurface(root["results"][i]["result"]);
+            	PlanetSurface * surf = new PlanetSurface(root["results"][i]["result"], p);
             	p->surface = surf;
             	//TODO read status
             }
