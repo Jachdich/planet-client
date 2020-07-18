@@ -14,5 +14,6 @@ extern std::mutex netq_mutex;
 extern std::condition_variable netq;
 extern std::vector<Json::Value> netRequests;
 extern bool netThreadStop;
+extern bool debugMode;
 Json::Value makeJSON(std::string x);
 #endif

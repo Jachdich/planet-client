@@ -34,9 +34,9 @@ bool Game::OnUserCreate() {
       resolver.resolve(address, "5555");
     
     asio::connect(sock, endpoints);
-    
+    std::cout << "a\n";
     std::thread(handleNetwork, &sock, &map).detach();
-    
+    std::cout << "b\n";
     loadSprites();
       
     return true;
@@ -60,7 +60,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     		selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
     	}
     	if (selectedPlanet->surface->generated) {
-			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), trx);
+			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, trx);
     		selectedPlanet->drawSurface(this, trx);
     	}
     }
@@ -137,13 +137,20 @@ bool Game::OnUserUpdate(float fElapsedTime) {
             return false;
         }
     }
-    
+	
+	if (GetKey(olc::Key::F3).bPressed) {
+		debugMode = !debugMode;
+	}
+	
+	if (debugMode) {
+		DrawStringDecal({0, 0}, std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
+		DrawStringDecal({0, 10}, std::to_string(1.0 / fElapsedTime), olc::Pixel(255, 255, 255));
+	}
+	
     if (netRequests.size() > 0) {
         std::lock_guard<std::mutex> lock(netq_mutex);
         netq.notify_all();
     }
-    
-    DrawString(0, 0, std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
 
     return true;
 }

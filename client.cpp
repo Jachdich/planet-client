@@ -38,6 +38,7 @@ std::mutex netq_mutex;
 std::condition_variable netq;
 std::vector<Json::Value> netRequests;
 bool netThreadStop = false;
+bool debugMode = false;
 
 int WIDTH = 960;
 int HEIGHT = 540;

@@ -8,6 +8,7 @@
 #include "star.h"
 
 void handleNetwork(tcp::socket * sock, SectorCache * cache) {
+	//return;
     while (true) {
         std::unique_lock<std::mutex> lk(netq_mutex);
         netq.wait(lk);
