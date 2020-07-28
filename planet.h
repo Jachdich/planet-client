@@ -16,8 +16,12 @@ public:
     std::vector<int> generationZValues;
     std::vector<double> generationNoise;
     olc::Pixel baseColour;
+	olc::Sprite * surf = nullptr;
+	olc::Decal  * dec;
     int posFromStar;
     double theta;
+	double rotationTheta;
+	double rotationalAngularVelocity;
     double angularVelocity;
     int posInStar;
     

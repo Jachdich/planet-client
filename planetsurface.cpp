@@ -7,12 +7,15 @@
 #include "olcPixelGameEngine.h"
 #include "planet.h"
 #include "sprites.h"
+#include "planethud.h"
+#include "planetdata.h"
+#include "JVector.h"
 
 #define TEXTURE_W 128
 #define TEXTURE_H 64
 #define TEXTURE_Z 30
 
-olc::Pixel PlanetSurface::getTint(int x, int y, bool selected) {
+olc::Pixel PlanetSurface::getTint(int x, int y, Tile * t) {
     int xb = x - parent->radius;
     int yb = y - parent->radius;
 
@@ -38,29 +41,30 @@ olc::Pixel PlanetSurface::getTint(int x, int y, bool selected) {
         b /= total;
     }
 	
-	r += (r * selected) / 5;
-	g += (g * selected) / 5;
-	b += (b * selected) / 5;
+	r += (r * (t->selected || t->hovered)) / 5;
+	g += (g * (t->selected || t->hovered)) / 5;
+	b += (b * (t->selected || t->hovered)) / 5;
 	if (r > 255) r = 255;
 	if (g > 255) g = 255;
 	if (b > 255) b = 255;
     return olc::Pixel(r, g, b);
 }
 
-void PlanetSurface::drawTile(int ax, int ay, Tile t, olc::PixelGameEngine * e, CamParams trx) {
-	int x = ax * TEXTURE_W / 2;
-	int y = ay * TEXTURE_H;
-	int z = t.z;
+void PlanetSurface::drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx) {
+	//int x = ax * TEXTURE_W / 2;
+	//int y = ay * TEXTURE_H;
+	//int z = t.z;
 
 	
-	float scx = (x - y) * trx.zoom + trx.tx;
-	float scy = ((x + y - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
+	//float scx = (x - y) * trx.zoom + trx.tx;
+	//float scy = ((x + y - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
+	olc::vf2d v = t.getTextureCoordinates(trx);
 	
 	if (t.type == 1 || t.type == 3) {
-		e->DrawDecal({scx, scy}, decals[0], {trx.zoom, trx.zoom}, getTint(ax, ay, t.hovered));
+		e->DrawDecal(v, decals[0], {trx.zoom, trx.zoom}, getTint(t.x, t.y, &t));
 	}
 	
-	e->DrawDecal({scx, scy}, decals[t.type], {trx.zoom, trx.zoom}, getTint(ax, ay, t.hovered));
+	e->DrawDecal(v, decals[t.type], {trx.zoom, trx.zoom}, getTint(t.x, t.y, &t));
 }
 
 void PlanetSurface::draw(olc::PixelGameEngine * e, CamParams trx) {
@@ -69,9 +73,10 @@ void PlanetSurface::draw(olc::PixelGameEngine * e, CamParams trx) {
             int ia = i - parent->radius;
             int ja = j - parent->radius;
             if ((ia * ia + ja * ja) >= (parent->radius * parent->radius)) continue;
-            drawTile(i, j, tiles[i * parent->radius * 2 + j], e, trx);
+            drawTile(tiles[i * parent->radius * 2 + j], e, trx);
         }
     }
+	this->hud->draw(e, trx);
 }
 
 PlanetSurface::PlanetSurface() {
@@ -103,16 +108,22 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 			} else {
 				z = -1;
 			}
-			tiles.push_back({type, z, 0});
+			tiles.push_back(Tile(type, z, i, j));
 		}
 	}
 	generated = true;
 	requested = false;
 	parent = p;
 	radius = root["rad"].asInt();
+	
+	this->data = new PlanetData(this);
+	this->hud = new PlanetHUD(this, this->data);
 }	
 
 void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams trx) {
+	if (hud->mousePressed(max, may, trx)) {
+		return;
+	}
 	float mx = (max - trx.tx) / trx.zoom;
 	float my = (may - trx.ty) / trx.zoom;
 	//try to calculate without using z
@@ -146,8 +157,12 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 		for (int ja = 2; ja >= -2; ja--) {
 			int i = ia + wx;
 			int j = ja + ia + wy;*/
+			
 	for (int i = radius * 2 - 1; i >= 0; i--) {
 		for (int j = radius * 2 - 1; j >= 0; j--) {
+			if (((i - radius) * (i - radius) + (j - radius) * (j - radius)) >= (this->radius * this->radius)) {
+				continue;
+			}
 			int x = i * TEXTURE_W / 2;
 			int y = j * TEXTURE_H;
 			int z = tiles[i * radius * 2 + j].z;
@@ -162,9 +177,17 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 				tiles[i * radius * 2 + j].hovered = true;
 				lastSelectX = j;
 				lastSelectY = i;
+				if (mouseClicked) {
+					this->hud->showClickMenu(&tiles[i * radius * 2 + j]);
+				}
 				return;
 			}
 		}
+	}
+	
+	//if not tile and not hud
+	if (mouseClicked) {
+		this->hud->mouseNotClickedOnAnything(max, may);
 	}
 }
 /*
@@ -212,3 +235,20 @@ new code once Ive figured it out
 		offset--;
 	}
 */
+
+
+Tile::Tile(int type, int z, int x, int y) {
+	this->type = type;
+	this->z = z;
+	this->x = x;
+	this->y = y;
+}
+
+olc::vf2d Tile::getTextureCoordinates(CamParams trx) {
+	int sx = x * TEXTURE_W / 2;
+	int sy = y * TEXTURE_H;
+
+	float scx = (sx - sy) * trx.zoom + trx.tx;
+	float scy = ((sx + sy - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
+	return olc::vf2d(scx, scy);
+}

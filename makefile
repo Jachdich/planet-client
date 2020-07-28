@@ -1,4 +1,4 @@
-SOURCES = client.cpp FastNoise.cpp planet.cpp star.cpp sector.cpp sectorcache.cpp game.cpp network.cpp planetsurface.cpp sprites.cpp helperfunctions.cpp
+SOURCES = $(wildcard *.cpp)
 HEADERS = $(SOURCES:.cpp=.h)
 OBJECTS = $(SOURCES:.cpp=.o)
 

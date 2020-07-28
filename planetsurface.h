@@ -5,14 +5,20 @@
 
 #include "helperfunctions.h"
 #include "olcPixelGameEngine.h"
+#include "planethud.h"
 //#include "planet.h"
 
 class Planet;
 
-struct Tile {
+class Tile {
+public:
 	int type;
 	int z;
-	bool hovered;
+	bool hovered = false;
+	bool selected = false;
+	int x,y;
+	Tile(int type, int z, int x, int y);
+	olc::vf2d getTextureCoordinates(CamParams trx);
 };
 
 class PlanetSurface {
@@ -25,14 +31,16 @@ public:
     bool generated = false;
     bool requested = false;
 	Planet * parent;
+	PlanetHUD * hud;
+	PlanetData * data;
     
     PlanetSurface();
     PlanetSurface(Json::Value root, Planet * p);
 
-    void drawTile(int ax, int ay, Tile t, olc::PixelGameEngine * e, CamParams trx);
+    void drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx);
     void draw(olc::PixelGameEngine * e, CamParams trx);
 	void mouseOver(int x, int y, bool mouseClicked, bool mousePressed, CamParams trx);
-    olc::Pixel getTint(int x, int y, bool selected);
+    olc::Pixel getTint(int x, int y, Tile * t);
 
 };
 

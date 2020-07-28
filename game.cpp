@@ -24,6 +24,16 @@ void Game::destruct() {
 }
 
 bool Game::OnUserCreate() {
+	renderingLayer = CreateLayer();
+	HUDLayer = 0;
+	
+	SetDrawTarget(HUDLayer);
+	Clear(olc::BLANK);
+	SetDrawTarget(renderingLayer);
+	
+	EnableLayer(renderingLayer, true);
+	//EnableLayer(HUDLayer, true);
+	
     std::string address = "127.0.0.1";
     if (args.size() > 1) {
         address = args[1];
@@ -43,10 +53,11 @@ bool Game::OnUserCreate() {
 }
 
 bool Game::OnUserUpdate(float fElapsedTime) {
+	SetDrawTarget(renderingLayer);
     //if (planetView) {
     //    Clear(selectedPlanet->baseColour);
     //} else {
-        Clear(olc::BLACK);
+	Clear(olc::BLACK);
     //}
 
     if (galaxyView) {
@@ -144,14 +155,14 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 	
 	if (debugMode) {
 		DrawStringDecal({0, 0}, std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
-		DrawStringDecal({0, 10}, std::to_string(1.0 / fElapsedTime), olc::Pixel(255, 255, 255));
+		DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
 	}
 	
     if (netRequests.size() > 0) {
         std::lock_guard<std::mutex> lock(netq_mutex);
         netq.notify_all();
     }
-
+	
     return true;
 }
 

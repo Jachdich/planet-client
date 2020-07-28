@@ -22,7 +22,6 @@
 #include "game.h"
 #include "client.h"
 
-
 using asio::ip::tcp;
 //TODO
 //planet noise generation settings
@@ -39,6 +38,8 @@ std::condition_variable netq;
 std::vector<Json::Value> netRequests;
 bool netThreadStop = false;
 bool debugMode = false;
+int HUDLayer;
+int renderingLayer;
 
 int WIDTH = 960;
 int HEIGHT = 540;

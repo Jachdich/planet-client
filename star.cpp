@@ -40,6 +40,7 @@ void Star::drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamPara
     e->FillCircle((WIDTH / 2) * trx.zoom + trx.tx, (HEIGHT / 2) * trx.zoom + trx.ty, this->radius * 6 * trx.zoom, this->colour);
     for (Planet & p: this->planets) {
         p.theta += p.angularVelocity * fElapsedTime;
+		p.rotationTheta += p.rotationalAngularVelocity * fElapsedTime;
         float ax = p.posFromStar * cos(p.theta);
         float ay = p.posFromStar * sin(p.theta);
         e->DrawCircle((WIDTH / 2) * trx.zoom + trx.tx, (HEIGHT / 2) * trx.zoom + trx.ty, p.posFromStar * trx.zoom, olc::Pixel(60, 60, 60, 200));
