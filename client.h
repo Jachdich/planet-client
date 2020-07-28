@@ -16,7 +16,5 @@ extern std::vector<Json::Value> netRequests;
 extern bool netThreadStop;
 extern bool debugMode;
 
-extern int renderingLayer;
-extern int HUDLayer;
 Json::Value makeJSON(std::string x);
 #endif

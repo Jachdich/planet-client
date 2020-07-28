@@ -3,3 +3,5 @@
 build
 *.o
 client
+line_counter.py
+JVector.h

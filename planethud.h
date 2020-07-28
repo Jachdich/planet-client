@@ -2,10 +2,31 @@
 #define __PLANETHUD_H
 #include "olcPixelGameEngine.h"
 #include "helperfunctions.h"
+#include <string>
 
 class Tile;
 class PlanetSurface;
 class PlanetData;
+
+struct DropdownMenuItem {
+	std::string text;
+	void (*click)(DropdownMenuItem * self);
+	inline DropdownMenuItem(std::string text, void (*ptr)(DropdownMenuItem * self)) {
+		this->text = text;
+		this->click = ptr;
+	}
+};
+
+class DropdownMenu {
+public:
+	bool open = false;
+	std::string text;
+	olc::vf2d pos;
+	std::vector<DropdownMenuItem> items;
+	DropdownMenu(olc::vf2d pos, std::string text);
+	void draw(olc::PixelGameEngine * e, CamParams trx);
+	bool click(olc::vi2d pos, CamParams trx);
+};
 
 class PlanetHUD {
 private:

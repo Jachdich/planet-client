@@ -86,7 +86,7 @@ void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {
 			}
 		}
 		
-		e->SetDrawTarget(renderingLayer);
+		e->SetDrawTarget(nullptr);
 		
 		this->dec = new olc::Decal(this->surf);
 	}

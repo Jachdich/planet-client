@@ -24,16 +24,6 @@ void Game::destruct() {
 }
 
 bool Game::OnUserCreate() {
-	renderingLayer = CreateLayer();
-	HUDLayer = 0;
-	
-	SetDrawTarget(HUDLayer);
-	Clear(olc::BLANK);
-	SetDrawTarget(renderingLayer);
-	
-	EnableLayer(renderingLayer, true);
-	//EnableLayer(HUDLayer, true);
-	
     std::string address = "127.0.0.1";
     if (args.size() > 1) {
         address = args[1];
@@ -53,7 +43,6 @@ bool Game::OnUserCreate() {
 }
 
 bool Game::OnUserUpdate(float fElapsedTime) {
-	SetDrawTarget(renderingLayer);
     //if (planetView) {
     //    Clear(selectedPlanet->baseColour);
     //} else {
