@@ -8,13 +8,14 @@ class Tile;
 class PlanetSurface;
 class PlanetData;
 
-struct DropdownMenuItem {
+class DropdownMenuItem {
+public:
 	std::string text;
 	void (*click)(DropdownMenuItem * self);
-	inline DropdownMenuItem(std::string text, void (*ptr)(DropdownMenuItem * self)) {
-		this->text = text;
-		this->click = ptr;
-	}
+	olc::vf2d pos;
+	olc::vf2d offset;
+	DropdownMenuItem(std::string text, void (*ptr)(DropdownMenuItem * self));
+	void draw(olc::PixelGameEngine * e, CamParams trx);
 };
 
 class DropdownMenu {
@@ -26,6 +27,7 @@ public:
 	DropdownMenu(olc::vf2d pos, std::string text);
 	void draw(olc::PixelGameEngine * e, CamParams trx);
 	bool click(olc::vi2d pos, CamParams trx);
+	void registerItem(DropdownMenuItem item);
 };
 
 class PlanetHUD {
@@ -34,6 +36,7 @@ private:
 	int wood;
 	int population;
 	Tile * selectedTile = nullptr;
+	DropdownMenu * ddmenu = nullptr;
 	PlanetSurface * parent;
 	PlanetData * data;
 public:

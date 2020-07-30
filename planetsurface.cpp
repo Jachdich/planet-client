@@ -121,8 +121,10 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 }	
 
 void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams trx) {
-	if (hud->mousePressed(max, may, trx)) {
-		return;
+	if (mouseClicked) {
+		if (hud->mousePressed(max, may, trx)) {
+			return;
+		}
 	}
 	float mx = (max - trx.tx) / trx.zoom;
 	float my = (may - trx.ty) / trx.zoom;
@@ -250,5 +252,14 @@ olc::vf2d Tile::getTextureCoordinates(CamParams trx) {
 
 	float scx = (sx - sy) * trx.zoom + trx.tx;
 	float scy = ((sx + sy - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
+	return olc::vf2d(scx, scy);
+}
+
+olc::vf2d Tile::getTextureCoordinates() {
+	int sx = x * TEXTURE_W / 2;
+	int sy = y * TEXTURE_H;
+
+	float scx = sx - sy;
+	float scy = (sx + sy - TEXTURE_Z * z) / 2;
 	return olc::vf2d(scx, scy);
 }

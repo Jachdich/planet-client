@@ -1,4 +1,5 @@
 #include "helperfunctions.h"
+#include "olcPixelGameEngine.h"
 
 #include <jsoncpp/json/json.h>
 #include <iostream>
@@ -22,6 +23,10 @@ Json::Value makeJSON(std::string x) {
     	return Json::Value(); //TODO error cos it didnt parse
     }
     return root;
+}
+
+olc::vf2d CamParams::toScreen(olc::vf2d pos) {
+	return (pos * zoom) + olc::vf2d(tx, ty);
 }
 
 

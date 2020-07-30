@@ -25,6 +25,8 @@ void loadSprites() {
 	}
 	
 	registerUISprite("menu_closed.png", "menu_closed");
+	registerUISprite("menu_open.png", "menu_open");
+	registerUISprite("menu_item.png", "menu_item");
 	/*
     sprites.push_back(new olc::Sprite("ground_iso.png"));
     decals.push_back(new olc::Decal(sprites[sprites.size() - 1]));

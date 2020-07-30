@@ -19,6 +19,7 @@ public:
 	int x,y;
 	Tile(int type, int z, int x, int y);
 	olc::vf2d getTextureCoordinates(CamParams trx);
+	olc::vf2d getTextureCoordinates();
 };
 
 class PlanetSurface {
