@@ -15,7 +15,7 @@ SectorCache::SectorCache(tcp::socket * sock) {
 }
 
 void SectorCache::getSectorFromNetwork(int x, int y) {
-    std::cout << "Requesting sector " << x << " " << y << "\n";
+    //std::cout << "Requesting sector " << x << " " << y << "\n";
     Json::Value json;
     json["request"] = "getSector";
     json["x"] = x;

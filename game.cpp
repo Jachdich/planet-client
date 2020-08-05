@@ -42,6 +42,10 @@ bool Game::OnUserCreate() {
     return true;
 }
 
+std::vector<int> Game::getCurrentPlanetsurfaceLocator() {
+	return std::vector<int>{lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar};
+}
+
 bool Game::OnUserUpdate(float fElapsedTime) {
     //if (planetView) {
     //    Clear(selectedPlanet->baseColour);

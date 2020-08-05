@@ -38,16 +38,17 @@ std::condition_variable netq;
 std::vector<Json::Value> netRequests;
 bool netThreadStop = false;
 bool debugMode = false;
+Game * app;
 
 int WIDTH = 960;
 int HEIGHT = 540;
 
 int main(int argc, char ** argv) {
     noiseGen.SetNoiseType(FastNoise::Simplex);
-	Game app(argc, argv);
-	if (app.Construct(WIDTH, HEIGHT, 2, 2))
-		app.Start();
-    app.destruct();
+	app = new Game(argc, argv);
+	if (app->Construct(WIDTH, HEIGHT, 2, 2))
+		app->Start();
+    app->destruct();
     netThreadStop = true;
     netq.notify_all();
 	return 0;

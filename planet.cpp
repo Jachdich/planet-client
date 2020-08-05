@@ -3,6 +3,7 @@
 #include "client.h"
 #include "helperfunctions.h"
 #include "olcPixelGameEngine.h"
+#include "star.h"
 
 #include <random>
 

@@ -11,10 +11,10 @@ class PlanetData;
 class DropdownMenuItem {
 public:
 	std::string text;
-	void (*click)(DropdownMenuItem * self);
+	std::function<void()> click;
 	olc::vf2d pos;
 	olc::vf2d offset;
-	DropdownMenuItem(std::string text, void (*ptr)(DropdownMenuItem * self));
+	DropdownMenuItem(std::string text, std::function<void()> ptr);
 	void draw(olc::PixelGameEngine * e, CamParams trx);
 };
 

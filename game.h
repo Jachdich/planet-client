@@ -3,7 +3,7 @@
 #include "helperfunctions.h"
 #include "olcPixelGameEngine.h"
 
-#include "client.h"
+//#include "client.h"
 #include "network.h"
 #include "sector.h"
 #include "sectorcache.h"
@@ -28,6 +28,7 @@ public:
     SectorCache map;
     std::thread * netThread;
     
+	Game();
     Game(int argc, char ** argv);
     
     void drawTile(int x, int y, int thing, olc::PixelGameEngine * e);
@@ -35,6 +36,7 @@ public:
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float fElapsedTime) override;
     void zoom(int count);
+	std::vector<int> getCurrentPlanetsurfaceLocator();
 };
 
 #endif

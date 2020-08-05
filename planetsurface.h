@@ -10,18 +10,6 @@
 
 class Planet;
 
-class Tile {
-public:
-	int type;
-	int z;
-	bool hovered = false;
-	bool selected = false;
-	int x,y;
-	Tile(int type, int z, int x, int y);
-	olc::vf2d getTextureCoordinates(CamParams trx);
-	olc::vf2d getTextureCoordinates();
-};
-
 class PlanetSurface {
 public:
     std::vector<Tile> tiles;

@@ -24,7 +24,7 @@ public:
 	double rotationalAngularVelocity;
     double angularVelocity;
     int posInStar;
-    
+	    
     PlanetSurface * surface;
     
     Planet();

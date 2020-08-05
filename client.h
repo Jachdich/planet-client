@@ -5,6 +5,7 @@
 #include <mutex>
 #include <condition_variable>
 #include "FastNoise.h"
+#include "game.h"
 
 extern FastNoise noiseGen;
 extern int WIDTH;
@@ -15,6 +16,7 @@ extern std::condition_variable netq;
 extern std::vector<Json::Value> netRequests;
 extern bool netThreadStop;
 extern bool debugMode;
+extern Game * app;
 
 Json::Value makeJSON(std::string x);
 #endif

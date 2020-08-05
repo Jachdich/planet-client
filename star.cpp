@@ -1,11 +1,11 @@
 #include "star.h"
-#include "star.h"
 #include <iostream>
 #include <stdlib.h>
 #include "client.h"
 #include "helperfunctions.h"
 #include "olcPixelGameEngine.h"
 #include "planet.h"
+#include "sector.h"
 
 Star::Star() {}
 

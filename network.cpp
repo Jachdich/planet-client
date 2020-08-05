@@ -8,12 +8,12 @@
 #include "star.h"
 
 void handleNetwork(tcp::socket * sock, SectorCache * cache) {
-	//return;
     while (true) {
         std::unique_lock<std::mutex> lk(netq_mutex);
         netq.wait(lk);
         lk.unlock();
         if (netThreadStop) { return; }
+		
         Json::Value totalJSON;
         int numRequests = netRequests.size();
         std::unique_lock<std::mutex> lock(netq_mutex);
@@ -54,7 +54,9 @@ void handleNetwork(tcp::socket * sock, SectorCache * cache) {
             	PlanetSurface * surf = new PlanetSurface(root["results"][i]["result"], p);
             	p->surface = surf;
             	//TODO read status
-            }
+            } else if (totalJSON["requests"][i]["request"] == "changeTile") {
+				std::cout << root["results"][i].get("status", 0).asInt() << "\n";
+			}
         }
     }
 }

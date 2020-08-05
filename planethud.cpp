@@ -1,4 +1,5 @@
 #include "planethud.h"
+#include "tile.h"
 #include "planet.h"
 #include "planetsurface.h"
 #include "helperfunctions.h"
@@ -6,11 +7,15 @@
 #include "olcPixelGameEngine.h"
 #include "client.h"
 #include "sprites.h"
+#include "star.h"
+#include "sector.h"
 
 #include <iostream>
+//#include <functional>
+#include <jsoncpp/json/json.h>
 //#include <math>
 
-DropdownMenuItem::DropdownMenuItem(std::string text, void (*ptr)(DropdownMenuItem * self)) {
+DropdownMenuItem::DropdownMenuItem(std::string text, std::function<void()> ptr) {
 	this->text = text;
 	this->click = ptr;
 }
@@ -60,7 +65,8 @@ bool DropdownMenu::click(olc::vi2d screenPos, CamParams trx) {
 		if (componentIndex >= items.size()) {
 			return false;
 		}
-		this->items[componentIndex].click(&this->items[componentIndex]);
+		
+		this->items[componentIndex].click();
 		return true;
 	}
 	
@@ -93,7 +99,25 @@ void PlanetHUD::showClickMenu(Tile * t) {
 	}
 	
 	this->ddmenu = new DropdownMenu(t->getTextureCoordinates() - olc::vf2d(128, 0), "Building");
-	DropdownMenuItem item("test", [](DropdownMenuItem * self) {std::cout << "test\n"; });
+	std::function<void()> thing = [this]() { 
+		Json::Value json;
+		json["request"] = "changeTile";
+		json["x"] = selectedTile->x;
+		json["y"] = selectedTile->y;
+		selectedTile->type = TileType::TREE;
+		
+		std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
+		json["planetPos"] = x[3];
+		json["starPos"] = x[2];
+		json["secX"] = x[0];
+		json["secY"] = x[1];
+	
+		json["to"] = (int)TileType::TREE;
+		std::lock_guard<std::mutex> lock(netq_mutex);
+		netRequests.push_back(json);
+		netq.notify_all();
+	};
+	DropdownMenuItem item("Tree", thing);
 	this->ddmenu->registerItem(item);
 	this->selectedTile = t;
 	t->selected = true;

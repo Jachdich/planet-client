@@ -9,11 +9,7 @@
 #include "sprites.h"
 #include "planethud.h"
 #include "planetdata.h"
-#include "JVector.h"
-
-#define TEXTURE_W 128
-#define TEXTURE_H 64
-#define TEXTURE_Z 30
+#include "tile.h"
 
 olc::Pixel PlanetSurface::getTint(int x, int y, Tile * t) {
     int xb = x - parent->radius;
@@ -60,11 +56,11 @@ void PlanetSurface::drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx) {
 	//float scy = ((x + y - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
 	olc::vf2d v = t.getTextureCoordinates(trx);
 	
-	if (t.type == 1 || t.type == 3) {
+	if (t.type == TileType::TREE || t.type == TileType::ROCK) {
 		e->DrawDecal(v, decals[0], {trx.zoom, trx.zoom}, getTint(t.x, t.y, &t));
 	}
 	
-	e->DrawDecal(v, decals[t.type], {trx.zoom, trx.zoom}, getTint(t.x, t.y, &t));
+	e->DrawDecal(v, decals[(int)t.type], {trx.zoom, trx.zoom}, getTint(t.x, t.y, &t));
 }
 
 void PlanetSurface::draw(olc::PixelGameEngine * e, CamParams trx) {
@@ -108,7 +104,7 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 			} else {
 				z = -1;
 			}
-			tiles.push_back(Tile(type, z, i, j));
+			tiles.push_back(Tile((TileType)type, z, i, j));
 		}
 	}
 	generated = true;
@@ -237,29 +233,3 @@ new code once Ive figured it out
 		offset--;
 	}
 */
-
-
-Tile::Tile(int type, int z, int x, int y) {
-	this->type = type;
-	this->z = z;
-	this->x = x;
-	this->y = y;
-}
-
-olc::vf2d Tile::getTextureCoordinates(CamParams trx) {
-	int sx = x * TEXTURE_W / 2;
-	int sy = y * TEXTURE_H;
-
-	float scx = (sx - sy) * trx.zoom + trx.tx;
-	float scy = ((sx + sy - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
-	return olc::vf2d(scx, scy);
-}
-
-olc::vf2d Tile::getTextureCoordinates() {
-	int sx = x * TEXTURE_W / 2;
-	int sy = y * TEXTURE_H;
-
-	float scx = sx - sy;
-	float scy = (sx + sy - TEXTURE_Z * z) / 2;
-	return olc::vf2d(scx, scy);
-}
