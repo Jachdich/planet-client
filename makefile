@@ -1,18 +1,15 @@
-SOURCES = $(wildcard *.cpp)
-HEADERS = $(SOURCES:.cpp=.h)
-OBJECTS = $(SOURCES:.cpp=.o)
-
-OBJ_DIR = obj
-
+SOURCES := $(shell find src -type f -name *.cpp)
+HEADERS := $(shell find include -type f -name *.h)
+OBJECTS := $(patsubst src/%,obj/%,$(SOURCES:.cpp=.o))
 
 client: $(OBJECTS)
 	g++ $(OBJECTS) -o $@ -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp
 
-%.o: %.cpp $(HEADERS)
-	g++ -c -o $@ $< -Wall -g -std=c++17
+obj/%.o: src/%.cpp $(HEADERS)
+	g++ -c -o $@ $< -Wall -g -std=c++17 -Iinclude
 
-FastNoise.o: FastNoise.cpp
-	g++ -c -o $@ $< -Wall -g -O3
+obj/FastNoise.o: src/FastNoise.cpp
+	g++ -c -o $@ $< -Wall -g -O3 -Iinclude
 
 debug: client
 	gdb client
@@ -21,5 +18,7 @@ run: client
 	./client
 
 clean:
-	rm *.o
+	rm obj/*.o
 	rm client
+
+.PHONY: clean

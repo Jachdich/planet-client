@@ -1,5 +1,4 @@
 #include "star.h"
-#include <iostream>
 #include <stdlib.h>
 #include "client.h"
 #include "helperfunctions.h"
@@ -52,7 +51,6 @@ Planet * Star::getPlanetAt(int x, int y, CamParams trx) {
     for (Planet & p: this->planets) {
         float dx = x - (p.posFromStar * cos(p.theta) + trx.tx + WIDTH / 2);
         float dy = y - (p.posFromStar * sin(p.theta) + trx.ty + HEIGHT / 2);
-        std::cout << "x, y, tx, ty " << dx << ", " << dy << ", " << trx.tx << ", " << trx.ty << "\n";
         if (dx * dx + dy * dy < p.radius * p.radius) {
             return &p;
         }

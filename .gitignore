@@ -1,6 +1,7 @@
 .cproject
 .project
 build
+obj
 *.o
 client
 line_counter.py

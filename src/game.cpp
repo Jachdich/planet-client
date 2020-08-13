@@ -34,9 +34,7 @@ bool Game::OnUserCreate() {
       resolver.resolve(address, "5555");
     
     asio::connect(sock, endpoints);
-    std::cout << "a\n";
     std::thread(handleNetwork, &sock, &map).detach();
-    std::cout << "b\n";
     loadSprites();
       
     return true;
@@ -78,7 +76,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
         if (galaxyView) {
             Sector * s = map.getSectorAt(floor((GetMouseX() - trx.tx) / 256), floor((GetMouseY() - trx.ty) / 256));
             lastClickedSector = s;
-            std::cout << "clicked sector " << s->x << " " << s->y << "\n";
+            //std::cout << "clicked sector " << s->x << " " << s->y << "\n";
             //std::cout << s->requested << " " << s->x << " " << s->y << "\n";
             Star * st = s->getStarAt(
                     (GetMouseX() - trx.tx) / trx.zoom - floor((GetMouseX() - trx.tx) / trx.zoom / 256) * 256,

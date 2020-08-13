@@ -58,18 +58,18 @@ bool DropdownMenu::click(olc::vi2d screenPos, CamParams trx) {
 		this->open = !this->open;
 		return true;
 	}
-	
+
 	//check X value since all items are the same width
 	if (delta.x <= 100 && delta.x >= 0) {
 		int componentIndex = floor(delta.y / 17) - 1; //1 for the menu header itself
-		if (componentIndex >= items.size()) {
+		if ((unsigned long int)componentIndex >= items.size()) {
 			return false;
 		}
-		
+
 		this->items[componentIndex].click();
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -97,21 +97,21 @@ void PlanetHUD::showClickMenu(Tile * t) {
 	if (this->selectedTile != nullptr) {
 		this->selectedTile->selected = false;
 	}
-	
+
 	this->ddmenu = new DropdownMenu(t->getTextureCoordinates() - olc::vf2d(128, 0), "Building");
-	std::function<void()> thing = [this]() { 
+	std::function<void()> thing = [this]() {
 		Json::Value json;
 		json["request"] = "changeTile";
 		json["x"] = selectedTile->x;
 		json["y"] = selectedTile->y;
 		selectedTile->type = TileType::TREE;
-		
+
 		std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
 		json["planetPos"] = x[3];
 		json["starPos"] = x[2];
 		json["secX"] = x[0];
 		json["secY"] = x[1];
-	
+
 		json["to"] = (int)TileType::TREE;
 		std::lock_guard<std::mutex> lock(netq_mutex);
 		netRequests.push_back(json);
@@ -128,7 +128,7 @@ void PlanetHUD::mouseNotClickedOnAnything(int x, int y) {
 		//DON'T delete the tile, since it's a pointer to something that still exists and is needed
 		this->selectedTile->selected = false;
 		this->selectedTile = nullptr;
-		
+
 		//delete the ddmenu since it has no references
 		delete this->ddmenu;
 		this->ddmenu = nullptr;
