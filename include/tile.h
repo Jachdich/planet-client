@@ -8,10 +8,11 @@
 #define TEXTURE_Z 30
 
 enum class TileType {
-	BLANK,
+	VOID,
+	GRASS,
 	TREE,
 	WATER,
-	ROCK
+	ROCK,
 };
 
 class Tile {
@@ -21,9 +22,11 @@ public:
 	bool hovered = false;
 	bool selected = false;
 	int x,y;
-	Tile(TileType type, int z, int x, int y);
+	olc::Pixel tint;
+	Tile(TileType type, int z, int x, int y, olc::Pixel tint);
 	olc::vf2d getTextureCoordinates(CamParams trx);
 	olc::vf2d getTextureCoordinates();
+	void draw(olc::PixelGameEngine * e, CamParams trx);
 };
 
 #endif

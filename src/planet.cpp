@@ -43,9 +43,9 @@ Planet::Planet(Json::Value res, int posInStar) {
 }
 
 std::string toHexString(std::string initText, olc::Pixel colour) {
-	std::stringstream stream;
-	stream << initText << std::setfill('0') << std::setw(6) << std::hex << ((((colour.r << 8) | colour.g) << 8) | colour.b);
-	return stream.str();
+//	std::stringstream stream;
+//	stream << initText << std::setfill('0') << std::setw(6) << std::hex << ((((colour.r << 8) | colour.g) << 8) | colour.b);
+	return "pi doesnt like this";
 }
 
 void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {

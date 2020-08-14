@@ -11,7 +11,7 @@
 #include "planetdata.h"
 #include "tile.h"
 
-olc::Pixel PlanetSurface::getTint(int x, int y, Tile * t) {
+olc::Pixel PlanetSurface::getTint(int x, int y) {
     int xb = x - parent->radius;
     int yb = y - parent->radius;
 
@@ -36,31 +36,12 @@ olc::Pixel PlanetSurface::getTint(int x, int y, Tile * t) {
         g /= total;
         b /= total;
     }
-
-	r += (r * (t->selected || t->hovered)) / 5;
-	g += (g * (t->selected || t->hovered)) / 5;
-	b += (b * (t->selected || t->hovered)) / 5;
-	if (r > 255) r = 255;
-	if (g > 255) g = 255;
-	if (b > 255) b = 255;
-    return olc::Pixel(r, g, b);
+    
+   return olc::Pixel(r, g, b);
 }
 
 void PlanetSurface::drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx) {
-	//int x = ax * TEXTURE_W / 2;
-	//int y = ay * TEXTURE_H;
-	//int z = t.z;
-
-
-	//float scx = (x - y) * trx.zoom + trx.tx;
-	//float scy = ((x + y - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
-	olc::vf2d v = t.getTextureCoordinates(trx);
-
-	if (t.type == TileType::TREE || t.type == TileType::ROCK) {
-		e->DrawDecal(v, decals[0], {trx.zoom, trx.zoom}, getTint(t.x, t.y, &t));
-	}
-
-	e->DrawDecal(v, decals[(int)t.type], {trx.zoom, trx.zoom}, getTint(t.x, t.y, &t));
+	t.draw(e, trx);
 }
 
 void PlanetSurface::draw(olc::PixelGameEngine * e, CamParams trx) {
@@ -105,7 +86,7 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 			} else {
 				z = -1;
 			}
-			tiles.push_back(Tile((TileType)type, z, j, i));
+			tiles.push_back(Tile((TileType)type, z, j, i, this->getTint(j, i));
 		}
 	}
 	generated = true;
