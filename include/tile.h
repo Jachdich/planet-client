@@ -13,6 +13,7 @@ enum class TileType {
 	TREE,
 	WATER,
 	ROCK,
+	HOUSE,
 };
 
 class Tile {

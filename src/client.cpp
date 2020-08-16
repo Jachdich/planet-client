@@ -40,10 +40,10 @@ bool netThreadStop = false;
 bool debugMode = false;
 Game * app;
 
-//int WIDTH = 960;
-//int HEIGHT = 540;
-int WIDTH = 400;
-int HEIGHT = 240;
+int WIDTH = 960;
+int HEIGHT = 540;
+//int WIDTH = 400;
+//int HEIGHT = 240;
 
 int main(int argc, char ** argv) {
     noiseGen.SetNoiseType(FastNoise::Simplex);
@@ -55,4 +55,3 @@ int main(int argc, char ** argv) {
     netq.notify_all();
 	return 0;
 }
-    

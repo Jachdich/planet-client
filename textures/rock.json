@@ -1,0 +1,6 @@
+{"drawGround": 1,
+ "textures": [
+     {"imageFile": "rock_iso.png",
+      "tint": true}
+     ]
+ }

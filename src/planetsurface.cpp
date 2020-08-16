@@ -1,5 +1,6 @@
 #include "planetsurface.h"
 
+#include <cstdint>
 #include <stdlib.h>
 #include <iostream>
 #include "client.h"
@@ -36,7 +37,7 @@ olc::Pixel PlanetSurface::getTint(int x, int y) {
         g /= total;
         b /= total;
     }
-    
+
    return olc::Pixel(r, g, b);
 }
 
@@ -61,37 +62,19 @@ PlanetSurface::PlanetSurface() {
 
 
 PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
-	pos = 0;
-	for (int i = 0; i < p->numColours; i++) {
-		olc::Pixel c = p->generationColours[i];
-		if (c.b > c.r * 2 && c.b * 1.2 > c.g) {
-			pos = i;
-			break;
-		}
-	}
-
-	tiles.reserve(root["rad"].asInt() * 2);
+	parent = p;
+    int width = root["rad"].asInt() * 2;
+	tiles.reserve(width * width);
 	for (int i = 0; i < root["rad"].asInt() * 2; i++) {
 		for (int j = 0; j < root["rad"].asInt() * 2; j++) {
-			int type = root["tiles"][i + j * root["rad"].asInt() * 2].asInt();
-			int z;
-			if (type != 2) {
-				int xb = j - p->radius;
-				int yb = i - p->radius;
-				float az = (1 - (noiseGen.GetNoise(xb / p->generationNoise[pos], yb / p->generationNoise[pos], p->generationZValues[pos]) + 1) / 2) - (1 - p->generationChances[pos]);
-				z = az * 30;
-				if (z < 0) {
-					z = -z;
-				}
-			} else {
-				z = -1;
-			}
-			tiles.push_back(Tile((TileType)type, z, j, i, this->getTint(j, i));
+			uint64_t val = root["tiles"][i + j * root["rad"].asInt() * 2].asUInt64();
+			int32_t type = val & 0xFFFFFFFF;
+            int32_t z    = (val >> 32) & 0xFFFFFFFF;
+			tiles.push_back(Tile((TileType)(type + 1), z, j, i, this->getTint(j, i))); //TODO change +1
 		}
 	}
 	generated = true;
 	requested = false;
-	parent = p;
 	radius = root["rad"].asInt();
 
 	this->data = new PlanetData(this);

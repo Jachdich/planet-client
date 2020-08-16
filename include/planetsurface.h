@@ -22,14 +22,14 @@ public:
 	Planet * parent;
 	PlanetHUD * hud;
 	PlanetData * data;
-    
+
     PlanetSurface();
     PlanetSurface(Json::Value root, Planet * p);
 
     void drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx);
     void draw(olc::PixelGameEngine * e, CamParams trx);
 	void mouseOver(int x, int y, bool mouseClicked, bool mousePressed, CamParams trx);
-    olc::Pixel getTint(int x, int y, Tile * t);
+    olc::Pixel getTint(int x, int y);
 
 };
 

@@ -1,0 +1,6 @@
+{"drawGround": 0,
+ "textures": [
+     {"imageFile": "ground_iso.png",
+      "tint": true}
+     ]
+ }
