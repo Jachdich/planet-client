@@ -11,11 +11,11 @@ public:
     bool generated = false;
     bool requested = false;
     std::vector<Star> stars;
-    
+
     Sector();
     void setRequested();
     Sector(Json::Value root);
-    Star * getStarAt(int x, int y);
+    Star * getStarAt(int x, int y, CamParams trx);
     void draw(olc::PixelGameEngine * e, CamParams trx);
 };
 #endif

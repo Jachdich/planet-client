@@ -21,13 +21,15 @@ Sector::Sector(Json::Value root) {
     for (int i = 0; i < numStars; i++) {
         stars.push_back(Star(root["stars"][i], (int)stars.size()));
     }
-    
+
 }
 
-Star * Sector::getStarAt(int x, int y) {
+Star * Sector::getStarAt(int ax, int ay, CamParams trx) {
+    int bx = (ax - trx.tx) / trx.zoom - this->x * r;
+    int by = (ay - trx.ty) / trx.zoom - this->y * r;
     for (int i = 0; i < numStars; i++) {
-        int dx = x - stars[i].x;
-        int dy = y - stars[i].y;
+        int dx = bx - stars[i].x;
+        int dy = by - stars[i].y;
         if (dx * dx + dy * dy < stars[i].radius * stars[i].radius) {
             return &this->stars[i];
         }

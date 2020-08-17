@@ -20,7 +20,7 @@ Game::Game(int argc, char ** argv) : io_context(), sock(io_context), map(&sock) 
 }
 
 void Game::destruct() {
-    
+
 }
 
 bool Game::OnUserCreate() {
@@ -28,15 +28,15 @@ bool Game::OnUserCreate() {
     if (args.size() > 1) {
         address = args[1];
     }
-    
+
     tcp::resolver resolver(io_context);
     tcp::resolver::results_type endpoints =
       resolver.resolve(address, "5555");
-    
+
     asio::connect(sock, endpoints);
     std::thread(handleNetwork, &sock, &map).detach();
     loadSprites();
-      
+
     return true;
 }
 
@@ -66,7 +66,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     		selectedPlanet->drawSurface(this, trx);
     	}
     }
-    
+
     int count = GetMouseWheel();
     if (count != 0) {
         zoom(-count);
@@ -78,9 +78,9 @@ bool Game::OnUserUpdate(float fElapsedTime) {
             lastClickedSector = s;
             //std::cout << "clicked sector " << s->x << " " << s->y << "\n";
             //std::cout << s->requested << " " << s->x << " " << s->y << "\n";
-            Star * st = s->getStarAt(
-                    (GetMouseX() - trx.tx) / trx.zoom - floor((GetMouseX() - trx.tx) / trx.zoom / 256) * 256,
-                    (GetMouseY() - trx.ty) / trx.zoom - floor((GetMouseY() - trx.ty) / trx.zoom / 256) * 256);
+            Star * st = s->getStarAt(GetMouseX(), GetMouseY(), trx);
+                    // (GetMouseX() - trx.tx) / trx.zoom - floor((GetMouseX() - trx.tx) / trx.zoom / 256) * 256,
+                    // (GetMouseY() - trx.ty) / trx.zoom - floor((GetMouseY() - trx.ty) / trx.zoom / 256) * 256);
             if (st != nullptr) {
                 this->selectedStar = st;
                 this->starView = true;
@@ -88,9 +88,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
                 galaxyTrx = trx;
                 trx = {0, 0, 1};
             }
-        }
-        
-        if (starView) {
+        } else if (starView) {
             Planet * p = selectedStar->getPlanetAt(GetMouseX(), GetMouseY(), trx);
             if (p != nullptr) {
                 this->selectedPlanet = p;
@@ -115,11 +113,11 @@ bool Game::OnUserUpdate(float fElapsedTime) {
         lastMouseX = GetMouseX();
         lastMouseY = GetMouseY();
     }
-    
+
     if (GetKey(olc::Key::L).bPressed) {
         std::cout << "L pressed\n";
     }
-	
+
 	if (GetKey(olc::Key::T).bPressed) {
 		loadSprites();
 	}
@@ -139,21 +137,21 @@ bool Game::OnUserUpdate(float fElapsedTime) {
             return false;
         }
     }
-	
+
 	if (GetKey(olc::Key::F3).bPressed) {
 		debugMode = !debugMode;
 	}
-	
+
 	if (debugMode) {
 		DrawStringDecal({0, 0}, std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
 		DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
 	}
-	
+
     if (netRequests.size() > 0) {
         std::lock_guard<std::mutex> lock(netq_mutex);
         netq.notify_all();
     }
-	
+
     return true;
 }
 

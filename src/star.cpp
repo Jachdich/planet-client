@@ -47,10 +47,12 @@ void Star::drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamPara
     }
 }
 
-Planet * Star::getPlanetAt(int x, int y, CamParams trx) {
+Planet * Star::getPlanetAt(int ax, int ay, CamParams trx) {
+    int x = (ax - trx.tx) / trx.zoom;
+    int y = (ay - trx.ty) / trx.zoom;
     for (Planet & p: this->planets) {
-        float dx = x - (p.posFromStar * cos(p.theta) + trx.tx + WIDTH / 2);
-        float dy = y - (p.posFromStar * sin(p.theta) + trx.ty + HEIGHT / 2);
+        float dx = x - (p.posFromStar * cos(p.theta) + WIDTH / 2);
+        float dy = y - (p.posFromStar * sin(p.theta) + HEIGHT / 2);
         if (dx * dx + dy * dy < p.radius * p.radius) {
             return &p;
         }

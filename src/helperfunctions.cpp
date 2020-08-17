@@ -29,7 +29,6 @@ olc::vf2d CamParams::toScreen(olc::vf2d pos) {
 	return (pos * zoom) + olc::vf2d(tx, ty);
 }
 
-
 //.kick (what if they're the last player?)
 //.leave (what if you're the last player?)
 //wining
