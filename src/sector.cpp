@@ -25,8 +25,10 @@ Sector::Sector(Json::Value root) {
 }
 
 Star * Sector::getStarAt(int ax, int ay, CamParams trx) {
-    int bx = (ax - trx.tx) / trx.zoom - this->x * r;
-    int by = (ay - trx.ty) / trx.zoom - this->y * r;
+    int wx = (ax - trx.tx) / trx.zoom;
+    int wy = (ay - trx.ty) / trx.zoom;
+    int bx = wx - r * x;
+    int by = wy - r * y;
     for (int i = 0; i < numStars; i++) {
         int dx = bx - stars[i].x;
         int dy = by - stars[i].y;

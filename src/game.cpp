@@ -74,7 +74,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 
     if (GetMouse(0).bPressed) {
         if (galaxyView) {
-            Sector * s = map.getSectorAt(floor((GetMouseX() - trx.tx) / 256), floor((GetMouseY() - trx.ty) / 256));
+            Sector * s = map.getSectorAt(floor((GetMouseX() - trx.tx) / trx.zoom / 256), floor((GetMouseY() - trx.ty) / trx.zoom / 256));
             lastClickedSector = s;
             //std::cout << "clicked sector " << s->x << " " << s->y << "\n";
             //std::cout << s->requested << " " << s->x << " " << s->y << "\n";
@@ -156,6 +156,12 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 }
 
 void Game::zoom(int count) {
+    if (trx.zoom >= 8 && count < 0) {
+        return;
+    }
+    if (trx.zoom <= 0.18 && count > 0) {
+        return;
+    }
     trx.tx -= GetMouseX();
     trx.ty -= GetMouseY();
     double delta = count < 0 ? 1.05 : count > 0 ? 1.0/1.05 : 1.0;
