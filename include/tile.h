@@ -2,19 +2,11 @@
 #define __TILE_H
 #include "olcPixelGameEngine.h"
 #include "helperfunctions.h"
+#include "common/enums.h"
 
 #define TEXTURE_W 128
 #define TEXTURE_H 64
 #define TEXTURE_Z 30
-
-enum class TileType {
-	VOID,
-	GRASS,
-	TREE,
-	WATER,
-	ROCK,
-	HOUSE,
-};
 
 class Tile {
 public:

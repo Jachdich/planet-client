@@ -7,3 +7,5 @@ client
 line_counter.py
 JVector.h
 *~
+common
+common.a
