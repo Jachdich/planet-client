@@ -67,7 +67,7 @@ void registerUISprite(std::string filename, std::string name) {
 
 void loadSprites() {
 	tileSprites.clear();
-	std::string names[] = {"void.json", "ground.json", "tree.json", "water.json", "rock.json", "house.json"};
+	std::string names[] = {"void.json", "ground.json", "bush.json", "tree.json", "pine.json", "water.json", "rock.json", "house.json"};
 	for (int i = 0; i < *(&names + 1) - names; i++) {
 		registerTileSprite(names[i]);
 	}

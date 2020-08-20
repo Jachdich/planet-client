@@ -60,7 +60,6 @@ void PlanetSurface::draw(olc::PixelGameEngine * e, CamParams trx) {
 PlanetSurface::PlanetSurface() {
 }
 
-
 PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 	parent = p;
     int width = root["rad"].asInt() * 2;
@@ -70,7 +69,7 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 			uint64_t val = root["tiles"][i + j * root["rad"].asInt() * 2].asUInt64();
 			int32_t type = val & 0xFFFFFFFF;
             int32_t z    = (val >> 32) & 0xFFFFFFFF;
-			tiles.push_back(Tile((TileType)(type + 1), z, j, i, this->getTint(j, i))); //TODO change +1
+			tiles.push_back(Tile((TileType)(type), z, j, i, this->getTint(j, i)));
 		}
 	}
 	generated = true;
