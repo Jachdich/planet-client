@@ -19,7 +19,7 @@ struct TileSpriteComponent {
 struct TileSprite {
 	TileType drawGround;
 	std::vector<TileSpriteComponent> components;
-	void draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, Tile * t);
+	void draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, olc::Pixel tint);
 	TileSprite(std::string fName);
 };
 

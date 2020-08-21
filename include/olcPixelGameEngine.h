@@ -85,9 +85,9 @@
 	~~~~~~
 	I'd like to extend thanks to Eremiell, slavka, gurkanctn, Phantim, IProgramInCPP
 	JackOJC, KrossX, Huhlig, Dragoneye, Appa, JustinRichardsMusic, SliceNDice, dandistine
-	Ralakus, Gorbit99, raoul, joshinils, benedani, Moros1138, SaladinAkara & MagetzUb 
-	for advice, ideas and testing, and I'd like to extend my appreciation to the 
-	164K YouTube followers,	70+ Patreons and 8K Discord server members who give me 
+	Ralakus, Gorbit99, raoul, joshinils, benedani, Moros1138, SaladinAkara & MagetzUb
+	for advice, ideas and testing, and I'd like to extend my appreciation to the
+	164K YouTube followers,	70+ Patreons and 8K Discord server members who give me
 	the motivation to keep going with all this :D
 	Significant Contributors: @Moros1138, @SaladinAkara, @MaGetzUb, @slavka, @Dragoneye & @Gorbit99
 	Special thanks to those who bring gifts!
@@ -232,14 +232,14 @@ int main()
 namespace olc
 {
 	class PixelGameEngine;
-		
+
 	// Pixel Game Engine Advanced Configuration
 	constexpr uint8_t  nMouseButtons = 5;
 	constexpr uint8_t  nDefaultAlpha = 0xFF;
 	constexpr uint32_t nDefaultPixel = (nDefaultAlpha << 24);
 	enum rcode { FAIL = 0, OK = 1, NO_FILE = -1 };
 
-	
+
 
 	// O------------------------------------------------------------------------------O
 	// | olc::Pixel - Represents a 32-Bit RGBA colour                                 |
@@ -326,7 +326,7 @@ namespace olc
 		operator v2d_generic<double>() const { return { static_cast<double>(this->x), static_cast<double>(this->y) };  }
 	};
 
-	// Note: joshinils has some good suggestions here, but they are complicated to implement at this moment, 
+	// Note: joshinils has some good suggestions here, but they are complicated to implement at this moment,
 	// however they will appear in a future version of PGE
 	template<class T> inline v2d_generic<T> operator * (const float& lhs, const v2d_generic<T>& rhs)
 	{ return v2d_generic<T>((T)(lhs * (float)rhs.x), (T)(lhs * (float)rhs.y)); }
@@ -463,9 +463,9 @@ namespace olc
 	// | Auxilliary components internal to engine                                     |
 	// O------------------------------------------------------------------------------O
 
-	struct DecalInstance 
+	struct DecalInstance
 	{
-		olc::Decal* decal = nullptr; 
+		olc::Decal* decal = nullptr;
 		olc::vf2d pos[4] = {{ 0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}};
 		olc::vf2d uv[4] = {{ 0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f}};
 		float w[4] = { 1, 1, 1, 1 };
@@ -511,7 +511,7 @@ namespace olc
 		virtual void       ClearBuffer(olc::Pixel p, bool bDepth) = 0;
 		static olc::PixelGameEngine* ptrPGE;
 	};
-	
+
 	class Platform
 	{
 	public:
@@ -526,7 +526,7 @@ namespace olc
 		virtual olc::rcode HandleSystemEvent() = 0;
 		static olc::PixelGameEngine* ptrPGE;
 	};
-	
+
 	static std::unique_ptr<Renderer> renderer;
 	static std::unique_ptr<Platform> platform;
 	static std::map<size_t, uint8_t> mapKeys;
@@ -652,14 +652,14 @@ namespace olc
 		// selected area is (ox,oy) to (ox+w,oy+h)
 		void DrawPartialSprite(int32_t x, int32_t y, Sprite *sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale = 1, uint8_t flip = olc::Sprite::NONE);
 		void DrawPartialSprite(const olc::vi2d& pos, Sprite *sprite, const olc::vi2d& sourcepos, const olc::vi2d& size, uint32_t scale = 1, uint8_t flip = olc::Sprite::NONE);
-		
+
 		// Decal Quad functions
 
 		// Draws a whole decal, with optional scale and tinting
 		void DrawDecal(const olc::vf2d& pos, olc::Decal *decal, const olc::vf2d& scale = { 1.0f,1.0f }, const olc::Pixel& tint = olc::WHITE);
 		// Draws a region of a decal, with optional scale and tinting
 		void DrawPartialDecal(const olc::vf2d& pos, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::vf2d& scale = { 1.0f,1.0f }, const olc::Pixel& tint = olc::WHITE);
-		void DrawPartialDecal(const olc::vf2d& pos, const olc::vf2d& size, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE);		
+		void DrawPartialDecal(const olc::vf2d& pos, const olc::vf2d& size, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE);
 		// Draws fully user controlled 4 vertices, pos(pixels), uv(pixels), colours
 		void DrawExplicitDecal(olc::Decal* decal, const olc::vf2d *pos, const olc::vf2d *uv, const olc::Pixel *col);
 		// Draws a decal with 4 arbitrary points, warping the texture to look "correct"
@@ -669,7 +669,7 @@ namespace olc
 		// As above, but you can specify a region of a decal source sprite
 		void DrawPartialWarpedDecal(olc::Decal* decal, const olc::vf2d(&pos)[4], const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE);
 		void DrawPartialWarpedDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE);
-		void DrawPartialWarpedDecal(olc::Decal* decal, const std::array<olc::vf2d, 4>& pos, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE);		
+		void DrawPartialWarpedDecal(olc::Decal* decal, const std::array<olc::vf2d, 4>& pos, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE);
 		// Draws a decal rotated to specified angle, wit point of rotation offset
 		void DrawRotatedDecal(const olc::vf2d& pos, olc::Decal* decal, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::vf2d& scale = { 1.0f,1.0f }, const olc::Pixel& tint = olc::WHITE);
 		void DrawPartialRotatedDecal(const olc::vf2d& pos, olc::Decal* decal, const float fAngle, const olc::vf2d& center, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::vf2d& scale = { 1.0f, 1.0f }, const olc::Pixel& tint = olc::WHITE);
@@ -680,7 +680,7 @@ namespace olc
 		// Draws a corner shaded rectangle as a decal
 		void GradientFillRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel colTL, const olc::Pixel colBL, const olc::Pixel colBR, const olc::Pixel colTR);
 
-		
+
 
 		// Draws a single line of text
 		void DrawString(int32_t x, int32_t y, const std::string& sText, Pixel col = olc::WHITE, uint32_t scale = 1);
@@ -727,7 +727,7 @@ namespace olc
 		std::function<olc::Pixel(const int x, const int y, const olc::Pixel&, const olc::Pixel&)> funcPixelMode;
 		std::chrono::time_point<std::chrono::system_clock> m_tp1, m_tp2;
 
-		// State of keyboard		
+		// State of keyboard
 		bool		pKeyNewState[256]{ 0 };
 		bool		pKeyOldState[256]{ 0 };
 		HWButton	pKeyboardState[256]{ 0 };
@@ -822,7 +822,7 @@ namespace olc
 	{ r = 0; g = 0; b = 0; a = nDefaultAlpha; }
 
 	Pixel::Pixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-	{ n = red | (green << 8) | (blue << 16) | (alpha << 24); } // Thanks jarekpelczar 
+	{ n = red | (green << 8) | (blue << 16) | (alpha << 24); } // Thanks jarekpelczar
 
 
 	Pixel::Pixel(uint32_t p)
@@ -1045,7 +1045,7 @@ namespace olc
 
 
 	//=============================================================
-	// Resource Packs - Allows you to store files in one large 
+	// Resource Packs - Allows you to store files in one large
 	// scrambled file - Thanks MaGetzUb for debugging a null char in std::stringstream bug
 	ResourceBuffer::ResourceBuffer(std::ifstream& ifs, uint32_t offset, uint32_t size)
 	{
@@ -1065,7 +1065,7 @@ namespace olc
 		{
 			sResourceFile e;
 			e.nSize = (uint32_t)_gfs::file_size(file);
-			e.nOffset = 0; // Unknown at this stage			
+			e.nOffset = 0; // Unknown at this stage
 			mapFiles[file] = e;
 			return true;
 		}
@@ -1248,7 +1248,7 @@ namespace olc
 		if (vPixelSize.x <= 0 || vPixelSize.y <= 0 || vScreenSize.x <= 0 || vScreenSize.y <= 0)
 			return olc::FAIL;
 
-		
+
 		return olc::OK;
 	}
 
@@ -1347,7 +1347,7 @@ namespace olc
 		LayerDesc ld;
 		ld.pDrawTarget = new olc::Sprite(vScreenSize.x, vScreenSize.y);
 		ld.nResID = renderer->CreateTexture(vScreenSize.x, vScreenSize.y);
-		renderer->UpdateTexture(ld.nResID, ld.pDrawTarget);		
+		renderer->UpdateTexture(ld.nResID, ld.pDrawTarget);
 		vLayers.push_back(ld);
 		return uint32_t(vLayers.size()) - 1;
 	}
@@ -1606,8 +1606,8 @@ namespace olc
 				{
 					if (x0 != y0)
 					{
-						drawline(x - x0, x + x0, y - y0);    
-						drawline(x - x0, x + x0, y + y0);    
+						drawline(x - x0, x + x0, y - y0);
+						drawline(x - x0, x + x0, y + y0);
 					}
 					d += 4 * (x0++ - y0--) + 10;
 				}
@@ -1886,7 +1886,7 @@ namespace olc
 	}
 
 	void PixelGameEngine::DrawPartialDecal(const olc::vf2d& pos, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::vf2d& scale, const olc::Pixel& tint)
-	{		
+	{
 		olc::vf2d vScreenSpacePos =
 		{
 			(pos.x * vInvScreenSize.x) * 2.0f - 1.0f,
@@ -1909,7 +1909,7 @@ namespace olc
 		olc::vf2d uvtl = source_pos * decal->vUVScale;
 		olc::vf2d uvbr = uvtl + (source_size * decal->vUVScale);
 		di.uv[0] = { uvtl.x, uvtl.y }; di.uv[1] = { uvtl.x, uvbr.y };
-		di.uv[2] = { uvbr.x, uvbr.y }; di.uv[3] = { uvbr.x, uvtl.y };	
+		di.uv[2] = { uvbr.x, uvbr.y }; di.uv[3] = { uvbr.x, uvtl.y };
 		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
 	}
 
@@ -2048,7 +2048,7 @@ namespace olc
 		float rd = ((pos[2].x - pos[0].x) * (pos[3].y - pos[1].y) - (pos[3].x - pos[1].x) * (pos[2].y - pos[0].y));
 		if (rd != 0)
 		{
-			olc::vf2d uvtl = source_pos * decal->vUVScale; 
+			olc::vf2d uvtl = source_pos * decal->vUVScale;
 			olc::vf2d uvbr = uvtl + (source_size * decal->vUVScale);
 			di.uv[0] = { uvtl.x, uvtl.y }; di.uv[1] = { uvtl.x, uvbr.y };
 			di.uv[2] = { uvbr.x, uvbr.y }; di.uv[3] = { uvbr.x, uvtl.y };
@@ -2063,7 +2063,7 @@ namespace olc
 				float q = d[i] == 0.0f ? 1.0f : (d[i] + d[(i + 2) & 3]) / d[(i + 2) & 3];
 				di.uv[i] *= q; di.w[i] *= q;
 				di.pos[i] = { (pos[i].x * vInvScreenSize.x) * 2.0f - 1.0f, ((pos[i].y * vInvScreenSize.y) * 2.0f - 1.0f) * -1.0f };
-			}			
+			}
 			vLayers[nTargetLayer].vecDecalInstance.push_back(di);
 		}
 	}
@@ -2105,7 +2105,7 @@ namespace olc
 
 	void PixelGameEngine::DrawPartialWarpedDecal(olc::Decal* decal, const olc::vf2d(&pos)[4], const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint)
 	{ DrawPartialWarpedDecal(decal, &pos[0], source_pos, source_size, tint); }
-	   
+
 	void PixelGameEngine::DrawStringDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col, const olc::vf2d& scale)
 	{
 		olc::vf2d spos = { 0.0f, 0.0f };
@@ -2331,7 +2331,7 @@ namespace olc
 
 		// Our time per frame coefficient
 		float fElapsedTime = elapsedTime.count();
-		fLastElapsed = fElapsedTime;		
+		fLastElapsed = fElapsedTime;
 
 		// Some platforms will need to check for events
 		platform->HandleSystemEvent();
@@ -2563,25 +2563,25 @@ namespace olc
 
 			glDeviceContext = glXCreateContext(olc_Display, olc_VisualInfo, nullptr, GL_TRUE);
 			glXMakeCurrent(olc_Display, *olc_Window, glDeviceContext);
-			
+
 			XWindowAttributes gwa;
 			XGetWindowAttributes(olc_Display, *olc_Window, &gwa);
 			glViewport(0, 0, gwa.width, gwa.height);
-			
+
 			glSwapIntervalEXT = nullptr;
 			glSwapIntervalEXT = (glSwapInterval_t*)glXGetProcAddress((unsigned char*)"glXSwapIntervalEXT");
-			
+
 			if (glSwapIntervalEXT == nullptr && !bVSYNC)
 			{
 				printf("NOTE: Could not disable VSYNC, glXSwapIntervalEXT() was not found!\n");
 				printf("      Don't worry though, things will still work, it's just the\n");
 				printf("      frame rate will be capped to your monitors refresh rate - javidx9\n");
 			}
-			
+
 			if (glSwapIntervalEXT != nullptr && !bVSYNC)
 				glSwapIntervalEXT(olc_Display, *olc_Window, 0);
-		#endif		
-		
+		#endif
+
 			glEnable(GL_TEXTURE_2D); // Turn on texturing
 			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 			return olc::rcode::OK;
@@ -2604,11 +2604,11 @@ namespace olc
 		{
 		#if defined(_WIN32)
 			SwapBuffers(glDeviceContext);
-		#endif	
+		#endif
 
 		#if defined(__linux__) || defined(__FreeBSD__)
 			X11::glXSwapBuffers(olc_Display, *olc_Window);
-		#endif		
+		#endif
 		}
 
 		void PrepareDrawing() override
@@ -2674,7 +2674,7 @@ namespace olc
 
 		uint32_t DeleteTexture(const uint32_t id) override
 		{
-			glDeleteTextures(1, &id);			
+			glDeleteTextures(1, &id);
 			return id;
 		}
 
@@ -2913,8 +2913,8 @@ namespace olc
 				return 0;
 			}
 			case WM_SIZE:       ptrPGE->olc_UpdateWindowSize(lParam & 0xFFFF, (lParam >> 16) & 0xFFFF);	return 0;
-			case WM_MOUSEWHEEL:	ptrPGE->olc_UpdateMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));           return 0;			
-			case WM_MOUSELEAVE: ptrPGE->olc_UpdateMouseFocus(false);                                    return 0;			
+			case WM_MOUSEWHEEL:	ptrPGE->olc_UpdateMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));           return 0;
+			case WM_MOUSELEAVE: ptrPGE->olc_UpdateMouseFocus(false);                                    return 0;
 			case WM_SETFOCUS:	ptrPGE->olc_UpdateKeyFocus(true);                                       return 0;
 			case WM_KILLFOCUS:	ptrPGE->olc_UpdateKeyFocus(false);                                      return 0;
 			case WM_KEYDOWN:	ptrPGE->olc_UpdateKeyState(mapKeys[wParam], true);                      return 0;
@@ -2948,7 +2948,7 @@ namespace olc
 			// Load sprite from file
 			bmp = Gdiplus::Bitmap::FromFile(ConvertS2W(sImageFile).c_str());
 		}
-		
+
 		if (bmp->GetLastStatus() != Gdiplus::Ok) return olc::NO_FILE;
 		width = bmp->GetWidth();
 		height = bmp->GetHeight();
@@ -3021,33 +3021,33 @@ namespace olc
 		{
 			using namespace X11;
 			XInitThreads();
-	
+
 			// Grab the deafult display and window
 			olc_Display = XOpenDisplay(NULL);
 			olc_WindowRoot = DefaultRootWindow(olc_Display);
-	
+
 			// Based on the display capabilities, configure the appearance of the window
 			GLint olc_GLAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
 			olc_VisualInfo = glXChooseVisual(olc_Display, 0, olc_GLAttribs);
 			olc_ColourMap = XCreateColormap(olc_Display, olc_WindowRoot, olc_VisualInfo->visual, AllocNone);
 			olc_SetWindowAttribs.colormap = olc_ColourMap;
-	
+
 			// Register which events we are interested in receiving
 			olc_SetWindowAttribs.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
 				ButtonPressMask | ButtonReleaseMask | PointerMotionMask | FocusChangeMask | StructureNotifyMask;
-	
+
 			// Create the window
 			olc_Window = XCreateWindow(olc_Display, olc_WindowRoot, vWindowPos.x, vWindowPos.y,
 				vWindowSize.x, vWindowSize.y,
 				0, olc_VisualInfo->depth, InputOutput, olc_VisualInfo->visual,
 				CWColormap | CWEventMask, &olc_SetWindowAttribs);
-	
+
 			Atom wmDelete = XInternAtom(olc_Display, "WM_DELETE_WINDOW", true);
 			XSetWMProtocols(olc_Display, olc_Window, &wmDelete, 1);
-	
+
 			XMapWindow(olc_Display, olc_Window);
 			XStoreName(olc_Display, olc_Window, "OneLoneCoder.com - Pixel Game Engine");
-	
+
 			if (bFullScreen) // Thanks DragonEye, again :D
 			{
 				Atom wm_state;
@@ -3072,7 +3072,7 @@ namespace olc
 				vWindowSize.x = gwa.width;
 				vWindowSize.y = gwa.height;
 			}
-	
+
 			// Create Keyboard Mapping
 			mapKeys[0x00] = Key::NONE;
 			mapKeys[0x61] = Key::A; mapKeys[0x62] = Key::B; mapKeys[0x63] = Key::C; mapKeys[0x64] = Key::D; mapKeys[0x65] = Key::E;
@@ -3081,27 +3081,27 @@ namespace olc
 			mapKeys[0x70] = Key::P; mapKeys[0x71] = Key::Q; mapKeys[0x72] = Key::R; mapKeys[0x73] = Key::S; mapKeys[0x74] = Key::T;
 			mapKeys[0x75] = Key::U; mapKeys[0x76] = Key::V; mapKeys[0x77] = Key::W; mapKeys[0x78] = Key::X; mapKeys[0x79] = Key::Y;
 			mapKeys[0x7A] = Key::Z;
-	
+
 			mapKeys[XK_F1] = Key::F1; mapKeys[XK_F2] = Key::F2; mapKeys[XK_F3] = Key::F3; mapKeys[XK_F4] = Key::F4;
 			mapKeys[XK_F5] = Key::F5; mapKeys[XK_F6] = Key::F6; mapKeys[XK_F7] = Key::F7; mapKeys[XK_F8] = Key::F8;
 			mapKeys[XK_F9] = Key::F9; mapKeys[XK_F10] = Key::F10; mapKeys[XK_F11] = Key::F11; mapKeys[XK_F12] = Key::F12;
-	
+
 			mapKeys[XK_Down] = Key::DOWN; mapKeys[XK_Left] = Key::LEFT; mapKeys[XK_Right] = Key::RIGHT; mapKeys[XK_Up] = Key::UP;
 			mapKeys[XK_KP_Enter] = Key::ENTER; mapKeys[XK_Return] = Key::ENTER;
-	
+
 			mapKeys[XK_BackSpace] = Key::BACK; mapKeys[XK_Escape] = Key::ESCAPE; mapKeys[XK_Linefeed] = Key::ENTER;	mapKeys[XK_Pause] = Key::PAUSE;
 			mapKeys[XK_Scroll_Lock] = Key::SCROLL; mapKeys[XK_Tab] = Key::TAB; mapKeys[XK_Delete] = Key::DEL; mapKeys[XK_Home] = Key::HOME;
 			mapKeys[XK_End] = Key::END; mapKeys[XK_Page_Up] = Key::PGUP; mapKeys[XK_Page_Down] = Key::PGDN;	mapKeys[XK_Insert] = Key::INS;
 			mapKeys[XK_Shift_L] = Key::SHIFT; mapKeys[XK_Shift_R] = Key::SHIFT; mapKeys[XK_Control_L] = Key::CTRL; mapKeys[XK_Control_R] = Key::CTRL;
 			mapKeys[XK_space] = Key::SPACE; mapKeys[XK_period] = Key::PERIOD;
-	
+
 			mapKeys[XK_0] = Key::K0; mapKeys[XK_1] = Key::K1; mapKeys[XK_2] = Key::K2; mapKeys[XK_3] = Key::K3; mapKeys[XK_4] = Key::K4;
 			mapKeys[XK_5] = Key::K5; mapKeys[XK_6] = Key::K6; mapKeys[XK_7] = Key::K7; mapKeys[XK_8] = Key::K8; mapKeys[XK_9] = Key::K9;
-	
+
 			mapKeys[XK_KP_0] = Key::NP0; mapKeys[XK_KP_1] = Key::NP1; mapKeys[XK_KP_2] = Key::NP2; mapKeys[XK_KP_3] = Key::NP3; mapKeys[XK_KP_4] = Key::NP4;
 			mapKeys[XK_KP_5] = Key::NP5; mapKeys[XK_KP_6] = Key::NP6; mapKeys[XK_KP_7] = Key::NP7; mapKeys[XK_KP_8] = Key::NP8; mapKeys[XK_KP_9] = Key::NP9;
 			mapKeys[XK_KP_Multiply] = Key::NP_MUL; mapKeys[XK_KP_Add] = Key::NP_ADD; mapKeys[XK_KP_Divide] = Key::NP_DIV; mapKeys[XK_KP_Subtract] = Key::NP_SUB; mapKeys[XK_KP_Decimal] = Key::NP_DECIMAL;
-	
+
 			return olc::OK;
 		}
 
@@ -3257,7 +3257,7 @@ namespace olc
 			for (int y = 0; y < height; y++) // Thanks maksym33
 				free(row_pointers[y]);
 			free(row_pointers);
-			png_destroy_read_struct(&png, &info, nullptr);			
+			png_destroy_read_struct(&png, &info, nullptr);
 		};
 
 		png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -3333,4 +3333,3 @@ namespace olc
 // O------------------------------------------------------------------------------O
 // | END OF OLC_PGE_APPLICATION                                                   |
 // O------------------------------------------------------------------------------O
-

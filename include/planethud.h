@@ -2,6 +2,7 @@
 #define __PLANETHUD_H
 #include "olcPixelGameEngine.h"
 #include "helperfunctions.h"
+#include "common/enums.h"
 #include <string>
 
 class Tile;
@@ -26,7 +27,7 @@ public:
 	std::vector<DropdownMenuItem> items;
 	DropdownMenu(olc::vf2d pos, std::string text);
 	void draw(olc::PixelGameEngine * e, CamParams trx);
-	bool click(olc::vi2d pos, CamParams trx);
+	bool click(olc::vf2d pos, CamParams trx);
 	void registerItem(DropdownMenuItem item);
 };
 
@@ -43,7 +44,8 @@ public:
 	PlanetHUD();
 	PlanetHUD(PlanetSurface * parent, PlanetData * data);
 	bool mousePressed(int x, int y, CamParams trx);
-	void mouseNotClickedOnAnything(int x, int y); //frikkin change the name of this
+	void closeClickMenu();
+	void sendChangeTileRequest(TileType to);
 	void draw(olc::PixelGameEngine * e, CamParams trx);
 	void showClickMenu(Tile * t);
 };

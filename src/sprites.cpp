@@ -12,16 +12,16 @@ std::vector<TileSprite> tileSprites;
 std::unordered_map<std::string, UIComponent> UIComponents;
 std::string texturedir = "textures";
 
-void TileSprite::draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, Tile * t) {
+void TileSprite::draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, olc::Pixel tint) {
 
     if (drawGround != TileType::VOID) {
 		 // e->DrawDecal(pos, tileSprites[(int)drawGround], {trx.zoom, trx.zoom}, t->tint);
-         tileSprites[(int)drawGround].draw(e, trx, pos, t);
+         tileSprites[(int)drawGround].draw(e, trx, pos, tint);
     }
 
     for (TileSpriteComponent &c : components) {
         if (c.tint) {
-            e->DrawDecal(pos, c.decal, {trx.zoom, trx.zoom}, t->tint);
+            e->DrawDecal(pos, c.decal, {trx.zoom, trx.zoom}, tint);
         } else {
             e->DrawDecal(pos, c.decal, {trx.zoom, trx.zoom});
         }
@@ -47,6 +47,10 @@ TileSprite::TileSprite(std::string fName) {
         &errors
     );
     delete reader;
+
+    if (!parsingSuccessful) {
+        std::cerr << "Unable to open texture json definition '" << fName << "'. Ignoring.\n";
+    }
 
     afile.close();
     drawGround = (TileType)root["drawGround"].asInt();

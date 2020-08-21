@@ -148,7 +148,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 
 	//if not tile and not hud
 	if (mouseClicked) {
-		this->hud->mouseNotClickedOnAnything(max, may);
+		this->hud->closeClickMenu();
 	}
 }
 /*

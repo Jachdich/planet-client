@@ -22,8 +22,8 @@ DropdownMenuItem::DropdownMenuItem(std::string text, std::function<void()> ptr) 
 
 void DropdownMenuItem::draw(olc::PixelGameEngine * e, CamParams trx) {
 	UIComponent comp = UIComponents["menu_item"];
-	e->DrawDecal(trx.toScreen(this->pos) + offset, comp.decal);
-	e->DrawStringDecal(trx.toScreen(this->pos) + comp.textPos + offset, this->text, olc::BLACK);
+	e->DrawDecal(this->pos + offset, comp.decal);
+	e->DrawStringDecal(this->pos + comp.textPos + offset, this->text, olc::BLACK);
 }
 
 DropdownMenu::DropdownMenu(olc::vf2d pos, std::string text) {
@@ -33,14 +33,18 @@ DropdownMenu::DropdownMenu(olc::vf2d pos, std::string text) {
 
 void DropdownMenu::registerItem(DropdownMenuItem item) {
 	item.pos = this->pos;
-	item.offset = olc::vf2d(0, 17);
+	if (this->items.size() > 0) {
+		item.offset = this->items[this->items.size() - 1].offset + olc::vf2d(0, 17);
+	} else {
+		item.offset = olc::vf2d(0, 17);
+	}
 	this->items.push_back(item);
 }
 
 void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams trx) {
 	UIComponent component = this->open ? UIComponents["menu_open"] : UIComponents["menu_closed"];
-	e->DrawDecal(trx.toScreen(pos), component.decal);
-	e->DrawStringDecal(trx.toScreen(pos) + component.textPos, this->text, olc::BLACK);
+	e->DrawDecal(pos, component.decal);
+	e->DrawStringDecal(pos + component.textPos, this->text, olc::BLACK);
 	if (this->open) {
 		for (DropdownMenuItem item : this->items) {
 			item.draw(e, trx);
@@ -48,9 +52,9 @@ void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams trx) {
 	}
 }
 
-bool DropdownMenu::click(olc::vi2d screenPos, CamParams trx) {
-	olc::vf2d rectPos = trx.toScreen(pos);
-	olc::vd2d delta = screenPos - rectPos;
+bool DropdownMenu::click(olc::vf2d screenPos, CamParams trx) {
+	olc::vf2d rectPos = pos;
+	olc::vd2d delta = (screenPos - olc::vf2d(trx.tx, trx.ty)) / trx.zoom - rectPos;
 	if (delta.x <= 100 &&
 		delta.x >= 0   &&
 		delta.y <= 17  &&
@@ -60,7 +64,7 @@ bool DropdownMenu::click(olc::vi2d screenPos, CamParams trx) {
 	}
 
 	//check X value since all items are the same width
-	if (delta.x <= 100 && delta.x >= 0) {
+	if (delta.x <= 100 && delta.x >= 0 && this->open) {
 		int componentIndex = floor(delta.y / 17) - 1; //1 for the menu header itself
 		if ((unsigned long int)componentIndex >= items.size()) {
 			return false;
@@ -93,37 +97,40 @@ bool PlanetHUD::mousePressed(int x, int y, CamParams trx) {
 	return false;
 }
 
+void PlanetHUD::sendChangeTileRequest(TileType to) {
+	Json::Value json;
+	json["request"] = "changeTile";
+	json["x"] = selectedTile->x;
+	json["y"] = selectedTile->y;
+	selectedTile->type = to;
+
+	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
+	json["planetPos"] = x[3];
+	json["starPos"] = x[2];
+	json["secX"] = x[0];
+	json["secY"] = x[1];
+
+	json["to"] = (int)to;
+	std::lock_guard<std::mutex> lock(netq_mutex);
+	netRequests.push_back(json);
+	netq.notify_all();
+}
+
 void PlanetHUD::showClickMenu(Tile * t) {
 	if (this->selectedTile != nullptr) {
 		this->selectedTile->selected = false;
 	}
 
-	this->ddmenu = new DropdownMenu(t->getTextureCoordinates() - olc::vf2d(128, 0), "Building");
-	std::function<void()> thing = [this]() {
-		Json::Value json;
-		json["request"] = "changeTile";
-		json["x"] = selectedTile->x;
-		json["y"] = selectedTile->y;
-		selectedTile->type = TileType::TREE;
+	this->ddmenu = new DropdownMenu(olc::vf2d(128, 0), "Building");
 
-		std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
-		json["planetPos"] = x[3];
-		json["starPos"] = x[2];
-		json["secX"] = x[0];
-		json["secY"] = x[1];
+	this->ddmenu->registerItem(DropdownMenuItem("Tree", [this]() { sendChangeTileRequest(TileType::TREE); }));
+	this->ddmenu->registerItem(DropdownMenuItem("Grass", [this]() { sendChangeTileRequest(TileType::GRASS); }));
 
-		json["to"] = (int)TileType::TREE;
-		std::lock_guard<std::mutex> lock(netq_mutex);
-		netRequests.push_back(json);
-		netq.notify_all();
-	};
-	DropdownMenuItem item("Tree", thing);
-	this->ddmenu->registerItem(item);
 	this->selectedTile = t;
 	t->selected = true;
 }
 
-void PlanetHUD::mouseNotClickedOnAnything(int x, int y) {
+void PlanetHUD::closeClickMenu() {
 	if (this->selectedTile != nullptr) {
 		//DON'T delete the tile, since it's a pointer to something that still exists and is needed
 		this->selectedTile->selected = false;

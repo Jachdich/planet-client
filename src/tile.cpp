@@ -20,15 +20,18 @@ olc::vf2d Tile::getTextureCoordinates(CamParams trx) {
 }
 
 void Tile::draw(olc::PixelGameEngine * e, CamParams trx) {
-    /*
-       r += (r * (t->selected || t->hovered)) / 5;
-	g += (g * (t->selected || t->hovered)) / 5;
-	b += (b * (t->selected || t->hovered)) / 5;
+    int r,g,b;
+    r = tint.r;
+    g = tint.g;
+    b = tint.b;
+    r += (r * (selected || hovered)) / 5;
+	g += (g * (selected || hovered)) / 5;
+	b += (b * (selected || hovered)) / 5;
 	if (r > 255) r = 255;
 	if (g > 255) g = 255;
-	if (b > 255) b = 255;*/
+	if (b > 255) b = 255;
 	olc::vf2d v = this->getTextureCoordinates(trx);
-	tileSprites[(int)type].draw(e, trx, v, this);
+	tileSprites[(int)type].draw(e, trx, v, olc::Pixel(r, g, b));
 }
 
 olc::vf2d Tile::getTextureCoordinates() {
