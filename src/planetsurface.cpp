@@ -9,7 +9,7 @@
 #include "planet.h"
 #include "sprites.h"
 #include "planethud.h"
-#include "planetdata.h"
+#include "common/planetdata.h"
 #include "tile.h"
 
 olc::Pixel PlanetSurface::getTint(int x, int y) {

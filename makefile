@@ -3,7 +3,7 @@ HEADERS := $(shell find include -type f -name *.h)
 OBJECTS := $(patsubst src/%,obj/%,$(SOURCES:.cpp=.o))
 
 client: $(OBJECTS)
-	g++ $(OBJECTS) -o $@ -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp
+	g++ $(OBJECTS) common.a -o $@ -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp
 
 obj/%.o: src/%.cpp $(HEADERS)
 	g++ -c -o $@ $< -Wall -Werror -g -ggdb -std=c++17 -Iinclude

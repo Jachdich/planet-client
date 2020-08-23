@@ -3,7 +3,7 @@
 #include "planet.h"
 #include "planetsurface.h"
 #include "helperfunctions.h"
-#include "planetdata.h"
+#include "common/planetdata.h"
 #include "olcPixelGameEngine.h"
 #include "client.h"
 #include "sprites.h"
@@ -54,7 +54,7 @@ void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams trx) {
 
 bool DropdownMenu::click(olc::vf2d screenPos, CamParams trx) {
 	olc::vf2d rectPos = pos;
-	olc::vd2d delta = (screenPos - olc::vf2d(trx.tx, trx.ty)) / trx.zoom - rectPos;
+	olc::vd2d delta = screenPos - rectPos;
 	if (delta.x <= 100 &&
 		delta.x >= 0   &&
 		delta.y <= 17  &&
@@ -121,10 +121,13 @@ void PlanetHUD::showClickMenu(Tile * t) {
 		this->selectedTile->selected = false;
 	}
 
-	this->ddmenu = new DropdownMenu(olc::vf2d(128, 0), "Building");
-
-	this->ddmenu->registerItem(DropdownMenuItem("Tree", [this]() { sendChangeTileRequest(TileType::TREE); }));
-	this->ddmenu->registerItem(DropdownMenuItem("Grass", [this]() { sendChangeTileRequest(TileType::GRASS); }));
+	//this->ddmenu = new DropdownMenu(olc::vf2d(128, 0), "Building");
+	this->ddmenu = new DropdownMenu(olc::vf2d(128, 8), "IDK tbh");
+	for (TaskType type : this->data->getPossibleTasks(t)) {
+		this->ddmenu->registerItem(DropdownMenuItem(getTaskTypeName(type), [this]() {}));
+	}
+	//this->ddmenu->registerItem(DropdownMenuItem("Tree", [this]() { sendChangeTileRequest(TileType::TREE); }));
+	//this->ddmenu->registerItem(DropdownMenuItem("Grass", [this]() { sendChangeTileRequest(TileType::GRASS); }));
 
 	this->selectedTile = t;
 	t->selected = true;
