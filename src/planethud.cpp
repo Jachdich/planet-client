@@ -124,7 +124,7 @@ void PlanetHUD::showClickMenu(Tile * t) {
 	//this->ddmenu = new DropdownMenu(olc::vf2d(128, 0), "Building");
 	this->ddmenu = new DropdownMenu(olc::vf2d(128, 8), "IDK tbh");
 	for (TaskType type : this->data->getPossibleTasks(t)) {
-		this->ddmenu->registerItem(DropdownMenuItem(getTaskTypeName(type), [this]() {}));
+		this->ddmenu->registerItem(DropdownMenuItem(getTaskTypeName(type), [this, type]() { data->dispatchTask(type, this->selectedTile); }));
 	}
 	//this->ddmenu->registerItem(DropdownMenuItem("Tree", [this]() { sendChangeTileRequest(TileType::TREE); }));
 	//this->ddmenu->registerItem(DropdownMenuItem("Grass", [this]() { sendChangeTileRequest(TileType::GRASS); }));
