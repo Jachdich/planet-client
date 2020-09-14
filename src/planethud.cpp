@@ -84,7 +84,14 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 }
 
 void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
-	e->DrawStringDecal({0, 30}, "Population: " + std::to_string(this->population), olc::WHITE);
+	e->DrawStringDecal({0, 30}, "Population: " + std::to_string(this->data->people.size()), olc::WHITE);
+	int idlePeople = 0;
+	for (Person &p : this->data->people) {
+		if (p.task == nullptr && p.job == nullptr) {
+			idlePeople =+ 1;
+		}
+	}
+	e->DrawStringDecal({0, 40}, "Population Idle: " + std::to_string(idlePeople), olc::WHITE);
 	if (this->ddmenu != nullptr) {
 		this->ddmenu->draw(e, trx);
 	}

@@ -1,0 +1,8 @@
+{"drawGround": 1,
+ "textures": [
+     {"imageFile": "pineforest_trunk.png",
+      "tint": false},
+     {"imageFile": "pineforest.png",
+      "tint": true}
+     ]
+ }
