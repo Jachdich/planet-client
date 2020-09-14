@@ -88,6 +88,7 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
 	if (this->ddmenu != nullptr) {
 		this->ddmenu->draw(e, trx);
 	}
+	this->data->tick();
 }
 
 bool PlanetHUD::mousePressed(int x, int y, CamParams trx) {
@@ -122,9 +123,10 @@ void PlanetHUD::showClickMenu(Tile * t) {
 	}
 
 	//this->ddmenu = new DropdownMenu(olc::vf2d(128, 0), "Building");
-	this->ddmenu = new DropdownMenu(olc::vf2d(128, 8), "IDK tbh");
+	this->ddmenu = new DropdownMenu(olc::vf2d(128, 8), "Demolition");
 	for (TaskType type : this->data->getPossibleTasks(t)) {
-		this->ddmenu->registerItem(DropdownMenuItem(getTaskTypeName(type), [this, type]() { data->dispatchTask(type, this->selectedTile); }));
+		this->ddmenu->registerItem(DropdownMenuItem(getTaskTypeName(type),
+		[this, type]() { data->dispatchTask(type, this->selectedTile); }));
 	}
 	//this->ddmenu->registerItem(DropdownMenuItem("Tree", [this]() { sendChangeTileRequest(TileType::TREE); }));
 	//this->ddmenu->registerItem(DropdownMenuItem("Grass", [this]() { sendChangeTileRequest(TileType::GRASS); }));
