@@ -95,7 +95,6 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
 	if (this->ddmenu != nullptr) {
 		this->ddmenu->draw(e, trx);
 	}
-	this->data->tick();
 }
 
 bool PlanetHUD::mousePressed(int x, int y, CamParams trx) {

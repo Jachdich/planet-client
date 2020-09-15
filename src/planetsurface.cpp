@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <stdlib.h>
 #include <iostream>
+#include <thread>
 #include "client.h"
 #include "helperfunctions.h"
 #include "olcPixelGameEngine.h"
@@ -78,6 +79,8 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 
 	this->data = new PlanetData(this);
 	this->hud = new PlanetHUD(this, this->data);
+    std::thread(&PlanetData::runLogic, this->data).detach();
+    
 }
 
 void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams trx) {
