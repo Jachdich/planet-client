@@ -19,6 +19,7 @@ public:
 	int lastSelectY = 0;
     bool generated = false;
     bool requested = false;
+    bool threadStarted = false;
 	Planet * parent;
 	PlanetHUD * hud;
 	PlanetData * data;
@@ -30,6 +31,8 @@ public:
     void draw(olc::PixelGameEngine * e, CamParams trx);
 	void mouseOver(int x, int y, bool mouseClicked, bool mousePressed, CamParams trx);
     olc::Pixel getTint(int x, int y);
+    void cleanUpThread();
+    void startThread();
 
 };
 

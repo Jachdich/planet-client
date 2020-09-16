@@ -79,8 +79,18 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 
 	this->data = new PlanetData(this);
 	this->hud = new PlanetHUD(this, this->data);
+    //this->startThread();
+}
+
+void PlanetSurface::startThread() {
     std::thread(&PlanetData::runLogic, this->data).detach();
-    
+    this->threadStarted = true;
+    this->data->threadStopped = false;
+}
+
+void PlanetSurface::cleanUpThread() {
+    this->data->stopThread();
+    this->threadStarted = false;
 }
 
 void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams trx) {
@@ -134,7 +144,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 			float scx = (x - y);
 			float scy = ((x + y - TEXTURE_Z * z) / 2);
 
-			double cx = abs(mx - (scx + TEXTURE_W / 2)); //TODO make CX,CY?
+			double cx = abs(mx - (scx + TEXTURE_W / 2));
 			double cy = abs(my - (scy + TEXTURE_H / 2 + TEXTURE_W / 2));
 			double d  = cx / TEXTURE_W + cy / TEXTURE_H;
 			if (d <= 0.5) {

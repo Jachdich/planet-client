@@ -56,12 +56,10 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     } else if (starView) {
         selectedStar->drawWithPlanets(this, fElapsedTime, trx);
     } else if (planetView) {
-    	if (!selectedPlanet->surface->generated and !selectedPlanet->surface->requested) {
-    		//std::cout << "thing" << posInSector << " " << lastClickedSector->stars.size() << " " << posInStar << " " << selectedStar->planets.size() << "\n";
-
-    		selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
-    	}
     	if (selectedPlanet->surface->generated) {
+            if (!selectedPlanet->surface->threadStarted) {
+                this->selectedPlanet->surface->startThread();
+            }
 			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, trx);
     		selectedPlanet->drawSurface(this, trx);
     	}
@@ -95,6 +93,9 @@ bool Game::OnUserUpdate(float fElapsedTime) {
                 galaxyView = false;
                 starView = false;
                 planetView = true;
+                if (!selectedPlanet->surface->generated and !selectedPlanet->surface->requested) {
+            		selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
+            	}
                 trx = {0, 0, 1};
             }
         }
@@ -124,6 +125,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 
     if (GetKey(olc::Key::ESCAPE).bPressed) {
         if (planetView) {
+            this->selectedPlanet->surface->cleanUpThread();
             starView = true;
             planetView = false;
             galaxyView = false;
