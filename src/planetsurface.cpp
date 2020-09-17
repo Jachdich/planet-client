@@ -56,6 +56,7 @@ void PlanetSurface::draw(olc::PixelGameEngine * e, CamParams trx) {
         }
     }
 	this->hud->draw(e, trx);
+    this->data->draw(e, trx);
 }
 
 PlanetSurface::PlanetSurface() {
