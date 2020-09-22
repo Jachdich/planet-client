@@ -76,7 +76,7 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 	}
 	generated = true;
 	requested = false;
-	radius = root["rad"].asInt();
+	rad = root["rad"].asInt();
 
 	this->data = new PlanetData(this);
 	this->hud = new PlanetHUD(this, this->data);
@@ -103,7 +103,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 	float mx = (max - trx.tx) / trx.zoom;
 	float my = (may - trx.ty) / trx.zoom;
 
-	tiles[lastSelectY * radius * 2 + lastSelectX].hovered = false;
+	tiles[lastSelectY * rad * 2 + lastSelectX].hovered = false;
 
 
 	//float ax = /*WHY THE CINNAMON TOAST FUCK DO I NEED THIS?!*/ WIDTH - (mx - trx.tx) / trx.zoom;
@@ -133,14 +133,14 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 			int i = ia + wx;
 			int j = ja + ia + wy;*/
 
-	for (int i = radius * 2 - 1; i >= 0; i--) {
-		for (int j = radius * 2 - 1; j >= 0; j--) {
-			if (((i - radius) * (i - radius) + (j - radius) * (j - radius)) >= (this->radius * this->radius)) {
+	for (int i = rad * 2 - 1; i >= 0; i--) {
+		for (int j = rad * 2 - 1; j >= 0; j--) {
+			if (((i - rad) * (i - rad) + (j - rad) * (j - rad)) >= (this->rad * this->rad)) {
 				continue;
 			}
 			int x = j * TEXTURE_W / 2;
 			int y = i * TEXTURE_H;
-			int z = tiles[i * radius * 2 + j].z;
+			int z = tiles[i * rad * 2 + j].z;
 
 			float scx = (x - y);
 			float scy = ((x + y - TEXTURE_Z * z) / 2);
@@ -149,11 +149,11 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 			double cy = abs(my - (scy + TEXTURE_H / 2 + TEXTURE_W / 2));
 			double d  = cx / TEXTURE_W + cy / TEXTURE_H;
 			if (d <= 0.5) {
-				tiles[i * radius * 2 + j].hovered = true;
+				tiles[i * rad * 2 + j].hovered = true;
 				lastSelectX = j;
 				lastSelectY = i;
 				if (mouseClicked) {
-					this->hud->showClickMenu(&tiles[i * radius * 2 + j]);
+					this->hud->showClickMenu(&tiles[i * rad * 2 + j]);
 				}
 				return;
 			}

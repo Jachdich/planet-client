@@ -52,7 +52,7 @@ PlanetSurface * getSurfaceFromJson(Json::Value root, SectorCache * cache) {
 
 void doUpdate(Json::Value root, SectorCache * cache) {
 	PlanetSurface * surf = getSurfaceFromJson(root, cache);
-	surf->tiles[root.get("y", 0).asInt() * surf->radius * 2 + root.get("x", 0).asInt()].type = (TileType)root["to"].asInt();
+	surf->tiles[root.get("y", 0).asInt() * surf->rad * 2 + root.get("x", 0).asInt()].type = (TileType)root["to"].asInt();
 	//Tile * a = &surf->tiles[root.get("y", 0).asInt() * surf->radius * 2 + root.get("x", 0).asInt()];
 }
 
