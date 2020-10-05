@@ -5,10 +5,13 @@ OBJECTS := $(patsubst src/%,obj/%,$(SOURCES:.cpp=.o))
 client: $(OBJECTS) common.a
 	g++ $(OBJECTS) common.a -o $@ -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp
 
-obj/%.o: src/%.cpp $(HEADERS)
+obj:
+	mkdir -p obj
+
+obj/%.o: src/%.cpp $(HEADERS) obj
 	g++ -c -o $@ $< -Wall -Werror -g -ggdb -std=c++17 -Iinclude
 
-obj/FastNoise.o: src/FastNoise.cpp
+obj/FastNoise.o: src/FastNoise.cpp obj
 	g++ -c -o $@ $< -Wall -g -O3 -Iinclude
 
 debug: client
