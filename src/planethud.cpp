@@ -88,7 +88,7 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
 	int idlePeople = 0;
 	for (Person &p : this->data->people) {
 		if (p.task.isNone && p.job.isNone) {
-			idlePeople =+ 1;
+			idlePeople++;
 		}
 	}
 	e->DrawStringDecal({0, 40}, "Population Idle: " + std::to_string(idlePeople), olc::WHITE);
