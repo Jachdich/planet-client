@@ -11,6 +11,7 @@
 #include "sectorcache.h"
 #include "sprites.h"
 #include "star.h"
+#include "planetdata.h"
 
 Game::Game(int argc, char ** argv) : io_context(), sock(io_context), map(&sock) {
     sAppName = "Example";
@@ -116,7 +117,8 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     }
 
     if (GetKey(olc::Key::L).bPressed) {
-        std::cout << "L pressed\n";
+        //std::cout << "L pressed\n";
+        std::cout << this->selectedPlanet->surface->data->toJSON() << "\n";
     }
 
 	if (GetKey(olc::Key::T).bPressed) {

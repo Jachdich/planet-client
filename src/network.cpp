@@ -16,6 +16,60 @@ struct SurfaceLocator {
 	int sectorY;
 };
 
+/*
+COMMUNICATION DIAGRAM
+
+User starts task (e.g. fell tree)
+Client: "hi user said fell tree x,y"
+Server: "Ok set timer for 30 seconds" OR "Can't do it for X reason"
+(timer set on client and server)
+(time runs out)
+Server sets tile to correct type
+Client does likewise
+*/
+
+std::unordered_map<int, std::function<void(int, ErrorCode)>> callbacks;
+uint32_t fuckin_index_into_callbacks = 0;
+
+void sendUserAction(Tile * target, TaskType task, std::function<void(int, ErrorCode)> callback) {
+	Json::Value json;
+	json["request"] = "userAction";
+	json["action"] = (int)task;
+	json["x"] = target->x;
+	json["y"] = target->y;
+
+	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
+	json["planetPos"] = x[3];
+	json["starPos"] = x[2];
+	json["secX"] = x[0];
+	json["secY"] = x[1];
+	json["callback"] = fuckin_index_into_callbacks;
+
+	callbacks[fuckin_index_into_callbacks] = callback;
+	fuckin_index_into_callbacks++;
+	std::lock_guard<std::mutex> lock(netq_mutex);
+	netRequests.push_back(json);
+	netq.notify_all();
+}
+
+void sendChangeTileRequest(Tile * target, TileType to) {
+	Json::Value json;
+	json["request"] = "changeTile";
+	json["x"] = target->y; //TODO WHY IN GODS NAME DO I HAVE TO COMMIT THIS ATROSITY
+	json["y"] = target->x; //OF SWAPPING THE X AND Y VALUES? WHAT DARK MAGIC IS GOING ON?
+
+	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
+	json["planetPos"] = x[3];
+	json["starPos"] = x[2];
+	json["secX"] = x[0];
+	json["secY"] = x[1];
+
+	json["to"] = (int)to;
+	std::lock_guard<std::mutex> lock(netq_mutex);
+	netRequests.push_back(json);
+	netq.notify_all();
+}
+
 SurfaceLocator getSurfaceLocatorFromJson(Json::Value root) {
 	int secX, secY;
     char starPos, planetPos;
@@ -94,19 +148,24 @@ void handleNetwork(tcp::socket * sock, SectorCache * cache) {
         Json::Value root = makeJSON(line);
 
         for (int i = 0; i < numRequests; i++) {
-            if (totalJSON["requests"][i]["request"] == "getSector") {
-                Sector s(root["results"][i]["result"]);
+			Json::Value req = totalJSON["requests"][i];
+			Json::Value res =       root["results"][i];
+            if (req["request"] == "getSector") {
+                Sector s(res["result"]);
                 //TODO read status
-                cache->setSectorAt(totalJSON["requests"][i]["x"].asInt(), totalJSON["requests"][i]["y"].asInt(), s);
-            } else if (totalJSON["requests"][i]["request"] == "getSurface") {
-            	Sector * s = cache->getSectorAt(totalJSON["requests"][i]["secX"].asInt(), totalJSON["requests"][i]["secY"].asInt());
-            	Star * star= &s->stars[totalJSON["requests"][i]["starPos"].asInt()];
-            	Planet * p = &star->planets[totalJSON["requests"][i]["planetPos"].asInt()];
-            	PlanetSurface * surf = new PlanetSurface(root["results"][i]["result"], p);
+                cache->setSectorAt(req["x"].asInt(), req["y"].asInt(), s);
+            } else if (req["request"] == "getSurface") {
+            	Sector * s = cache->getSectorAt(req["secX"].asInt(), req["secY"].asInt());
+            	Star * star= &s->stars[req["starPos"].asInt()];
+            	Planet * p = &star->planets[req["planetPos"].asInt()];
+            	PlanetSurface * surf = new PlanetSurface(res["result"], p);
             	p->surface = surf;
             	//TODO read status
-            } else if (totalJSON["requests"][i]["request"] == "changeTile") {
+            } else if (req["request"] == "changeTile") {
 
+			} else if (req["request"] == "userAction") {
+				callbacks[req["callback"].asInt()](res["time"].asInt(), (ErrorCode)res["status"].asInt());
+				callbacks.erase(req["callback"].asInt());
 			}
         }
 		if (root["updates"].isArray()) {

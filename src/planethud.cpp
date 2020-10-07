@@ -3,7 +3,7 @@
 #include "planet.h"
 #include "planetsurface.h"
 #include "helperfunctions.h"
-#include "common/planetdata.h"
+#include "planetdata.h"
 #include "olcPixelGameEngine.h"
 #include "client.h"
 #include "sprites.h"
@@ -102,25 +102,6 @@ bool PlanetHUD::mousePressed(int x, int y, CamParams trx) {
 		return this->ddmenu->click(olc::vf2d(x, y), trx);
 	}
 	return false;
-}
-
-void PlanetHUD::sendChangeTileRequest(TileType to) {
-	Json::Value json;
-	json["request"] = "changeTile";
-	json["x"] = selectedTile->x;
-	json["y"] = selectedTile->y;
-	selectedTile->type = to;
-
-	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
-	json["planetPos"] = x[3];
-	json["starPos"] = x[2];
-	json["secX"] = x[0];
-	json["secY"] = x[1];
-
-	json["to"] = (int)to;
-	std::lock_guard<std::mutex> lock(netq_mutex);
-	netRequests.push_back(json);
-	netq.notify_all();
 }
 
 void PlanetHUD::showClickMenu(Tile * t) {
