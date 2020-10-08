@@ -9,6 +9,12 @@
 class PlanetSurface;
 struct Tile;
 
+struct Timer {
+	TaskType type;
+	Tile * target;
+	double time;
+};
+
 struct Task {
 	Tile * target;
 	TaskType type;

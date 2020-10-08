@@ -8,6 +8,10 @@
 #include <string>
 
 class PlanetSurface;
+
+std::mutex muxTimers;
+std::vector<Timer> timers;
+
 PlanetData::PlanetData() {}
 PlanetData::PlanetData(PlanetSurface * surface) {
 	this->surface = surface;
@@ -63,10 +67,30 @@ void PlanetData::tick() {
 		std::chrono::system_clock::now().time_since_epoch()).count();
 
 	long elapsedTime = ms - this->lastTimeStamp;
+	double elapsedS = ((double)elapsedTime) / 1000.0;
+	/*
 	for (Person &p : this->people) {
 		p.tick(elapsedTime);
+	}*/
+	std::unique_lock<std::mutex> lk(muxTimers);
+	for (Timer &t: timers) {
+		t.time -= elapsedS;
+		if (t.time <= 0) {
+			std::cout << "Timer finished with task " << (int)t.type << "\n";
+			switch (t.type) {
+				case TaskType::FELL_TREE:
+					t.target->type = TileType::GRASS;
+					break;
+				default:
+					break;
+			}
+		}
 	}
-
+	timers.erase(std::remove_if(timers.begin(), timers.end(),
+	[](Timer& t) {
+		return t.time <= 0;
+	}), timers.end());
+	lk.unlock();
 	this->lastTimeStamp = ms; //todo take into account the time taken for tick8
 }
 
@@ -75,6 +99,7 @@ std::string pad(std::string str, int n = 2, char chr = '0') {
 }
 
 void PlanetData::draw(olc::PixelGameEngine * e, CamParams trx) {
+	/*
 	for (Person &p : this->people) {
 		if (!p.task.isNone) {
 			olc::vf2d pos = p.task.target->getTextureCoordinates(trx);
@@ -82,6 +107,13 @@ void PlanetData::draw(olc::PixelGameEngine * e, CamParams trx) {
 			std::string txt = std::to_string((int)(p.task.durationLeft / 60)) + ":" + pad(std::to_string((int)(p.task.durationLeft) % 60));
 			e->DrawStringDecal(pos + offset, txt, olc::WHITE, {trx.zoom * 3, trx.zoom * 3});
 		}
+	}*/
+	std::unique_lock<std::mutex> lk(muxTimers);
+	for (Timer &t : timers) {
+		olc::vf2d pos = t.target->getTextureCoordinates(trx);
+		olc::vf2d offset = {32 * trx.zoom, 64 * trx.zoom}; //TODO fractions of texture size not hardcoded values
+		std::string txt = std::to_string((int)(t.time / 60)) + ":" + pad(std::to_string((int)(t.time) % 60));
+		e->DrawStringDecal(pos + offset, txt, olc::WHITE, {trx.zoom * 3, trx.zoom * 3});
 	}
 }
 
@@ -111,8 +143,11 @@ bool PlanetData::dispatchTask(TaskType type, Tile * target) {
 		}
 	}*/
 	sendUserAction(target, type,
-	[](int time, ErrorCode code) {
+	[type, target](int time, ErrorCode code) {
 		std::cout << time << ", code " << (int)code << "\n";
+		Timer timer = {type, target, (double)time};
+		std::lock_guard<std::mutex> lk(muxTimers);
+		timers.push_back(timer);
 	});
 	return false;
 }
