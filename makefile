@@ -8,8 +8,11 @@ client: $(OBJECTS) common.a
 #obj:
 #	mkdir -p obj
 
+
+
 obj/%.o: src/%.cpp $(HEADERS)# obj
 	g++ -c -o $@ $< -Wall -Werror -g -ggdb -std=c++17 -Iinclude
+#	g++ -c -o $@ $< -Wall -Werror -O3 -std=c++17 -Iinclude
 
 obj/FastNoise.o: src/FastNoise.cpp #obj
 	g++ -c -o $@ $< -Wall -g -O3 -Iinclude
