@@ -14,7 +14,7 @@
 #include "planetdata.h"
 
 Game::Game(int argc, char ** argv) : io_context(), sock(io_context), map(&sock) {
-    sAppName = "Example";
+    sAppName = "Planet Game";
     for (int i = 0; i < argc; i++) {
         args.push_back(std::string(argv[i]));
     }
