@@ -19,7 +19,7 @@ Star::Star(Json::Value root, int posInSector) {
         planets.push_back(Planet(root["planets"][i], (int)planets.size()));
     }
     this->selected = false;
-    randomDissapearChance = rand() % 10 + 1; //send from server
+    randomDissapearChance = 10 - (radius - 4);
     this->posInSector = posInSector;
 }
 
