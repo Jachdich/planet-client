@@ -6,7 +6,7 @@
 #include "network.h"
 #include <chrono>
 #include <string>
-
+//BUG: Tasks dont change if selected tile has a task and finishes the task
 class PlanetSurface;
 
 std::mutex muxTimers;
@@ -78,9 +78,16 @@ void PlanetData::tick() {
 		if (t.time <= 0) {
 			std::cout << "Timer finished with task " << (int)t.type << "\n";
 			switch (t.type) {
+				case TaskType::GATHER_MINERALS:
+				case TaskType::CLEAR:
 				case TaskType::FELL_TREE:
 					t.target->type = TileType::GRASS;
 					break;
+
+				case TaskType::PLANT_TREE:
+					t.target->type = TileType::TREE;
+					break;
+
 				default:
 					break;
 			}
