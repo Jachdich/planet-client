@@ -1,6 +1,6 @@
 # important
 
-This is alpha level software, it probably doesn't work. I may commit broken code because I cba making a new branch. There are many many bugs, creating issues is much appreciated however if it's really really obvious then I probably know about it already.
+This is alpha level software, it probably doesn't work. There are many many bugs, creating issues is much appreciated however if it's really really obvious then I probably know about it already.
 
 # planet-client
 
@@ -10,7 +10,7 @@ This is the client for my kinda weird and probably not gonna be finished planet-
 
 You must have these dependencies installed:  
     asio (may need to build it from source)  
-    boost  
+    boost (Actually you might not need this, depending on if asio requires it)
     jsoncpp  
 and perhaps others.  
 
@@ -20,7 +20,23 @@ Building on windows is not currently supported. minwingw may work however IT HAS
 
 ### Linux (Mac?)
 
-Just run `make`. Simple as that. This generates a binary called `client` which can be run.
+First you must compile the common library, then the client can be built.
+```bash
+git clone https://github.com/Jachdich/planet-client
+git clone https://github.com/Jachdich/planet-common
+
+cd planet-common
+make
+
+#warning: this installs to ../planet-client directory. Make sure you have that installed!
+make install
+
+cd ../planet-client
+
+#optional: make -j# where # is the number of threads to use
+make
+make run
+```
 
 ### "It's not running!"
 
