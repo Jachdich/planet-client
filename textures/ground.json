@@ -1,6 +1,8 @@
 {"drawGround": 0,
  "textures": [
-     {"imageFile": "ground_iso.png",
-      "tint": true}
-     ]
+     {  "imageFile": "ground_iso.png",
+        "tint": true,
+        "width": 64
+     }
+]
  }

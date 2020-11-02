@@ -20,10 +20,11 @@ void TileSprite::draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, ol
     }
 
     for (TileSpriteComponent &c : components) {
+        float scl = trx.zoom / (c.width / 128.0f);
         if (c.tint) {
-            e->DrawDecal(pos, c.decal, {trx.zoom, trx.zoom}, tint);
+            e->DrawDecal(pos, c.decal, {scl, scl}, tint);
         } else {
-            e->DrawDecal(pos, c.decal, {trx.zoom, trx.zoom});
+            e->DrawDecal(pos, c.decal, {scl, scl});
         }
     }
 }
@@ -57,7 +58,8 @@ TileSprite::TileSprite(std::string fName) {
     for (Json::Value t : root["textures"]) {
         olc::Decal * dec = new olc::Decal(new olc::Sprite(texturedir + "/" + t["imageFile"].asString()));
         bool tint = t["tint"].asBool();
-        components.push_back({dec, tint});
+        uint32_t width = t.get("width", 128).asInt();
+        components.push_back({dec, tint, width});
     }
 }
 void registerTileSprite(std::string x) {

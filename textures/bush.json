@@ -1,6 +1,6 @@
 {"drawGround": 1,
  "textures": [
      {"imageFile": "bush.png",
-      "tint": true}
+      "tint": true, "width": 128}
      ]
  }
