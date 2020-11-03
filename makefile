@@ -2,8 +2,8 @@ SOURCES := $(shell find src -type f -name *.cpp)
 HEADERS := $(shell find include -type f -name *.h)
 OBJECTS := $(patsubst src/%,obj/%,$(SOURCES:.cpp=.o))
 
-client: $(OBJECTS) common.a
-	g++ $(OBJECTS) common.a -o $@ -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp
+client: $(OBJECTS)
+	g++ $(OBJECTS) -o $@ -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp
 
 #obj:
 #	mkdir -p obj
