@@ -1,6 +1,7 @@
 {"drawGround": 1,
  "textures": [
      {"imageFile": "house_iso.png",
-      "tint": true}
+      "tint": false,
+       "width": 96}
      ]
 }

@@ -6,6 +6,7 @@
 #include "network.h"
 #include <chrono>
 #include <string>
+#include <iostream>
 //BUG: Tasks dont change if selected tile has a task and finishes the task
 class PlanetSurface;
 
@@ -104,6 +105,7 @@ bool PlanetData::dispatchTask(TaskType type, Tile * target) {
 			return true;
 		}
 	}*/
+	std::cout << "x " << target->x << " y " << target->y << "\n";
 	sendUserAction(target, type,
 	[type, target](int time, ErrorCode code) {
 		std::cout << time << ", code " << (int)code << "\n";

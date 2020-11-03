@@ -35,8 +35,8 @@ void sendUserAction(Tile * target, TaskType task, std::function<void(int, ErrorC
 	Json::Value json;
 	json["request"] = "userAction";
 	json["action"] = (int)task;
-	json["x"] = target->x;
-	json["y"] = target->y;
+	json["x"] = target->y; //TODO WHY IN GODS NAME DO I HAVE TO COMMIT THIS ATROSITY
+	json["y"] = target->x; //OF SWAPPING THE X AND Y VALUES? WHAT DARK MAGIC IS GOING ON?
 
 	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
 	json["planetPos"] = x[3];
