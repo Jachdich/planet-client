@@ -57,7 +57,21 @@ This project uses the [olcPixelGameEngine](https://github.com/OneLoneCoder/olcPi
 
 ## Textures
 
-To make your own textures it's fairly simple: each tile has a JSON file, and the JSON file describes one or more image files that are drawn at the position of a tile. Here's an example, I'll break down what each bit does.
+To make your own textures it's fairly simple: each tile has a JSON file, and the JSON file describes one or more image files that are drawn at the position of a tile.
+
+The textures you need to create are:
+ - bush.json
+ - ground.json
+ - house.json
+ - pine.json
+ - pineforest.json
+ - rock.json
+ - tree.json
+ - forest.json
+ - void.json (no texture)
+ - water.json
+
+Here's an example, I'll break down what each bit does.
 
 ```json
 {
