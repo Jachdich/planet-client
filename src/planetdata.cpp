@@ -24,10 +24,7 @@ void PlanetData::tick() {
 
 	long elapsedTime = ms - this->lastTimeStamp;
 	double elapsedS = ((double)elapsedTime) / 1000.0;
-	/*
-	for (Person &p : this->people) {
-		p.tick(elapsedTime);
-	}*/
+
 	std::unique_lock<std::mutex> lk(muxTimers);
 	for (Timer &t: timers) {
 		t.time -= elapsedS;
@@ -35,15 +32,23 @@ void PlanetData::tick() {
 			std::cout << "Timer finished with task " << (int)t.type << "\n";
 			switch (t.type) {
 				case TaskType::GATHER_MINERALS:
+				    t.target->type = TileType::GRASS;
+                    this->surface->stats.stone += 1;
+				    break;
 				case TaskType::CLEAR:
 				case TaskType::FELL_TREE:
 					t.target->type = TileType::GRASS;
+					this->surface->stats.wood += 1;
 					break;
 
 				case TaskType::PLANT_TREE:
 					t.target->type = TileType::TREE;
 					break;
-
+                case TaskType::BUILD_HOUSE:
+                    this->surface->stats.wood -= 3;
+                    this->surface->stats.stone -= 6;
+                    t.target->type = TileType::HOUSE;
+                    break;
 				default:
 					break;
 			}
@@ -97,6 +102,17 @@ void PlanetData::stopThread() {
 	this->threadStopped = true;
 }
 
+bool hasMaterialsFor(PlanetSurface * surf, TaskType type) {
+    switch (type) {
+        case TaskType::BUILD_HOUSE:
+            if (surf->stats.wood >= 3 && surf->stats.stone >= 6) return true;
+            break;
+        default:
+            return true;
+    }
+    return false;
+}
+
 bool PlanetData::dispatchTask(TaskType type, Tile * target) {
 	/*
 	for (Person &p : this->people) {
@@ -105,7 +121,7 @@ bool PlanetData::dispatchTask(TaskType type, Tile * target) {
 			return true;
 		}
 	}*/
-	std::cout << "x " << target->x << " y " << target->y << "\n";
+	if (!hasMaterialsFor(this->surface, type)) { return false; }
 	sendUserAction(target, type,
 	[type, target](int time, ErrorCode code) {
 		std::cout << time << ", code " << (int)code << "\n";
@@ -113,10 +129,11 @@ bool PlanetData::dispatchTask(TaskType type, Tile * target) {
 		std::lock_guard<std::mutex> lk(muxTimers);
 		timers.push_back(timer);
 	});
-	return false;
+	return true;
 }
 
 std::vector<TaskType> PlanetData::getPossibleTasks(Tile * target) {
+    //TODO This is unintuitive to have it here and also bad because of push_back
 	std::vector<TaskType> v;
 	if (isTree(target->type)) {
 		v.push_back(TaskType::FELL_TREE);
@@ -129,6 +146,7 @@ std::vector<TaskType> PlanetData::getPossibleTasks(Tile * target) {
 	}
 	if (target->type == TileType::GRASS) {
 		v.push_back(TaskType::PLANT_TREE);
+		v.push_back(TaskType::BUILD_HOUSE);
 	}
 	return v;
 }

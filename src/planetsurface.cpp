@@ -78,6 +78,8 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 	requested = false;
 	rad = root["rad"].asInt();
 
+	stats = {(uint32_t)root["wood"].asInt(), (uint32_t)root["stone"].asInt()};
+
 	this->data = new PlanetData(this);
 	this->hud = new PlanetHUD(this, this->data);
     //this->startThread();

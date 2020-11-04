@@ -10,9 +10,15 @@
 
 class Planet;
 
+struct Stats {
+    uint32_t wood;
+    uint32_t stone;
+};
+
 class PlanetSurface {
 public:
     std::vector<Tile> tiles;
+    Stats stats;
 	int rad;
 	int pos;
 	int lastSelectX = 0;

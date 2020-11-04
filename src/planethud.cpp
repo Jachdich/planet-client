@@ -84,6 +84,8 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 }
 
 void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
+    e->DrawStringDecal({0, 30}, "Stone: " + std::to_string(this->parent->stats.stone), olc::WHITE);
+    e->DrawStringDecal({0, 40}, "Wood : " + std::to_string(this->parent->stats.wood), olc::WHITE);
     /*
 	e->DrawStringDecal({0, 30}, "Population: " + std::to_string(this->data->people.size()), olc::WHITE);
 	int idlePeople = 0;
