@@ -11,6 +11,7 @@ client: $(OBJECTS)
 
 
 obj/%.o: src/%.cpp $(HEADERS)# obj
+	@mkdir -p obj
 	g++ -c -o $@ $< -Wall -Werror -g -ggdb -std=c++17 -Iinclude
 #	g++ -c -o $@ $< -Wall -Werror -O3 -std=c++17 -Iinclude
 
