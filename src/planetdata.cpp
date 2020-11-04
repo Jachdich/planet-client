@@ -45,8 +45,6 @@ void PlanetData::tick() {
 					t.target->type = TileType::TREE;
 					break;
                 case TaskType::BUILD_HOUSE:
-                    this->surface->stats.wood -= 3;
-                    this->surface->stats.stone -= 6;
                     t.target->type = TileType::HOUSE;
                     break;
 				default:

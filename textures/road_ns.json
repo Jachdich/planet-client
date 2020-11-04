@@ -1,0 +1,7 @@
+{"drawGround": 1,
+ "textures": [
+     {"imageFile": "road_ns.png",
+      "tint": false,
+      "width": 64}
+     ]
+ }

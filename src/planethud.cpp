@@ -124,7 +124,7 @@ void PlanetHUD::showClickMenu(Tile * t) {
 
 	this->selectedTile = t;
 	t->selected = true;
-}
+},.,.
 
 void PlanetHUD::closeClickMenu() {
 	if (this->selectedTile != nullptr) {
