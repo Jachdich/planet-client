@@ -26,7 +26,7 @@ public:
     asio::io_context io_context;
     tcp::socket sock;
     SectorCache map;
-    std::thread * netThread;
+    ClientNetwork client;
     
 	Game();
     Game(int argc, char ** argv);

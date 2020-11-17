@@ -30,12 +30,7 @@ bool Game::OnUserCreate() {
         address = args[1];
     }
 
-    tcp::resolver resolver(io_context);
-    tcp::resolver::results_type endpoints =
-      resolver.resolve(address, "5555");
-
-    asio::connect(sock, endpoints);
-    std::thread(handleNetwork, &sock, &map).detach();
+    client.connect(address, 5555, &map);
     loadSprites();
 
     return true;

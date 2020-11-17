@@ -31,6 +31,60 @@ Client does likewise
 std::unordered_map<int, std::function<void(int, ErrorCode)>> callbacks;
 uint32_t fuckin_index_into_callbacks = 0;
 
+void handleNetwork(asio::ip::tcp::socket * sock) {
+    while (true) {
+		Json::Value totalJSON;
+        std::unique_lock<std::mutex> lk(netq_mutex);
+        if (netq.wait_for(lk, std::chrono::seconds(1)) == std::cv_status::timeout) {
+			totalJSON["requests"][0]["request"] = "keepAlive";
+		}
+        lk.unlock();
+        if (netThreadStop) { return; }
+
+        std::unique_lock<std::mutex> lock(netq_mutex);
+        while (netRequests.size() > 0) {
+            Json::Value n = netRequests.back();
+            netRequests.pop_back();
+            totalJSON["requests"].append(n);
+            //std::cout << "Net thread got request " << n << "\n";
+        }
+        lock.unlock();
+
+        asio::streambuf buf;
+        asio::error_code error;
+        Json::StreamWriterBuilder builder;
+        builder["indentation"] = "";
+        const std::string output = Json::writeString(builder, totalJSON);
+
+        asio::write(*sock, asio::buffer(output + "\n"), error);
+    }
+}
+
+void handleNetworkPacket(Json::Value root, SectorCache * cache) {
+    for (uint32_t i = 0; i < root["requests"].size(); i++) {
+        Json::Value req = root["requests"][i];
+        Json::Value res = root["results"][i];
+        std::cout << req << "\n";
+        if (req["request"] == "getSector") {
+            Sector s(res["result"]);
+            //TODO read status
+            cache->setSectorAt(req["x"].asInt(), req["y"].asInt(), s);
+        } else if (req["request"] == "getSurface") {
+            Sector * s = cache->getSectorAt(req["secX"].asInt(), req["secY"].asInt());
+            Star * star= &s->stars[req["starPos"].asInt()];
+            Planet * p = &star->planets[req["planetPos"].asInt()];
+            PlanetSurface * surf = new PlanetSurface(res["result"], p);
+            p->surface = surf;
+            //TODO read status
+        } else if (req["request"] == "changeTile") {
+
+        } else if (req["request"] == "userAction") {
+            callbacks[req["callback"].asInt()](res["time"].asInt(), (ErrorCode)res["status"].asInt());
+            callbacks.erase(req["callback"].asInt());
+        }
+    }
+}
+
 void sendUserAction(Tile * target, TaskType task, std::function<void(int, ErrorCode)> callback) {
 	Json::Value json;
 	json["request"] = "userAction";
@@ -110,68 +164,77 @@ void doUpdate(Json::Value root, SectorCache * cache) {
 	//Tile * a = &surf->tiles[root.get("y", 0).asInt() * surf->radius * 2 + root.get("x", 0).asInt()];
 }
 
-void handleNetwork(tcp::socket * sock, SectorCache * cache) {
-    while (true) {
-		Json::Value totalJSON;
-        std::unique_lock<std::mutex> lk(netq_mutex);
-        if (netq.wait_for(lk, std::chrono::seconds(1)) == std::cv_status::timeout) {
-			totalJSON["requests"][0]["request"] = "keepAlive";
-		}
-        lk.unlock();
-        if (netThreadStop) { return; }
+ClientNetwork::ClientNetwork() : socket(ctx) {
+    
+}
 
-        int numRequests = netRequests.size();
-        std::unique_lock<std::mutex> lock(netq_mutex);
-        while (netRequests.size() > 0) {
-            Json::Value n = netRequests.back();
-            netRequests.pop_back();
-            totalJSON["requests"].append(n);
-            //std::cout << "Net thread got request " << n << "\n";
+void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * cache) {
+    this->cache = cache;
+    asio::error_code ec;
+    //asio::io_context::work work(ctx);
+
+    asio::ip::tcp::endpoint endpoint(asio::ip::make_address(address, ec), port);
+    socket.connect(endpoint, ec);
+    /*
+    if (!ec) {
+        std::cout << "connected\n";
+        if (socket.is_open()) {
+            std::string req = "{\"requests\": [{\"request\": \"getSector\", \"x\": 0, \"y\": 0}]}\n";
+            socket.write_some(asio::buffer(req.data(), req.size()), ec);
+            if (ec) {
+                std::cout << "Error: " << ec.message() << "\n";
+            }
+            readUntil();
         }
-        lock.unlock();
+    } else {
+        std::cout << "error: " << ec.message() << "\n";
+        ctx.stop();
+    }*/
+    readUntil();
+    std::thread asioThread = std::thread([&]() {ctx.run();});
+    std::thread networkThread = std::thread([this]() {handleNetwork(&socket);});
+    asioThread.detach();
+    networkThread.detach();
+    
+}
 
-        asio::streambuf buf;
-        asio::error_code error;
-        Json::StreamWriterBuilder builder;
-        builder["indentation"] = "";
-        const std::string output = Json::writeString(builder, totalJSON);
+void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
+    std::cout << bytes_transferred << "\n";
+    if (!ec) {
+        std::string request(buf.begin(), buf.begin() + bytes_transferred);
+        buf.clear();
 
-        asio::write(*sock, asio::buffer(output + "\n"), error);
-        /*size_t len = */asio::read_until(*sock, buf, "\n");
-        std::istream is(&buf);
-        std::string line;
-        std::getline(is, line);
-        if (error && error != asio::error::eof) {
-            throw asio::system_error(error);
+        Json::CharReaderBuilder builder;
+        Json::CharReader* reader = builder.newCharReader();
+
+        Json::Value root;
+        std::string errors;
+
+        bool parsingSuccessful = reader->parse(
+            request.c_str(),
+            request.c_str() + request.size(),
+            &root,
+            &errors
+        );
+        delete reader;
+
+        if (!parsingSuccessful) {
+            std::cerr << "Server sent malformed JSON: " << request << ". Full error: " << errors;
+            //asio::error_code ign_error;
+            //asio::write(sock, asio::buffer("{\"status\": -1}\n"), ign_error);
+
+        } else {
+            handleNetworkPacket(root, cache);
         }
-
-        Json::Value root = makeJSON(line);
-
-        for (int i = 0; i < numRequests; i++) {
-			Json::Value req = totalJSON["requests"][i];
-			Json::Value res =       root["results"][i];
-            if (req["request"] == "getSector") {
-                Sector s(res["result"]);
-                //TODO read status
-                cache->setSectorAt(req["x"].asInt(), req["y"].asInt(), s);
-            } else if (req["request"] == "getSurface") {
-            	Sector * s = cache->getSectorAt(req["secX"].asInt(), req["secY"].asInt());
-            	Star * star= &s->stars[req["starPos"].asInt()];
-            	Planet * p = &star->planets[req["planetPos"].asInt()];
-            	PlanetSurface * surf = new PlanetSurface(res["result"], p);
-            	p->surface = surf;
-            	//TODO read status
-            } else if (req["request"] == "changeTile") {
-
-			} else if (req["request"] == "userAction") {
-				callbacks[req["callback"].asInt()](res["time"].asInt(), (ErrorCode)res["status"].asInt());
-				callbacks.erase(req["callback"].asInt());
-			}
-        }
-		if (root["updates"].isArray()) {
-			for (int j = 0; j < (signed)root["updates"].size(); j++) {
-				doUpdate(root["updates"][j], cache);
-			}
-		}
+        readUntil();
+    } else {
+        std::cerr << "ERROR: " <<  ec.message() << "\n";
     }
 }
+
+void ClientNetwork::readUntil() {
+    asio::async_read_until(socket, asio::dynamic_buffer(buf), "\n", [this] (std::error_code ec, std::size_t bytes_transferred) {
+        handler(ec, bytes_transferred);
+    });
+}
+
