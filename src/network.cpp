@@ -39,6 +39,7 @@ void handleNetwork(asio::ip::tcp::socket * sock) {
 			totalJSON["requests"][0]["request"] = "keepAlive";
 		}
         lk.unlock();
+        std::cout << "sending message\n";
         if (netThreadStop) { return; }
 
         std::unique_lock<std::mutex> lock(netq_mutex);
@@ -64,7 +65,6 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     for (uint32_t i = 0; i < root["requests"].size(); i++) {
         Json::Value req = root["requests"][i];
         Json::Value res = root["results"][i];
-        std::cout << req << "\n";
         if (req["request"] == "getSector") {
             Sector s(res["result"]);
             //TODO read status

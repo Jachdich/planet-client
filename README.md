@@ -1,3 +1,7 @@
+# really important
+
+I kinda messed up, the current client does not work. go to before the commit "rewrote using async" or something and it should be stable.
+
 # Important
 
 This is alpha level software, it probably doesn't work. There are many many bugs, creating issues is much appreciated however if it's really really obvious then I probably know about it already.

@@ -22,7 +22,7 @@ void SectorCache::getSectorFromNetwork(int x, int y) {
     json["y"] = y;
     std::lock_guard<std::mutex> lock(netq_mutex);
     netRequests.push_back(json);
-    netq.notify_all();
+    //netq.notify_all();
 }
 
 void SectorCache::setSectorAt(int sx, int sy, Sector s) {
