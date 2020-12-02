@@ -31,7 +31,7 @@ Client does likewise
 std::unordered_map<int, std::function<void(int, ErrorCode)>> callbacks;
 uint32_t fuckin_index_into_callbacks = 0;
 
-void handleNetwork(asio::ip::tcp::socket * sock) {
+void sendRequest(Json::Value request, asio::ip::tcp::socket * sock) {
     while (true) {
 		Json::Value totalJSON;
         std::unique_lock<std::mutex> lk(netq_mutex);
@@ -47,7 +47,7 @@ void handleNetwork(asio::ip::tcp::socket * sock) {
             Json::Value n = netRequests.back();
             netRequests.pop_back();
             totalJSON["requests"].append(n);
-            //std::cout << "Net thread got request " << n << "\n";
+            std::cout << "Net thread got request " << n << "\n";
         }
         lock.unlock();
 
@@ -58,6 +58,9 @@ void handleNetwork(asio::ip::tcp::socket * sock) {
         const std::string output = Json::writeString(builder, totalJSON);
 
         asio::write(*sock, asio::buffer(output + "\n"), error);
+        if (error) {
+            std::cout << "ERROR SENDING: " << error.message() << "\n";
+        }
     }
 }
 
@@ -219,21 +222,21 @@ void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
         delete reader;
 
         if (!parsingSuccessful) {
-            std::cerr << "Server sent malformed JSON: " << request << ". Full error: " << errors;
+            std::cerr << "Server sent malformed JSON: '" << request << "'. Full error: " << errors;
             //asio::error_code ign_error;
             //asio::write(sock, asio::buffer("{\"status\": -1}\n"), ign_error);
 
         } else {
             handleNetworkPacket(root, cache);
         }
-        readUntil();
     } else {
         std::cerr << "ERROR: " <<  ec.message() << "\n";
     }
+    readUntil();
 }
 
 void ClientNetwork::readUntil() {
-    asio::async_read_until(socket, asio::dynamic_buffer(buf), "\n", [this] (std::error_code ec, std::size_t bytes_transferred) {
+    asio::async_read_until(socket, asio::dynamic_buffer(buf), '\n', [this] (std::error_code ec, std::size_t bytes_transferred) {
         handler(ec, bytes_transferred);
     });
 }
