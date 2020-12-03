@@ -2,26 +2,21 @@
 
 #include <asio.hpp>
 
-//PLEASE DELETE TODO
-#include <iostream>
 #include "client.h"
 #include "helperfunctions.h"
 #include "olcPixelGameEngine.h"
 
 using asio::ip::tcp;
 
-SectorCache::SectorCache(tcp::socket * sock) {
-    this->sock = sock;
+SectorCache::SectorCache() {
 }
 
 void SectorCache::getSectorFromNetwork(int x, int y) {
-    //std::cout << "Requesting sector " << x << " " << y << "\n";
     Json::Value json;
     json["request"] = "getSector";
     json["x"] = x;
     json["y"] = y;
-    sendRequest(json, this->sock);
-
+    app->client.sendRequest(json);
 }
 
 void SectorCache::setSectorAt(int sx, int sy, Sector s) {
@@ -34,7 +29,7 @@ Sector * SectorCache::getSectorAt(int x, int y) {
     if (x < 0 || y < 0) {
         index = 0;
     }
-    
+
     if (!secs[index].generated && !secs[index].requested) {
         getSectorFromNetwork(x, y);
         secs[index].setRequested();

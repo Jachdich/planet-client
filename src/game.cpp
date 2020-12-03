@@ -13,7 +13,17 @@
 #include "star.h"
 #include "planetdata.h"
 
-Game::Game(int argc, char ** argv) : map(&client.socket) {
+/*
+Client: "fell tree <surfaceLocator> <coords>"
+Server: "time <surfacelocator> <coords> 5"
+Server: "time <surfacelocator> <coords> 4"
+...
+Server: "time <surfaceLocator> <coords> 1"
+Server: "update item wood + 1"
+Server: "changeTime <surfaceLocator> <coords> grass"
+*/
+
+Game::Game(int argc, char ** argv) : map() {
     sAppName = "Planet Game";
 
     std::vector<std::string> args;
@@ -148,11 +158,6 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 		DrawStringDecal({0, 0}, std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
 		DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
 	}
-
-    if (netRequests.size() > 0) {
-        std::lock_guard<std::mutex> lock(netq_mutex);
-        netq.notify_all();
-    }
 
     return true;
 }

@@ -33,10 +33,6 @@ using asio::ip::tcp;
 
 FastNoise noiseGen;
 std::mutex cache_mutex;
-std::mutex netq_mutex;
-std::condition_variable netq;
-std::vector<Json::Value> netRequests;
-bool netThreadStop = false;
 bool debugMode = false;
 Game * app;
 
@@ -51,7 +47,5 @@ int main(int argc, char ** argv) {
 	if (app->Construct(WIDTH, HEIGHT, 2, 2))
 		app->Start();
     app->destruct();
-    netThreadStop = true;
-    netq.notify_all();
 	return 0;
 }

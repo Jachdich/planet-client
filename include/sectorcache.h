@@ -12,10 +12,9 @@ using asio::ip::tcp;
 class SectorCache {
 public:
     int secNum = 6;
-    std::unordered_map<long long, Sector> secs;
-    tcp::socket * sock;
+    std::unordered_map<uint64_t, Sector> secs;
     
-    SectorCache(tcp::socket * sock);
+    SectorCache();
     void getSectorFromNetwork(int x, int y);
     void setSectorAt(int sx, int sy, Sector s);
     Sector * getSectorAt(int x, int y);

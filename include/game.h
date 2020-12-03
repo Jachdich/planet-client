@@ -12,7 +12,6 @@
 
 class Game : public olc::PixelGameEngine {
 public:
-    std::vector<std::string> args;
     int lastMouseX;
     int lastMouseY;
     CamParams galaxyTrx;

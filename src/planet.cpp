@@ -43,9 +43,9 @@ Planet::Planet(Json::Value res, int posInStar) {
 }
 
 std::string toHexString(std::string initText, olc::Pixel colour) {
-//	std::stringstream stream;
-//	stream << initText << std::setfill('0') << std::setw(6) << std::hex << ((((colour.r << 8) | colour.g) << 8) | colour.b);
-	return "pi doesnt like this";
+	std::stringstream stream;
+	stream << initText << std::setfill('0') << std::setw(6) << std::hex << ((((colour.r << 8) | colour.g) << 8) | colour.b);
+	return stream.str();
 }
 
 void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {
@@ -117,9 +117,7 @@ void Planet::loadSurface(int secX, int secY, int starPos, int planetPos) {
 		    root["starPos"] = starPos;
 		    root["planetPos"] = planetPos;
 		    surface->requested = true;
-		    std::lock_guard<std::mutex> lock(netq_mutex);
-		    netRequests.push_back(root);
-		    netq.notify_all();
+		    app->client.sendRequest(root);
 		}
 	}
 }

@@ -16,26 +16,9 @@ struct SurfaceLocator {
 	int sectorY;
 };
 
-/*
-COMMUNICATION DIAGRAM
-
-User starts task (e.g. fell tree)
-Client: "hi user said fell tree x,y"
-Server: "Ok set timer for 30 seconds" OR "Can't do it for X reason"
-(timer set on client and server)
-(time runs out)
-Server sets tile to correct type
-Client does likewise
-*/
-
-std::unordered_map<int, std::function<void(int, ErrorCode)>> callbacks;
-uint32_t fuckin_index_into_callbacks = 0;
-
-void sendRequest(Json::Value request, asio::ip::tcp::socket * sock) {
+void ClientNetwork::sendRequest(Json::Value request) {
     Json::Value totalJSON;
     totalJSON["requests"].append(request);
-    
-    std::cout << "sending message\n";
 
     asio::streambuf buf;
     asio::error_code error;
@@ -43,37 +26,48 @@ void sendRequest(Json::Value request, asio::ip::tcp::socket * sock) {
     builder["indentation"] = "";
     const std::string output = Json::writeString(builder, totalJSON);
 
-    asio::write(*sock, asio::buffer(output + "\n"), error);
+    asio::write(socket, asio::buffer(output + "\n"), error);
     if (error) {
         std::cout << "ERROR SENDING: " << error.message() << "\n";
     }
 }
 
 void handleNetworkPacket(Json::Value root, SectorCache * cache) {
+    if (root.get("status", 0).asInt() != 0) {
+        std::cerr << "Server sent non-zero status: " << root["status"].asInt() << "\n";
+        return;
+    }
+    
     for (uint32_t i = 0; i < root["requests"].size(); i++) {
         Json::Value req = root["requests"][i];
         Json::Value res = root["results"][i];
+
+        if (res["status"].asInt() != 0) {
+            std::cerr << "Server sent non-zero status for request '" << req["request"]
+                      << "': " << res["status"].asInt() << "\n";
+            continue;
+        }
+        
         if (req["request"] == "getSector") {
             Sector s(res["result"]);
-            //TODO read status
             cache->setSectorAt(req["x"].asInt(), req["y"].asInt(), s);
+            
         } else if (req["request"] == "getSurface") {
             Sector * s = cache->getSectorAt(req["secX"].asInt(), req["secY"].asInt());
             Star * star= &s->stars[req["starPos"].asInt()];
             Planet * p = &star->planets[req["planetPos"].asInt()];
             PlanetSurface * surf = new PlanetSurface(res["result"], p);
             p->surface = surf;
-            //TODO read status
+
         } else if (req["request"] == "changeTile") {
 
         } else if (req["request"] == "userAction") {
-            callbacks[req["callback"].asInt()](res["time"].asInt(), (ErrorCode)res["status"].asInt());
-            callbacks.erase(req["callback"].asInt());
+
         }
     }
 }
 
-void sendUserAction(Tile * target, TaskType task, std::function<void(int, ErrorCode)> callback) {
+void sendUserAction(Tile * target, TaskType task) {
 	Json::Value json;
 	json["request"] = "userAction";
 	json["action"] = (int)task;
@@ -81,35 +75,12 @@ void sendUserAction(Tile * target, TaskType task, std::function<void(int, ErrorC
 	json["y"] = target->x; //OF SWAPPING THE X AND Y VALUES? WHAT DARK MAGIC IS GOING ON?
 
 	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
-	json["planetPos"] = x[3];
-	json["starPos"] = x[2];
 	json["secX"] = x[0];
 	json["secY"] = x[1];
-	json["callback"] = fuckin_index_into_callbacks;
-
-	callbacks[fuckin_index_into_callbacks] = callback;
-	fuckin_index_into_callbacks++;
-	std::lock_guard<std::mutex> lock(netq_mutex);
-	netRequests.push_back(json);
-	netq.notify_all();
-}
-
-void sendChangeTileRequest(Tile * target, TileType to) {
-	Json::Value json;
-	json["request"] = "changeTile";
-	json["x"] = target->y; //TODO WHY IN GODS NAME DO I HAVE TO COMMIT THIS ATROSITY
-	json["y"] = target->x; //OF SWAPPING THE X AND Y VALUES? WHAT DARK MAGIC IS GOING ON?
-
-	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
 	json["planetPos"] = x[3];
 	json["starPos"] = x[2];
-	json["secX"] = x[0];
-	json["secY"] = x[1];
-
-	json["to"] = (int)to;
-	std::lock_guard<std::mutex> lock(netq_mutex);
-	netRequests.push_back(json);
-	netq.notify_all();
+	
+	app->client.sendRequest(json);
 }
 
 SurfaceLocator getSurfaceLocatorFromJson(Json::Value root) {
@@ -159,7 +130,6 @@ ClientNetwork::ClientNetwork() : socket(ctx) {
 void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * cache) {
     this->cache = cache;
     asio::error_code ec;
-    //asio::io_context::work work(ctx);
 
     asio::ip::tcp::endpoint endpoint(asio::ip::make_address(address, ec), port);
     socket.connect(endpoint, ec);
@@ -196,8 +166,6 @@ void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
 
         if (!parsingSuccessful) {
             std::cerr << "Server sent malformed JSON: '" << request << "'. Full error: " << errors;
-            //asio::error_code ign_error;
-            //asio::write(sock, asio::buffer("{\"status\": -1}\n"), ign_error);
 
         } else {
             handleNetworkPacket(root, cache);
