@@ -32,35 +32,20 @@ std::unordered_map<int, std::function<void(int, ErrorCode)>> callbacks;
 uint32_t fuckin_index_into_callbacks = 0;
 
 void sendRequest(Json::Value request, asio::ip::tcp::socket * sock) {
-    while (true) {
-		Json::Value totalJSON;
-        std::unique_lock<std::mutex> lk(netq_mutex);
-        if (netq.wait_for(lk, std::chrono::seconds(1)) == std::cv_status::timeout) {
-			totalJSON["requests"][0]["request"] = "keepAlive";
-		}
-        lk.unlock();
-        std::cout << "sending message\n";
-        if (netThreadStop) { return; }
+    Json::Value totalJSON;
+    totalJSON["requests"].append(request);
+    
+    std::cout << "sending message\n";
 
-        std::unique_lock<std::mutex> lock(netq_mutex);
-        while (netRequests.size() > 0) {
-            Json::Value n = netRequests.back();
-            netRequests.pop_back();
-            totalJSON["requests"].append(n);
-            std::cout << "Net thread got request " << n << "\n";
-        }
-        lock.unlock();
+    asio::streambuf buf;
+    asio::error_code error;
+    Json::StreamWriterBuilder builder;
+    builder["indentation"] = "";
+    const std::string output = Json::writeString(builder, totalJSON);
 
-        asio::streambuf buf;
-        asio::error_code error;
-        Json::StreamWriterBuilder builder;
-        builder["indentation"] = "";
-        const std::string output = Json::writeString(builder, totalJSON);
-
-        asio::write(*sock, asio::buffer(output + "\n"), error);
-        if (error) {
-            std::cout << "ERROR SENDING: " << error.message() << "\n";
-        }
+    asio::write(*sock, asio::buffer(output + "\n"), error);
+    if (error) {
+        std::cout << "ERROR SENDING: " << error.message() << "\n";
     }
 }
 
@@ -178,34 +163,22 @@ void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * ca
 
     asio::ip::tcp::endpoint endpoint(asio::ip::make_address(address, ec), port);
     socket.connect(endpoint, ec);
-    /*
-    if (!ec) {
-        std::cout << "connected\n";
-        if (socket.is_open()) {
-            std::string req = "{\"requests\": [{\"request\": \"getSector\", \"x\": 0, \"y\": 0}]}\n";
-            socket.write_some(asio::buffer(req.data(), req.size()), ec);
-            if (ec) {
-                std::cout << "Error: " << ec.message() << "\n";
-            }
-            readUntil();
-        }
-    } else {
-        std::cout << "error: " << ec.message() << "\n";
-        ctx.stop();
-    }*/
+
     readUntil();
     std::thread asioThread = std::thread([&]() {ctx.run();});
-    std::thread networkThread = std::thread([this]() {handleNetwork(&socket);});
     asioThread.detach();
-    networkThread.detach();
-    
 }
 
 void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
     std::cout << bytes_transferred << "\n";
     if (!ec) {
-        std::string request(buf.begin(), buf.begin() + bytes_transferred);
-        buf.clear();
+        std::string request{
+                buffers_begin(buf.data()),
+                buffers_begin(buf.data()) + bytes_transferred
+                  - 1 /*for the \n*/};
+        
+        buf.consume(bytes_transferred);
+        readUntil();
 
         Json::CharReaderBuilder builder;
         Json::CharReader* reader = builder.newCharReader();
@@ -229,14 +202,15 @@ void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
         } else {
             handleNetworkPacket(root, cache);
         }
+
     } else {
         std::cerr << "ERROR: " <<  ec.message() << "\n";
+        readUntil();
     }
-    readUntil();
 }
 
 void ClientNetwork::readUntil() {
-    asio::async_read_until(socket, asio::dynamic_buffer(buf), '\n', [this] (std::error_code ec, std::size_t bytes_transferred) {
+    asio::async_read_until(socket, buf, '\n', [this] (std::error_code ec, std::size_t bytes_transferred) {
         handler(ec, bytes_transferred);
     });
 }

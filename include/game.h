@@ -23,8 +23,6 @@ public:
     bool galaxyView = true;
     bool planetView = false;
     bool starView = false;
-    asio::io_context io_context;
-    tcp::socket sock;
     SectorCache map;
     ClientNetwork client;
     

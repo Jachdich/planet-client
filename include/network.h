@@ -11,7 +11,8 @@ using asio::ip::tcp;
 
 class ClientNetwork {
 public:
-    std::vector<char> buf;
+    //std::vector<char> buf;
+    asio::streambuf buf;
     asio::io_context ctx;
     asio::ip::tcp::socket socket;
     SectorCache * cache;
@@ -25,6 +26,7 @@ public:
 };
 
 //void handleNetwork(tcp::socket * sock, SectorCache * cache);
+void sendRequest(Json::Value request, asio::ip::tcp::socket * sock);
 void sendChangeTileRequest(Tile * target, TileType to);
 void sendUserAction(Tile * target, TaskType task, std::function<void(int, ErrorCode)> callback);
 #endif

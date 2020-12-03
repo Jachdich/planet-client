@@ -13,11 +13,20 @@
 #include "star.h"
 #include "planetdata.h"
 
-Game::Game(int argc, char ** argv) : io_context(), sock(io_context), map(&sock) {
+Game::Game(int argc, char ** argv) : map(&client.socket) {
     sAppName = "Planet Game";
+
+    std::vector<std::string> args;
     for (int i = 0; i < argc; i++) {
         args.push_back(std::string(argv[i]));
     }
+
+    std::string address = "127.0.0.1";
+    if (args.size() > 1) {
+        address = args[1];
+    }
+
+    client.connect(address, 5555, &map);
 }
 
 void Game::destruct() {
@@ -25,12 +34,6 @@ void Game::destruct() {
 }
 
 bool Game::OnUserCreate() {
-    std::string address = "127.0.0.1";
-    if (args.size() > 1) {
-        address = args[1];
-    }
-
-    client.connect(address, 5555, &map);
     loadSprites();
 
     return true;
