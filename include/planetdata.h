@@ -15,21 +15,20 @@ struct Timer {
 	double time;
 };
 
+struct Materials {
+	int wood = 0;
+	int stone = 0;
+	int iron = 0;
+};
+
 class PlanetData {
 public:
 	PlanetSurface * surface;
-	bool threadStopped = false;
-	long lastTimeStamp;
 	PlanetData();
 	PlanetData(PlanetSurface * surface);
 	std::vector<TaskType> getPossibleTasks(Tile * target);
 	bool dispatchTask(TaskType type, Tile * target);
 	void draw(olc::PixelGameEngine * e, CamParams trx);
-	void tick();
-	void runLogic();
-	void stopThread();
-	Json::Value toJSON();
-	void fromJSON(Json::Value json, PlanetSurface * surface);
 };
 
 #endif
