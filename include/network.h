@@ -2,6 +2,7 @@
 #define __NETWORK_H
 
 #include <asio.hpp>
+#include <asio/ssl.hpp>
 
 #include "sectorcache.h"
 #include "common/enums.h"
@@ -13,7 +14,8 @@ class ClientNetwork {
 public:
     asio::streambuf buf;
     asio::io_context ctx;
-    asio::ip::tcp::socket socket;
+    asio::ssl::context ssl_ctx;
+    asio::ssl::stream<asio::ip::tcp::socket> socket;
     SectorCache * cache;
     
     void readUntil();

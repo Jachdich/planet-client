@@ -123,7 +123,7 @@ void doUpdate(Json::Value root, SectorCache * cache) {
 	//Tile * a = &surf->tiles[root.get("y", 0).asInt() * surf->radius * 2 + root.get("x", 0).asInt()];
 }
 
-ClientNetwork::ClientNetwork() : socket(ctx) {
+ClientNetwork::ClientNetwork() : ssl_ctx(asio::ssl::context::tls), socket(ctx, ssl_ctx) {
     
 }
 
@@ -131,8 +131,10 @@ void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * ca
     this->cache = cache;
     asio::error_code ec;
 
-    asio::ip::tcp::endpoint endpoint(asio::ip::make_address(address, ec), port);
-    socket.connect(endpoint, ec);
+    asio::ip::tcp::resolver resolver(ctx);
+    auto endpoint = resolver.resolve(address, std::to_string(port));
+    asio::connect(socket.next_layer(), endpoint);
+    socket.handshake(asio::ssl::stream_base::client);
 
     readUntil();
     std::thread asioThread = std::thread([&]() {ctx.run();});
@@ -142,11 +144,17 @@ void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * ca
 void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
     std::cout << bytes_transferred << "\n";
     if (!ec) {
-        std::string request{
+    
+        std::string request(
                 buffers_begin(buf.data()),
-                buffers_begin(buf.data()) + bytes_transferred
-                  - 1 /*for the \n*/};
-        
+                buffers_begin(buf.data()) + (bytes_transferred
+                  - 1));
+
+        /*
+        buf.commit(bytes_transferred);
+        std::istream is(&buf);
+        std::string request;
+        is >> request;*/
         buf.consume(bytes_transferred);
         readUntil();
 
