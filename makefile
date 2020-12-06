@@ -3,7 +3,7 @@ HEADERS := $(shell find include -type f -name *.h)
 OBJECTS := $(patsubst src/%,obj/%,$(SOURCES:.cpp=.o))
 
 client: $(OBJECTS)
-	g++ $(OBJECTS) -o $@ -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp
+	g++ $(OBJECTS) -o $@ -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp -lssl -lcrypto
 
 obj/%.o: src/%.cpp $(HEADERS)
 	@mkdir -p obj

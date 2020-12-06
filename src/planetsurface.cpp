@@ -85,17 +85,6 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
     //this->startThread();
 }
 
-void PlanetSurface::startThread() {
-    std::thread(&PlanetData::runLogic, this->data).detach();
-    this->threadStarted = true;
-    this->data->threadStopped = false;
-}
-
-void PlanetSurface::cleanUpThread() {
-    this->data->stopThread();
-    this->threadStarted = false;
-}
-
 void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams trx) {
 	if (mouseClicked) {
 		if (hud->mousePressed(max, may, trx)) {
