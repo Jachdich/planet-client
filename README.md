@@ -115,9 +115,9 @@ Whether or not to tint the image to the colour at the tile's position on the pla
 
 #### width
 
-The width of the tile, in pixels. This is half of the height of a square tile.
+The width of the tile, in pixels. This is double of the height of a square tile.
 
 ### considerations when creating a texture
 
-The texture is drawn one tile below the top of the image, to allow for tall tiles like trees.
+The texture is drawn one tile below the top of the image, to allow for tall tiles like trees. This means your texture should contain some empty space at the top before the actual texture starts, in the same way that the current textures do.
 More to come.
