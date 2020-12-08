@@ -65,6 +65,12 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
 
         }
     }
+
+    if (root.get("serverRequest", "NONE").asString() != "NONE") {
+    	if (root["serverRequest"].asString() == "setTimer") {
+    		
+    	}
+    }
 }
 
 void sendUserAction(Tile * target, TaskType task) {
