@@ -84,8 +84,8 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 }
 
 void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
-    e->DrawStringDecal({0, 30}, "Stone: " + std::to_string(this->parent->stats.stone), olc::WHITE);
-    e->DrawStringDecal({0, 40}, "Wood : " + std::to_string(this->parent->stats.wood), olc::WHITE);
+    e->DrawStringDecal({0, 30}, "Stone: " + std::to_string(this->data->stats.stone), olc::WHITE);
+    e->DrawStringDecal({0, 40}, "Wood : " + std::to_string(this->data->stats.wood),  olc::WHITE);
     /*
 	e->DrawStringDecal({0, 30}, "Population: " + std::to_string(this->data->people.size()), olc::WHITE);
 	int idlePeople = 0;
@@ -99,9 +99,38 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
 	if (this->ddmenu != nullptr) {
 		this->ddmenu->draw(e, trx);
 	}
+	if (this->popupMessage != "") {
+	    UIComponent component = UIComponents["error_popup"];
+	    olc::vi2d pos = {WIDTH / 2 - component.decal->sprite->width / 2, HEIGHT / 2 - component.decal->sprite->height / 2};
+	    e->DrawDecal(pos - olc::vi2d{3, 3}, component.decal);
+	    e->DrawStringDecal(pos, this->popupMessage, olc::BLACK);
+	}
+}
+
+void PlanetHUD::showPopup(std::string message) {
+	this->popupMessage = message;
 }
 
 bool PlanetHUD::mousePressed(int x, int y, CamParams trx) {
+	if (this->popupMessage != "") {
+	    UIComponent component = UIComponents["error_popup"];
+	    olc::vi2d size = {component.decal->sprite->width, component.decal->sprite->height};
+	    olc::vi2d pos = {WIDTH / 2 - size.x / 2, HEIGHT / 2 - size.y / 2};
+
+        olc::vi2d buttonPos = olc::vi2d{177, 19} + pos;
+        std::cout << buttonPos.x << ", " << buttonPos.y << "\n";
+        olc::vi2d buttonSize = {21, 12};
+	    
+        if (x > pos.x && x < (pos.x + size.x)
+         && y > pos.y && y < (pos.y + size.y)) {
+            if (x > buttonPos.x && x < (buttonPos.x + buttonSize.x)
+             && y > buttonPos.y && y < (buttonPos.y + buttonSize.y)) {
+                this->popupMessage = "";
+                std::cout << "e\n";
+            }
+            return true;
+        }
+    }
 	if (this->ddmenu != nullptr) {
 		return this->ddmenu->click(olc::vf2d(x, y), trx);
 	}

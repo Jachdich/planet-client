@@ -81,4 +81,5 @@ void loadSprites() {
 	registerUISprite("menu_closed.png", "menu_closed");
 	registerUISprite("menu_open.png", "menu_open");
 	registerUISprite("menu_item.png", "menu_item");
+	registerUISprite("error_popup.png", "error_popup");
 }
