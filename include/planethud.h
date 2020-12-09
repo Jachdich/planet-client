@@ -48,6 +48,10 @@ public:
 	void sendChangeTileRequest(TileType to);
 	void draw(olc::PixelGameEngine * e, CamParams trx);
 	void showClickMenu(Tile * t);
+	void showPopup(std::string message);
+
+private:
+    std::string popupMessage = "";
 };
 
 #endif

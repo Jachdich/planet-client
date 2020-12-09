@@ -23,13 +23,6 @@
 #include "client.h"
 
 using asio::ip::tcp;
-//TODO
-//planet noise generation settings
-//tidally lock planets/have planets rotate
-//star colours/textures
-//planets go offscreen
-//move around on starsystem view
-//starsystem view scrolls on star view
 
 FastNoise noiseGen;
 std::mutex cache_mutex;
@@ -38,8 +31,6 @@ Game * app;
 
 int WIDTH = 960;
 int HEIGHT = 540;
-//int WIDTH = 400;
-//int HEIGHT = 240;
 
 int main(int argc, char ** argv) {
     noiseGen.SetNoiseType(FastNoise::Simplex);
