@@ -8,13 +8,8 @@
 #include "sector.h"
 #include "star.h"
 #include "tile.h"
-
-struct SurfaceLocator {
-	char planetPos;
-	char starPos;
-	int sectorX;
-	int sectorY;
-};
+#include "planetdata.h"
+#include "common/surfacelocator.h"
 
 void ClientNetwork::sendRequest(Json::Value request) {
     Json::Value totalJSON;
@@ -43,8 +38,36 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
         Json::Value res = root["results"][i];
 
         if (res["status"].asInt() != 0) {
-            std::cerr << "Server sent non-zero status for request '" << req["request"]
-                      << "': " << res["status"].asInt() << "\n";
+            ErrorCode e = (ErrorCode)res["status"].asInt();
+            switch (e) {
+                case ErrorCode::OK:
+                    break;
+                case ErrorCode::MALFORMED_JSON:
+                case ErrorCode::INVALID_REQUEST:
+                case ErrorCode::OUT_OF_BOUNDS:
+                    std::cerr << "Server sent non-zero status for request '" << req["request"]
+                                          << "': " << res["status"].asInt() << "\n";
+            	case ErrorCode::NO_PEOPLE_AVAILABLE: {
+            	    PlanetSurface * surf = getSurfaceFromJson(req, cache);
+            	    surf->hud->showPopup("No people available to\ncomplete action!");
+            	    break;
+            	}
+                case ErrorCode::INSUFFICIENT_RESOURCES: {
+                    PlanetSurface * surf = getSurfaceFromJson(req, cache);
+                    surf->hud->showPopup("Insufficient resources!");
+                    break;
+                }
+                case ErrorCode::TASK_ALREADY_STARTED: {
+                    PlanetSurface * surf = getSurfaceFromJson(req, cache);
+                    surf->hud->showPopup("There is already a task on\nthis tile!");
+                    break;
+                }
+                case ErrorCode::TASK_ON_WRONG_TILE: {
+                    PlanetSurface * surf = getSurfaceFromJson(req, cache);
+                    surf->hud->showPopup("This task is not available\non this tile!");
+                    break;
+                }
+            }
             continue;
         }
         
@@ -53,17 +76,32 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
             cache->setSectorAt(req["x"].asInt(), req["y"].asInt(), s);
             
         } else if (req["request"] == "getSurface") {
-            Sector * s = cache->getSectorAt(req["secX"].asInt(), req["secY"].asInt());
-            Star * star= &s->stars[req["starPos"].asInt()];
-            Planet * p = &star->planets[req["planetPos"].asInt()];
+        	SurfaceLocator loc = getSurfaceLocatorFromJson(req);
+        	Sector * sec = cache->getSectorAt(loc.sectorX, loc.sectorY);
+        	Star * s = &sec->stars[loc.starPos];
+            Planet * p = &s->planets[loc.planetPos];
             PlanetSurface * surf = new PlanetSurface(res["result"], p);
             p->surface = surf;
 
-        } else if (req["request"] == "changeTile") {
-
-        } else if (req["request"] == "userAction") {
-
         }
+    }
+
+    if (root.get("serverRequest", "NONE").asString() != "NONE") {
+    	if (root["serverRequest"].asString() == "setTimer") {
+    	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
+            Tile * target = &surface->tiles[root["tile"].asInt()];
+            surface->data->timers.push_back(Timer{target, root["time"].asDouble()});
+    	}
+    	if (root["serverRequest"].asString() == "statsChange") {
+    	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
+    	    surface->data->stats.wood = root["wood"].asInt();
+    	    surface->data->stats.stone = root["stone"].asInt();
+    	}
+    	if (root["serverRequest"].asString() == "changeTile") {
+    	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
+            surface->tiles[root["tilePos"].asInt()].type = (TileType)root["type"].asInt();
+    	}
+    	
     }
 }
 
@@ -71,8 +109,8 @@ void sendUserAction(Tile * target, TaskType task) {
 	Json::Value json;
 	json["request"] = "userAction";
 	json["action"] = (int)task;
-	json["x"] = target->y; //TODO WHY IN GODS NAME DO I HAVE TO COMMIT THIS ATROSITY
-	json["y"] = target->x; //OF SWAPPING THE X AND Y VALUES? WHAT DARK MAGIC IS GOING ON?
+	json["x"] = target->x; //TODO WHY IN GODS NAME DO I HAVE TO COMMIT THIS ATROSITY
+	json["y"] = target->y; //OF SWAPPING THE X AND Y VALUES? WHAT DARK MAGIC IS GOING ON?
 
 	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
 	json["secX"] = x[0];
@@ -81,40 +119,6 @@ void sendUserAction(Tile * target, TaskType task) {
 	json["starPos"] = x[2];
 	
 	app->client.sendRequest(json);
-}
-
-SurfaceLocator getSurfaceLocatorFromJson(Json::Value root) {
-	int secX, secY;
-    char starPos, planetPos;
-	secX = root.get("secX", 0).asInt();
-	secY = root.get("secY", 0).asInt();
-	starPos = root.get("starPos", 0).asInt();
-	planetPos = root.get("planetPos", 0).asInt();
-	return {planetPos, starPos, secX, secY};
-}
-
-void getJsonFromSurfaceLocator(SurfaceLocator loc, Json::Value& root) {
-	root["secX"] = loc.sectorX;
-	root["secY"] = loc.sectorY;
-	root["starPos"] = loc.starPos;
-	root["planetPos"] = loc.planetPos;
-}
-
-PlanetSurface * getSurfaceFromJson(Json::Value root, SectorCache * cache) {
-	SurfaceLocator loc = getSurfaceLocatorFromJson(root);
-	Sector * sec = cache->getSectorAt(loc.sectorX, loc.sectorY);
-	if (loc.starPos < sec->numStars) {
-		Star * s = &sec->stars[loc.starPos];
-		if (loc.planetPos < s->num) {
-			Planet * p = &s->planets[loc.planetPos];
-			PlanetSurface * surf = p->surface;
-			return surf;
-		} else {
-			return nullptr;
-		}
-	} else {
-		return nullptr;
-	}
 }
 
 void doUpdate(Json::Value root, SectorCache * cache) {

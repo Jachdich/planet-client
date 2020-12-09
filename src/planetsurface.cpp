@@ -78,16 +78,14 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 	requested = false;
 	rad = root["rad"].asInt();
 
-	stats = {(uint32_t)root["wood"].asInt(), (uint32_t)root["stone"].asInt()};
-
-	this->data = new PlanetData(this);
+	this->data = new PlanetData(this, root);
 	this->hud = new PlanetHUD(this, this->data);
-    //this->startThread();
 }
 
 void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams trx) {
 	if (mouseClicked) {
 		if (hud->mousePressed(max, may, trx)) {
+		    //HUD was clicked on, do not click on anything below HUD
 			return;
 		}
 	}
@@ -97,7 +95,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 	tiles[lastSelectY * rad * 2 + lastSelectX].hovered = false;
 
 
-	//float ax = /*WHY THE CINNAMON TOAST FUCK DO I NEED THIS?!*/ WIDTH - (mx - trx.tx) / trx.zoom;
+	//float ax = /*WHY THE CINNAMON TOAST FUCK DO I NEED THIS?!*/// WIDTH - (mx - trx.tx) / trx.zoom;
 	//float ay = (my - trx.ty) / trx.zoom;
 	//int wx = (ay / 64.0) + (ax / 128.0);
 	//int wy = (-ax / 128.0) + (ay / 64.0);

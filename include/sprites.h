@@ -9,6 +9,7 @@
 struct UIComponent {
 	olc::Decal * decal;
 	olc::vi2d textPos;
+	olc::vi2d size;
 };
 
 struct TileSpriteComponent {

@@ -66,6 +66,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
         selectedStar->drawWithPlanets(this, fElapsedTime, trx);
     } else if (planetView) {
     	if (selectedPlanet->surface->generated) {
+    	    selectedPlanet->surface->data->updateTimers(fElapsedTime);
 			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, trx);
     		selectedPlanet->drawSurface(this, trx);
     	}
