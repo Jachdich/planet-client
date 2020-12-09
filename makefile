@@ -22,7 +22,7 @@ debug: client
 
 .PHONY: release
 release: $(OBJECTS_OPTIMISED)
-	g++ $(OBJECTS_OPTIMISED) -o $@ -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp -lssl -lcrypto
+	g++ $(OBJECTS_OPTIMISED) -o planet-client -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp -lssl -lcrypto
 
 .PHONY: run
 run: client
