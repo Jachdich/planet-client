@@ -21,9 +21,10 @@ DropdownMenuItem::DropdownMenuItem(std::string text, std::function<void()> ptr) 
 }
 
 void DropdownMenuItem::draw(olc::PixelGameEngine * e, CamParams trx) {
+	olc::vd2d pos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
 	UIComponent comp = UIComponents["menu_item"];
-	e->DrawDecal(this->pos + offset, comp.decal);
-	e->DrawStringDecal(this->pos + comp.textPos + offset, this->text, olc::BLACK);
+	e->DrawDecal(pos + offset * trx.zoom, comp.decal, {trx.zoom, trx.zoom});
+	e->DrawStringDecal((this->pos + offset + comp.textPos) * trx.zoom + olc::vi2d{trx.tx, trx.ty}, this->text, olc::BLACK, {trx.zoom, trx.zoom});
 }
 
 DropdownMenu::DropdownMenu(olc::vf2d pos, std::string text) {
@@ -43,8 +44,9 @@ void DropdownMenu::registerItem(DropdownMenuItem item) {
 
 void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams trx) {
 	UIComponent component = this->open ? UIComponents["menu_open"] : UIComponents["menu_closed"];
-	e->DrawDecal(pos, component.decal);
-	e->DrawStringDecal(pos + component.textPos, this->text, olc::BLACK);
+	olc::vd2d pos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
+	e->DrawDecal(pos, component.decal, {trx.zoom, trx.zoom});
+	e->DrawStringDecal((this->pos + component.textPos) * trx.zoom + olc::vi2d{trx.tx, trx.ty}, this->text, olc::BLACK, {trx.zoom, trx.zoom});
 	if (this->open) {
 		for (DropdownMenuItem item : this->items) {
 			item.draw(e, trx);
@@ -53,19 +55,20 @@ void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams trx) {
 }
 
 bool DropdownMenu::click(olc::vf2d screenPos, CamParams trx) {
-	olc::vf2d rectPos = pos;
+	olc::vd2d rectPos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
+
 	olc::vd2d delta = screenPos - rectPos;
-	if (delta.x <= 100 &&
-		delta.x >= 0   &&
-		delta.y <= 17  &&
-		delta.y >= 0  ) {
+	if (delta.x <= 100 * trx.zoom &&
+		delta.x >= 0   * trx.zoom &&
+		delta.y <= 17  * trx.zoom &&
+		delta.y >= 0   * trx.zoom) {
 		this->open = !this->open;
 		return true;
 	}
 
 	//check X value since all items are the same width
-	if (delta.x <= 100 && delta.x >= 0 && this->open) {
-		int componentIndex = floor(delta.y / 17) - 1; //1 for the menu header itself
+	if (delta.x <= 100 * trx.zoom  && delta.x >= 0 && this->open) {
+		int componentIndex = floor(delta.y / (17 * trx.zoom)) - 1; //-1 for the menu header itself
 		if ((unsigned long int)componentIndex >= items.size()) {
 			return false;
 		}
@@ -84,18 +87,11 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 }
 
 void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
-    e->DrawStringDecal({0, 30}, "Stone: " + std::to_string(this->data->stats.stone), olc::WHITE);
-    e->DrawStringDecal({0, 40}, "Wood : " + std::to_string(this->data->stats.wood),  olc::WHITE);
-    /*
-	e->DrawStringDecal({0, 30}, "Population: " + std::to_string(this->data->people.size()), olc::WHITE);
-	int idlePeople = 0;
-	for (Person &p : this->data->people) {
-		if (p.task.isNone && p.job.isNone) {
-			idlePeople++;
-		}
-	}
-	e->DrawStringDecal({0, 40}, "Population Idle: " + std::to_string(idlePeople), olc::WHITE);
-    */
+    e->DrawStringDecal({0, 30}, "Stone       " + std::to_string(this->data->stats.stone), olc::WHITE);
+    e->DrawStringDecal({0, 40}, "Wood        " + std::to_string(this->data->stats.wood),  olc::WHITE);
+    e->DrawStringDecal({0, 50}, "People      " + std::to_string(this->data->stats.people),  olc::WHITE);
+    e->DrawStringDecal({0, 60}, "People Idle " + std::to_string(this->data->stats.peopleIdle),  olc::WHITE);
+
 	if (this->ddmenu != nullptr) {
 		this->ddmenu->draw(e, trx);
 	}
@@ -143,7 +139,7 @@ void PlanetHUD::showClickMenu(Tile * t) {
 	}
 
 	//this->ddmenu = new DropdownMenu(olc::vf2d(128, 0), "Building");
-	this->ddmenu = new DropdownMenu(olc::vf2d(128, 8), "Demolition");
+	this->ddmenu = new DropdownMenu(t->getTextureCoordinates() - olc::vf2d(32, 32), "Demolition");
 	for (TaskType type : this->data->getPossibleTasks(t)) {
 		this->ddmenu->registerItem(DropdownMenuItem(getTaskTypeName(type),
 		[this, type]() { data->dispatchTask(type, this->selectedTile); }));

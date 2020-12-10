@@ -59,7 +59,7 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
                 }
                 case ErrorCode::TASK_ALREADY_STARTED: {
                     PlanetSurface * surf = getSurfaceFromJson(req, cache);
-                    surf->hud->showPopup("There is already a task on\nthis tile!");
+                    surf->hud->showPopup("There is already a task\non this tile!");
                     break;
                 }
                 case ErrorCode::TASK_ON_WRONG_TILE: {

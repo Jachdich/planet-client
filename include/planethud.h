@@ -13,8 +13,8 @@ class DropdownMenuItem {
 public:
 	std::string text;
 	std::function<void()> click;
-	olc::vf2d pos;
-	olc::vf2d offset;
+	olc::vd2d pos;
+	olc::vd2d offset;
 	DropdownMenuItem(std::string text, std::function<void()> ptr);
 	void draw(olc::PixelGameEngine * e, CamParams trx);
 };
@@ -23,7 +23,7 @@ class DropdownMenu {
 public:
 	bool open = false;
 	std::string text;
-	olc::vf2d pos;
+	olc::vd2d pos;
 	std::vector<DropdownMenuItem> items;
 	DropdownMenu(olc::vf2d pos, std::string text);
 	void draw(olc::PixelGameEngine * e, CamParams trx);
