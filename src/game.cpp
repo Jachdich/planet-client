@@ -54,11 +54,12 @@ std::vector<int> Game::getCurrentPlanetsurfaceLocator() {
 }
 
 bool Game::OnUserUpdate(float fElapsedTime) {
-    //if (planetView) {
-    //    Clear(selectedPlanet->baseColour);
-    //} else {
-	Clear(olc::BLACK);
-    //}
+    if (planetView) {
+		olc::Pixel a = selectedPlanet->baseColour;
+        Clear({(uint8_t)(a.r * 0.5), (uint8_t)(a.g * 0.5), (uint8_t)(a.b * 0.5)});
+    } else {
+		Clear(olc::BLACK);
+    }
 
     if (galaxyView) {
         map.draw(this, trx);
@@ -140,8 +141,6 @@ bool Game::OnUserUpdate(float fElapsedTime) {
             galaxyView = true;
             trx = galaxyTrx;
             this->selectedStar = nullptr;
-        } else if (galaxyView) {
-            return false;
         }
     }
 
