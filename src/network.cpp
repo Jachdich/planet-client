@@ -59,7 +59,7 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
                 }
                 case ErrorCode::TASK_ALREADY_STARTED: {
                     PlanetSurface * surf = getSurfaceFromJson(req, cache);
-                    surf->hud->showPopup("There is already a task on\nthis tile!");
+                    surf->hud->showPopup("There is already a task\non this tile!");
                     break;
                 }
                 case ErrorCode::TASK_ON_WRONG_TILE: {
@@ -96,6 +96,8 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
     	    surface->data->stats.wood = root["wood"].asInt();
     	    surface->data->stats.stone = root["stone"].asInt();
+    	    surface->data->stats.people = root["people"].asInt();
+    	    surface->data->stats.peopleIdle = root["peopleIdle"].asInt();
     	}
     	if (root["serverRequest"].asString() == "changeTile") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);

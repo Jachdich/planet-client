@@ -159,12 +159,12 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 }
 
 void Game::zoom(int count) {
-    if (trx.zoom >= 8 && count < 0) {
-        return;
-    }
-    if (trx.zoom <= 0.18 && count > 0) {
-        return;
-    }
+    //if (trx.zoom >= 8 && count < 0) {
+    //    return;
+    //}
+    //if (trx.zoom <= 0.18 && count > 0) {
+    //    return;
+    //}
     trx.tx -= GetMouseX();
     trx.ty -= GetMouseY();
     double delta = count < 0 ? 1.05 : count > 0 ? 1.0/1.05 : 1.0;
