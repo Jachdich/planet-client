@@ -80,7 +80,6 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
         	Sector * sec = cache->getSectorAt(loc.sectorX, loc.sectorY);
         	Star * s = &sec->stars[loc.starPos];
             Planet * p = &s->planets[loc.planetPos];
-            std::cout << res["result"] << "\n";
             PlanetSurface * surf = new PlanetSurface(res["result"], p);
             p->surface = surf;
 
