@@ -64,7 +64,7 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
                 }
                 case ErrorCode::TASK_ON_WRONG_TILE: {
                     PlanetSurface * surf = getSurfaceFromJson(req, cache);
-                    surf->hud->showPopup("This task is not available\non this tile!");433
+                    surf->hud->showPopup("This task is not available\non this tile!");
                     break;
                 }
             }
