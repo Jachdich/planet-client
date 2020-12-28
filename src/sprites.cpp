@@ -56,10 +56,12 @@ TileSprite::TileSprite(std::string fName) {
     afile.close();
     drawGround = (TileType)root["drawGround"].asInt();
     for (Json::Value t : root["textures"]) {
-        olc::Decal * dec = new olc::Decal(new olc::Sprite(texturedir + "/" + t["imageFile"].asString()));
+        olc::Sprite * spr = new olc::Sprite(texturedir + "/" + t["imageFile"].asString());
+        olc::Decal * dec = new olc::Decal(spr);
         bool tint = t["tint"].asBool();
         uint32_t width = t.get("width", 128).asInt();
         components.push_back({dec, tint, width});
+        sprites.push_back(spr);
     }
 }
 void registerTileSprite(std::string x) {
@@ -69,11 +71,17 @@ void registerTileSprite(std::string x) {
 void registerUISprite(std::string filename, std::string name) {
 	olc::Sprite * temp = new olc::Sprite(texturedir + "/" + filename);
 	UIComponents[name] = {new olc::Decal(temp), olc::vi2d(3, 3)};
+	sprites.push_back(temp);
 }
 
 void loadSprites() {
 	tileSprites.clear();
-	std::string names[] = {"void.json", "ground.json", "bush.json", "tree.json", "pine.json", "water.json", "rock.json", "house.json", "pineforest.json", "forest.json"};
+	for (olc::Sprite * spr : sprites) {
+	    delete spr;
+	}
+	sprites.clear();
+	std::string names[] = {"void.json", "ground.json", "bush.json", "tree.json", "pine.json",
+	                       "water.json", "rock.json", "house.json", "pineforest.json", "forest.json"};
 	for (int i = 0; i < *(&names + 1) - names; i++) {
 		registerTileSprite(names[i]);
 	}
@@ -82,4 +90,7 @@ void loadSprites() {
 	registerUISprite("menu_open.png", "menu_open");
 	registerUISprite("menu_item.png", "menu_item");
 	registerUISprite("error_popup.png", "error_popup");
+	registerUISprite("menu/background.png", "main_menu_background");
+	registerUISprite("menu/mainmenutext.png", "main_menu_buttons");
+	
 }
