@@ -31,12 +31,10 @@ Game::Game(int argc, char ** argv) : map() {
         args.push_back(std::string(argv[i]));
     }
 
-    std::string address = "127.0.0.1";
+    address = "127.0.0.1";
     if (args.size() > 1) {
         address = args[1];
     }
-
-    client.connect(address, 5555, &map);
 }
 
 void Game::destruct() {
@@ -53,12 +51,48 @@ std::vector<int> Game::getCurrentPlanetsurfaceLocator() {
 	return std::vector<int>{lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar};
 }
 
+void Game::mousePressed() {
+    if (galaxyView) {
+        Sector * s = map.getSectorAt(floor((GetMouseX() - trx.tx) / trx.zoom / 256), floor((GetMouseY() - trx.ty) / trx.zoom / 256));
+        lastClickedSector = s;
+        //std::cout << "clicked sector " << s->x << " " << s->y << "\n";
+        //std::cout << s->requested << " " << s->x << " " << s->y << "\n";
+        Star * st = s->getStarAt(GetMouseX(), GetMouseY(), trx);
+                // (GetMouseX() - trx.tx) / trx.zoom - floor((GetMouseX() - trx.tx) / trx.zoom / 256) * 256,
+                // (GetMouseY() - trx.ty) / trx.zoom - floor((GetMouseY() - trx.ty) / trx.zoom / 256) * 256);
+        if (st != nullptr) {
+            this->selectedStar = st;
+            this->starView = true;
+            this->galaxyView = false;
+            galaxyTrx = trx;
+            trx = {0, 0, 1};
+        }
+    } else if (starView) {
+        Planet * p = selectedStar->getPlanetAt(GetMouseX(), GetMouseY(), trx);
+        if (p != nullptr) {
+            this->selectedPlanet = p;
+            galaxyView = false;
+            starView = false;
+            planetView = true;
+            if (!selectedPlanet->surface->generated and !selectedPlanet->surface->requested) {
+        		selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
+        	}
+            trx = {0, 0, 1};
+        }
+    }
+}
+
+void Game::connectToServer() {
+    client.connect(address, 5555, &map);
+}
+
 bool Game::OnUserUpdate(float fElapsedTime) {
-    //if (planetView) {
-    //    Clear(selectedPlanet->baseColour);
-    //} else {
 	Clear(olc::BLACK);
-    //}
+
+	if (menuView) {
+	    menu.draw(this);
+	    return true;
+	}
 
     if (galaxyView) {
         map.draw(this, trx);
@@ -78,34 +112,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     }
 
     if (GetMouse(0).bPressed) {
-        if (galaxyView) {
-            Sector * s = map.getSectorAt(floor((GetMouseX() - trx.tx) / trx.zoom / 256), floor((GetMouseY() - trx.ty) / trx.zoom / 256));
-            lastClickedSector = s;
-            //std::cout << "clicked sector " << s->x << " " << s->y << "\n";
-            //std::cout << s->requested << " " << s->x << " " << s->y << "\n";
-            Star * st = s->getStarAt(GetMouseX(), GetMouseY(), trx);
-                    // (GetMouseX() - trx.tx) / trx.zoom - floor((GetMouseX() - trx.tx) / trx.zoom / 256) * 256,
-                    // (GetMouseY() - trx.ty) / trx.zoom - floor((GetMouseY() - trx.ty) / trx.zoom / 256) * 256);
-            if (st != nullptr) {
-                this->selectedStar = st;
-                this->starView = true;
-                this->galaxyView = false;
-                galaxyTrx = trx;
-                trx = {0, 0, 1};
-            }
-        } else if (starView) {
-            Planet * p = selectedStar->getPlanetAt(GetMouseX(), GetMouseY(), trx);
-            if (p != nullptr) {
-                this->selectedPlanet = p;
-                galaxyView = false;
-                starView = false;
-                planetView = true;
-                if (!selectedPlanet->surface->generated and !selectedPlanet->surface->requested) {
-            		selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
-            	}
-                trx = {0, 0, 1};
-            }
-        }
+        mousePressed();
     }
 
     if (GetMouse(1).bPressed) {

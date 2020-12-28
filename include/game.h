@@ -9,6 +9,9 @@
 #include "sectorcache.h"
 #include "sprites.h"
 #include "star.h"
+#include "menu.h"
+
+const olc::vd2d pixelsPerPixel{2, 2};
 
 class Game : public olc::PixelGameEngine {
 public:
@@ -19,20 +22,26 @@ public:
     Star * selectedStar = nullptr;
     Planet * selectedPlanet = nullptr;
     Sector * lastClickedSector = nullptr;
-    bool galaxyView = true;
+    bool galaxyView = false;
     bool planetView = false;
     bool starView = false;
+    bool menuView = true;
+    Menu menu;
     SectorCache map;
     ClientNetwork client;
+    std::string address;
     
 	Game();
     Game(int argc, char ** argv);
+
+    void connectToServer();
     
     void drawTile(int x, int y, int thing, olc::PixelGameEngine * e);
     void destruct();
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float fElapsedTime) override;
     void zoom(int count);
+    void mousePressed();
 	std::vector<int> getCurrentPlanetsurfaceLocator();
 };
 
