@@ -4,7 +4,7 @@ This is alpha level software, it probably doesn't work. There are many many bugs
 
 # Planet-client
 
-This is the client for my kinda weird and probably not gonna be finished planet-game. IDK why anyone is here but if they are then here are some build instructions.
+This is the client for my kinda weird and probably not gonna be finished planet-game. IDK why anyone is here but if they are then here are some build instructions. EDIT well now I guess I can be the prOfessional youtoober and say that this is the repository of code from [this](https://www.youtube.com/playlist?list=PLJ7FLuJ_eDMe3KBh2znAYD5YamSuXD0vV) video series (that can hardly be called a series at this point).
 
 # Launcher
 
