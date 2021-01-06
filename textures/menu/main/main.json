@@ -1,0 +1,33 @@
+{
+	"texture": "menu/main/buttons.png",
+	"buttons": [
+		{
+                        "name": "multiplayer",
+			"pos_x": 100,
+			"pos_y": 100,
+			"width": 100,
+			"height": 100
+		},
+		{
+                        "name": "singleplayer",
+			"pos_x": 100,
+			"pos_y": 100,
+			"width": 100,
+			"height": 100
+		},
+		{
+                        "name": "options",
+			"pos_x": 100,
+			"pos_y": 100,
+			"width": 100,
+			"height": 100
+		},
+		{
+                        "name": "quit",
+			"pos_x": 100,
+			"pos_y": 100,
+			"width": 100,
+			"height": 100
+		}
+	]
+}

@@ -1,6 +1,6 @@
 {"drawGround": 1,
  "textures": [
-     {"imageFile": "road_ew.png",
+     {"imageFile": "tiles/png/road_ns.png",
       "tint": false,
       "width": 64}
      ]

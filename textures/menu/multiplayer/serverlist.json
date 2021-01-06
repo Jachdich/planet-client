@@ -1,0 +1,23 @@
+{
+	"texture": "menu/multiplayer/buttons.png",
+	"buttons": {
+		"server_list": {
+			"pos_x": 100,
+			"pos_y": 100,
+			"width": 100,
+			"height": 100
+		},
+		"connect": {
+			"pos_x": 100,
+			"pos_y": 100,
+			"width": 100,
+			"height": 100
+		},
+		"back": {
+			"pos_x": 100,
+			"pos_y": 100,
+			"width": 100,
+			"height": 100
+		}
+	}
+}

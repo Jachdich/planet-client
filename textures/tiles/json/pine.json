@@ -1,0 +1,8 @@
+{"drawGround": 1,
+ "textures": [
+     {"imageFile": "tiles/png/pine.png",
+      "tint": true},
+     {"imageFile": "tiles/png/pine_trunk.png",
+      "tint": false}
+     ]
+ }

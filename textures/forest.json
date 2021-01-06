@@ -1,8 +1,0 @@
-{"drawGround": 1,
- "textures": [
-     {"imageFile": "forest_trunk.png",
-      "tint": false},
-     {"imageFile": "forest.png",
-      "tint": true}
-     ]
- }

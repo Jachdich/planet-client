@@ -1,6 +1,6 @@
 {"drawGround": 0,
  "textures": [
-     {  "imageFile": "ground_iso.png",
+     {  "imageFile": "tiles/png/ground.png",
         "tint": true,
         "width": 64
      }

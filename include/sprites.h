@@ -6,6 +6,17 @@
 #include "olcPixelGameEngine.h"
 #include "tile.h"
 
+//maths helper?
+struct AABB {
+	olc::vi2d pos;
+	olc::vi2d size;
+};
+
+struct MenuComponent {
+	olc::Decal * decal;
+	std::unordered_map<std::string, AABB> buttons;
+}
+
 struct UIComponent {
 	olc::Decal * decal;
 	olc::vi2d textPos;
@@ -29,5 +40,5 @@ void loadSprites();
 extern std::vector<olc::Sprite *> sprites;
 extern std::vector<TileSprite> tileSprites;
 extern std::unordered_map<std::string, UIComponent> UIComponents;
-
+extern std::unordered_map<std::string, MenuComponent> menuComponents;
 #endif
