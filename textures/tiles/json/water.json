@@ -1,6 +1,6 @@
 {"drawGround": 0,
  "textures": [
-     {"imageFile": "water_iso.png",
+     {"imageFile": "tiles/png/water.png",
       "tint": true}
      ]
  }

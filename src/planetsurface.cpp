@@ -71,6 +71,9 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 			uint64_t val = root["tiles"][j + i * root["rad"].asInt() * 2].asUInt64();
 			int32_t type = val & 0xFFFFFFFF;
             int32_t z    = (val >> 32) & 0xFFFFFFFF;
+            if (rand() % 1000000 == 0) {
+            	type = (int)TileType::TONK;
+            }
 			tiles.push_back(Tile((TileType)(type), z, j, i, this->getTint(j, i)));
 		}
 	}

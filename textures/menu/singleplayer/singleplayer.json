@@ -1,0 +1,23 @@
+{
+	"texture": "menu/singleplayer/buttons.png",
+	"buttons": {
+		"new_save": {
+			"pos_x": 100,
+			"pos_y": 100,
+			"width": 100,
+			"height": 100
+		},
+		"load_save": {
+			"pos_x": 100,
+			"pos_y": 100,
+			"width": 100,
+			"height": 100
+		},
+		"back": {
+			"pos_x": 100,
+			"pos_y": 100,
+			"width": 100,
+			"height": 100
+		}
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"texture": "menu/multiplayer/connecttoip.png",
+	"buttons": [
+		{
+			"name": "box",
+			"pos_x": 0.03229166666666667,
+			"pos_y": 0.9174814814814814,
+			"width": 100,
+			"height": 100
+		},
+	]
+}
