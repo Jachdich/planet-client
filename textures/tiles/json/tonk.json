@@ -1,0 +1,6 @@
+{"drawGround": 1,
+ "textures": [
+     {"imageFile": "tiles/png/tonk.png",
+      "tint": false}
+     ]
+ }

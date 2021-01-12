@@ -8,14 +8,27 @@
 
 //maths helper?
 struct AABB {
-	olc::vi2d pos;
-	olc::vi2d size;
+	olc::vd2d pos;
+	olc::vd2d size;
+	inline AABB(double x, double y, double w, double h) : pos{x, y}, size{w, h} {}
+	inline AABB() {}
+
+	inline bool isInside(olc::vd2d point) {
+		if (point.x > pos.x &&
+			point.x < pos.x + size.x &&
+			point.y > pos.y &&
+			point.y < pos.y + size.y) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 };
 
 struct MenuComponent {
 	olc::Decal * decal;
 	std::unordered_map<std::string, AABB> buttons;
-}
+};
 
 struct UIComponent {
 	olc::Decal * decal;

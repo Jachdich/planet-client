@@ -82,23 +82,42 @@ void registerUISprite(std::string filename, std::string name) {
 
 void registerMenuSprite(std::string filename, std::string name) {
 	Json::Value root = getJsonFromTextureFile(filename);
-	olc::Sprite * temp = new olc::Sprite(texturedir + "/" + root["texture"]);
+	olc::Sprite * temp = new olc::Sprite(texturedir + "/" + root["texture"].asString());
 	sprites.push_back(temp);
 	MenuComponent c;
 	c.decal = new olc::Decal(temp);
 	for (Json::Value v : root["buttons"]) {
-		
+		c.buttons[v["name"].asString()] = AABB(v["pos_x"].asDouble(),
+								  			   v["pos_y"].asDouble(),
+											   v["width"].asDouble(),
+								  			   v["height"].asDouble());
 	}
+	menuComponents[name] = c;
 }
 
 void loadSprites() {
+	for (TileSprite t : tileSprites) {
+		for (TileSpriteComponent tc : t.components) {
+			delete tc.decal;
+		}
+	}
+
+	for (std::pair<std::string, UIComponent> element : UIComponents) {
+		delete element.second.decal;
+	}
+	for (std::pair<std::string, MenuComponent> element : menuComponents) {
+		delete element.second.decal;
+	}
+	
 	tileSprites.clear();
+	UIComponents.clear();
+	menuComponents.clear();
 	for (olc::Sprite * spr : sprites) {
 	    delete spr;
 	}
 	sprites.clear();
 	std::string names[] = {"void.json", "ground.json", "bush.json", "tree.json", "pine.json",
-	                       "water.json", "rock.json", "house.json", "pineforest.json", "forest.json"};
+	                       "water.json", "rock.json", "house.json", "pineforest.json", "forest.json", "tonk.json"};
 	for (int i = 0; i < *(&names + 1) - names; i++) {
 		registerTileSprite("tiles/json/" + names[i]);
 	}
@@ -107,5 +126,9 @@ void loadSprites() {
 	registerUISprite("hud/menu_open.png", "menu_open");
 	registerUISprite("hud/menu_item.png", "menu_item");
 	registerUISprite("hud/error_popup.png", "error_popup");
-	
+
+	registerMenuSprite("menu/main/main.json", "main");
+	registerMenuSprite("menu/multiplayer/multiplayer.json", "multiplayer");
+	registerMenuSprite("menu/background.json", "background");
+	registerMenuSprite("menu/multiplayer/serverconnect.json", "serverconnect");
 }

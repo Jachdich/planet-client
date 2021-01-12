@@ -1,18 +1,25 @@
 #ifndef __MENU_H
 #define __MENU_H
+#include <string>
+
 class Game;
+
+enum MenuState {
+	MAIN,
+	MULTI,
+	SINGLE,
+	OPTIONS,
+	SERVER_LIST,
+	CONNECT,
+};
 
 class Menu {
 private:
-    bool main = true;
-    bool multi = false;
-    bool load = false;
-    bool newSave = false;
-    bool options = false;
-
+	std::string ipInput = "";
+    MenuState state;
 public:
     Menu();
-    void draw(Game * e);    
+    bool draw(Game * e);    
 };
 
 #endif

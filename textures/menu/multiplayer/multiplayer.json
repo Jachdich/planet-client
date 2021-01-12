@@ -1,23 +1,26 @@
 {
 	"texture": "menu/multiplayer/buttons.png",
-	"buttons": {
-		"server_list": {
-			"pos_x": 100,
-			"pos_y": 100,
-			"width": 100,
-			"height": 100
+	"buttons": [
+		{
+			"name": "server_list",
+			"pos_x": 0.011458333333333333,
+			"pos_y": 0.7953703703703704,
+			"width": 0.22135416666666666,
+			"height": 0.053703703703703705
 		},
-		"connect": {
-			"pos_x": 100,
-			"pos_y": 100,
-			"width": 100,
-			"height": 100
+		{
+			"name": "connect",
+			"pos_x": 0.011458333333333333,
+			"pos_y": 0.862037037037037,
+			"width": 0.22135416666666666,
+			"height": 0.053703703703703705
 		},
-		"back": {
-			"pos_x": 100,
-			"pos_y": 100,
-			"width": 100,
-			"height": 100
+		{
+			"name": "back",
+			"pos_x": 0.011458333333333333,
+			"pos_y": 0.9287037037037037,
+			"width": 0.22135416666666666,
+			"height": 0.053703703703703705
 		}
-	}
+	]
 }

@@ -43,7 +43,11 @@ void Game::destruct() {
 
 bool Game::OnUserCreate() {
     loadSprites();
-
+    /*
+    connectToServer();
+    galaxyView = true;
+    menuView = false;
+	*/
     return true;
 }
 
@@ -90,8 +94,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 	Clear(olc::BLACK);
 
 	if (menuView) {
-	    menu.draw(this);
-	    return true;
+	    return menu.draw(this);
 	}
 
     if (galaxyView) {
@@ -166,12 +169,12 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 }
 
 void Game::zoom(int count) {
-    //if (trx.zoom >= 8 && count < 0) {
-    //    return;
-    //}
-    //if (trx.zoom <= 0.18 && count > 0) {
-    //    return;
-    //}
+    if (trx.zoom >= 8 && count < 0) {
+        return;
+    }
+    if (trx.zoom <= 0.18 && count > 0) {
+        return;
+    }
     trx.tx -= GetMouseX();
     trx.ty -= GetMouseY();
     double delta = count < 0 ? 1.05 : count > 0 ? 1.0/1.05 : 1.0;
