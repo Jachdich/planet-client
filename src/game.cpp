@@ -94,7 +94,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 	Clear(olc::BLACK);
 
 	if (menuView) {
-	    return menu.draw(this);
+	    menu.draw(this);
 	}
 
     if (galaxyView) {
