@@ -28,6 +28,7 @@ void ClientNetwork::sendRequest(Json::Value request) {
 }
 
 void handleNetworkPacket(Json::Value root, SectorCache * cache) {
+	std::cout << root << "\n\n\n";
     if (root.get("status", 0).asInt() != 0) {
         std::cerr << "Server sent non-zero status: " << root["status"].asInt() << "\n";
         return;
@@ -73,7 +74,7 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
         
         if (req["request"] == "getSector") {
             Sector s(res["result"]);
-            cache->setSectorAt(req["x"].asInt(), req["y"].asInt(), s);
+            cache->setSectorAt(req["x"].asUInt(), req["y"].asUInt(), s);
             
         } else if (req["request"] == "getSurface") {
         	SurfaceLocator loc = getSurfaceLocatorFromJson(req);

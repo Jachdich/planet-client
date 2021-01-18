@@ -11,7 +11,7 @@ using asio::ip::tcp;
 SectorCache::SectorCache() {
 }
 
-void SectorCache::getSectorFromNetwork(int x, int y) {
+void SectorCache::getSectorFromNetwork(uint32_t x, uint32_t y) {
     Json::Value json;
     json["request"] = "getSector";
     json["x"] = x;
@@ -19,19 +19,16 @@ void SectorCache::getSectorFromNetwork(int x, int y) {
     app->client.sendRequest(json);
 }
 
-void SectorCache::setSectorAt(int sx, int sy, Sector s) {
+void SectorCache::setSectorAt(int32_t sx, int32_t sy, Sector s) {
     std::lock_guard<std::mutex> lock(cache_mutex);
-    secs[(long long)sx << 32 | sy] = s;
+    secs[((uint64_t)sx << 32) | (uint32_t)sy] = s;
 }
 
-Sector * SectorCache::getSectorAt(int x, int y) {
-    long long index = (long long)x << 32 | y;
-    if (x < 0 || y < 0) {
-        index = 0;
-    }
+Sector * SectorCache::getSectorAt(int32_t x, int32_t y) {
+    uint64_t index = (uint64_t)x << 32 | (uint32_t)y;
 
     if (!secs[index].generated && !secs[index].requested) {
-        getSectorFromNetwork(x, y);
+        getSectorFromNetwork((uint32_t)x, (uint32_t)y);
         secs[index].setRequested();
     }
     
@@ -39,12 +36,12 @@ Sector * SectorCache::getSectorAt(int x, int y) {
 }
 
 void SectorCache::draw(olc::PixelGameEngine * e, CamParams trx) {
-    int sectorX = ((-trx.tx) / trx.zoom) / 256;
-    int sectorY = ((-trx.ty) / trx.zoom) / 256;
+    int32_t sectorX = ((-trx.tx) / trx.zoom) / 256;
+    int32_t sectorY = ((-trx.ty) / trx.zoom) / 256;
     float num = ceil((WIDTH) / 256.0 / trx.zoom);
     std::lock_guard<std::mutex> lock(cache_mutex);
-    for (int x = 0; x < num + 1; x++) {
-        for (int y = 0; y < num + 1; y++) {
+    for (int32_t x = 0; x < num + 1; x++) {
+        for (int32_t y = 0; y < num + 1; y++) {
             Sector * s = getSectorAt(sectorX + x, sectorY + y);
             if (s != nullptr && s->generated) {
                 s->draw(e, trx);
