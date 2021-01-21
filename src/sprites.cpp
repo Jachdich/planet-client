@@ -60,7 +60,10 @@ void TileSprite::draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, ol
 
 TileSprite::TileSprite(std::string fName) {
 	Json::Value root = getJsonFromTextureFile(fName);
+
+	//TODO this is a very bad idea!
     drawGround = (TileType)root["drawGround"].asInt();
+    
     for (Json::Value t : root["textures"]) {
         olc::Sprite * spr = new olc::Sprite(texturedir + "/" + t["imageFile"].asString());
         olc::Decal * dec = new olc::Decal(spr);

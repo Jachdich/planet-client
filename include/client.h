@@ -8,11 +8,13 @@
 #include "game.h"
 
 extern FastNoise noiseGen;
-extern int WIDTH;
-extern int HEIGHT;
+extern uint16_t WIDTH;
+extern uint16_t HEIGHT;
 extern std::mutex cache_mutex;
 extern bool debugMode;
 extern Game * app;
+extern olc::vi2d pixelsPerPixel;
+extern Json::Value configJson;
 
 Json::Value makeJSON(std::string x);
 #endif

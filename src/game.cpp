@@ -57,13 +57,12 @@ std::vector<int> Game::getCurrentPlanetsurfaceLocator() {
 
 void Game::mousePressed() {
     if (galaxyView) {
-        Sector * s = map.getSectorAt(floor((GetMouseX() - trx.tx) / trx.zoom / 256), floor((GetMouseY() - trx.ty) / trx.zoom / 256));
+        Sector * s = map.getSectorAt(floor((GetMouseX() - trx.tx) / trx.zoom / 256),
+                                     floor((GetMouseY() - trx.ty) / trx.zoom / 256));
         lastClickedSector = s;
-        //std::cout << "clicked sector " << s->x << " " << s->y << "\n";
-        //std::cout << s->requested << " " << s->x << " " << s->y << "\n";
+ 
         Star * st = s->getStarAt(GetMouseX(), GetMouseY(), trx);
-                // (GetMouseX() - trx.tx) / trx.zoom - floor((GetMouseX() - trx.tx) / trx.zoom / 256) * 256,
-                // (GetMouseY() - trx.ty) / trx.zoom - floor((GetMouseY() - trx.ty) / trx.zoom / 256) * 256);
+
         if (st != nullptr) {
             this->selectedStar = st;
             this->starView = true;

@@ -11,8 +11,6 @@
 #include "star.h"
 #include "menu.h"
 
-const olc::vd2d pixelsPerPixel{2, 2};
-
 class Game : public olc::PixelGameEngine {
 public:
     int lastMouseX;

@@ -48,7 +48,8 @@ void getInput(std::string &inp, olc::PixelGameEngine *m_pge) {
 
 bool Menu::draw(Game *e) {
     MenuComponent bg = menuComponents["background"];
-    e->DrawDecal({0, 0}, bg.decal, 1.0f / pixelsPerPixel);
+    e->DrawDecal({0, 0}, bg.decal, 1.0 / (olc::vd2d)pixelsPerPixel);
+  
     if (e->GetKey(olc::Key::T).bPressed) {
 		loadSprites();
 	}
@@ -56,7 +57,7 @@ bool Menu::draw(Game *e) {
     switch (state) {
 	   	case MAIN: {
 		    MenuComponent buttons = menuComponents["main"];
-		    e->DrawDecal({0, 0}, buttons.decal, 1.0f / pixelsPerPixel);
+		    e->DrawDecal({0, 0}, buttons.decal, 1.0 / (olc::vd2d)pixelsPerPixel);
 		    if (e->GetMouse(0).bPressed) {
 		    	olc::vd2d adjustedPos = {(double)e->GetMouseX() / (double)WIDTH, (double)e->GetMouseY() / (double)HEIGHT};
 				if (buttons.buttons["multiplayer"].isInside(adjustedPos)) {
@@ -69,7 +70,7 @@ bool Menu::draw(Game *e) {
 		}
 	    case MULTI: {
 	    	MenuComponent buttons = menuComponents["multiplayer"];
-	    	e->DrawDecal({0, 0}, buttons.decal, 1.0f / pixelsPerPixel);
+	    	e->DrawDecal({0, 0}, buttons.decal, 1.0 / (olc::vd2d)pixelsPerPixel);
 			if (e->GetMouse(0).bPressed) {
 		    	olc::vd2d adjustedPos = {(double)e->GetMouseX() / (double)WIDTH, (double)e->GetMouseY() / (double)HEIGHT};
 				if (buttons.buttons["server_list"].isInside(adjustedPos)) {
@@ -85,15 +86,12 @@ bool Menu::draw(Game *e) {
 
 	    case CONNECT: {
 	    	MenuComponent buttons = menuComponents["serverconnect"];
-	    	e->DrawDecal({0, 0}, buttons.decal, 1.0f / pixelsPerPixel);
+	    	e->DrawDecal({0, 0}, buttons.decal, 1.0 / (olc::vd2d)pixelsPerPixel);
 	    	getInput(ipInput, e);
-	    	e->DrawStringDecal(buttons.buttons["box"].pos * olc::vd2d{(double)WIDTH, (double)HEIGHT}, ipInput, olc::Pixel(0, 0, 0), 3.0f / pixelsPerPixel);
+	    	e->DrawStringDecal(buttons.buttons["box"].pos * olc::vd2d{(double)WIDTH, (double)HEIGHT}, ipInput, olc::Pixel(0, 0, 0), 3.0 / (olc::vd2d)pixelsPerPixel);
 			if (e->GetKey(olc::Key::ESCAPE).bPressed) {
 				state = MULTI;
 			}
-			//if (e->GetMouse(0).bPressed) {
-		    	//olc::vd2d adjustedPos = {(double)e->GetMouseX() / (double)WIDTH, (double)e->GetMouseY() / (double)HEIGHT};
-			//}
 			break;
 	    }
 	    default: break;
