@@ -48,6 +48,7 @@ bool Game::OnUserCreate() {
     galaxyView = true;
     menuView = false;
 	*/
+    current_scene = new MainMenu();
     return true;
 }
 
@@ -92,9 +93,9 @@ void Game::connectToServer() {
 bool Game::OnUserUpdate(float fElapsedTime) {
 	Clear(olc::BLACK);
 
-	if (menuView) {
-	    return menu.draw(this);
-	}
+    current_scene->draw();
+    
+    //menu.draw(this);
 
     if (galaxyView) {
         map.draw(this, trx);
@@ -164,6 +165,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 		DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
 	}
 
+
     return true;
 }
 
@@ -182,4 +184,8 @@ void Game::zoom(int count) {
     trx.ty *= delta;
     trx.tx += GetMouseX();
     trx.ty += GetMouseY();
+}
+
+void Game::changeScene(Scene* scene){
+    this->current_scene = scene;
 }
