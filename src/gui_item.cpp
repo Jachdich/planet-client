@@ -2,8 +2,15 @@
 #include "game.h"
 #include "client.h"
 
-GUIItem::GUIItem(olc::vf2d position, olc::Decal* decal, AABB aabb, const std::string text, int left_text_margin, int top_text_margin) : position(position), decal(decal), aabb(aabb), text(text), game(app), left_text_margin(left_text_margin), top_text_margin(top_text_margin){
+GUIItem::GUIItem(olc::vf2d position, const std::string decal_path, const std::string text, float size, int left_text_margin, int top_text_margin) : position(position), text(text), game(app), size(size), left_text_margin(left_text_margin), top_text_margin(top_text_margin){
+    if(!decal_path.empty()){
+        sprite = std::make_unique<olc::Sprite>(decal_path);
+        GUIItem::decal = std::make_unique<olc::Decal>(sprite.get());
+        aabb = AABB(position.x, position.y, GUIItem::decal->sprite->width, GUIItem::decal->sprite->height);
+    }
+}
 
+GUIItem::~GUIItem(){
 }
 
 bool GUIItem::draw(){
@@ -14,15 +21,18 @@ bool GUIItem::draw(){
     }
 
     if(mouse_inside && game->GetMouse(0).bPressed){
+        area_clicked = true;
         onMouseClick();
+    }else{
+        area_clicked = false;
     }
     
     if(decal != NULL){
-        game->DrawDecal(aabb.pos * olc::vd2d(game->ScreenWidth(), game->ScreenHeight()), decal);
+        game->DrawDecal(aabb.pos * olc::vd2d(game->ScreenWidth(), game->ScreenHeight()), decal.get(), {size, size});
     }
 
     if(!text.empty()){
-        game->DrawStringDecal({(float)aabb.pos.x * game->ScreenWidth() + left_text_margin, (float)aabb.pos.y * game->ScreenHeight() + top_text_margin}, text, olc::BLACK);
+        game->DrawStringDecal({position.x + left_text_margin * size, position.y + top_text_margin * size}, text, olc::BLACK, {size, size});
     }
     return true;
 }
@@ -32,6 +42,7 @@ void GUIItem::onMouseEntered(){
 }
 
 void GUIItem::onMouseClick(){
+    std::cout << "clicked" << std::endl;
 }
 
 void GUIItem::onMouseLeft(){
@@ -39,5 +50,5 @@ void GUIItem::onMouseLeft(){
 }
 
 olc::Decal* GUIItem::getDecal(){
-    return decal;
+    return decal.get();
 }

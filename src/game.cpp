@@ -96,7 +96,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     current_scene->draw();
     
     //menu.draw(this);
-
+    
     if (galaxyView) {
         map.draw(this, trx);
     } else if (starView) {

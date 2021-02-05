@@ -9,7 +9,7 @@ private:
     bool& toggle_value;
 
 public:
-    ToggleButton(olc::vf2d position, olc::Decal* decal, AABB aabb, const std::string text, bool& toggle_value);
+    ToggleButton(olc::vf2d position, const std::string decal_path, const std::string text, bool& toggle_value, float size = 1.0);
 
     bool draw();
     void onMouseClick();

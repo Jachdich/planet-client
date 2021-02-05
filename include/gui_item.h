@@ -9,17 +9,21 @@ class Game;
 class GUIItem{
 
 protected:
+    std::unique_ptr<olc::Sprite> sprite;
+    std::unique_ptr<olc::Decal> decal;
     olc::vf2d position; 
-    olc::Decal* decal;
-    AABB aabb;
     const std::string text;
     bool mouse_inside;
     Game* game;
+    float size;
     int left_text_margin;
     int top_text_margin;
+    AABB aabb;
 
 public:
-    GUIItem(olc::vf2d position, olc::Decal* decal, AABB aabb, const std::string text, int left_text_margin = 5, int top_text_margin = 5);
+    bool area_clicked;
+    GUIItem(olc::vf2d position, const std::string decal_path, const std::string text, float size = 1.0, int left_text_margin = 5, int top_text_margin = 5);
+    virtual ~GUIItem();
 
     virtual bool draw();
     virtual void onMouseEntered();

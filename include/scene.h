@@ -12,7 +12,6 @@ private:
     std::unique_ptr<olc::Sprite> background_sprite;
     std::unique_ptr<olc::Decal> background;
 public:
-    Game* game;
     Scene(){}
     Scene(const std::string background_path);
     ~Scene();
