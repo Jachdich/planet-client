@@ -2,7 +2,7 @@
 #include "game.h"
 #include "client.h"
 
-GUIItem::GUIItem(olc::vf2d position, const std::string decal_path, const std::string text, float size, int left_text_margin, int top_text_margin) : position(position), text(text), game(app), size(size), left_text_margin(left_text_margin), top_text_margin(top_text_margin){
+GUIItem::GUIItem(const std::string name, olc::vf2d position, const std::string decal_path, std::string text, float size, int left_text_margin, int top_text_margin) : name(name), position(position), text(text), game(app), size(size), left_text_margin(left_text_margin), top_text_margin(top_text_margin){
     if(!decal_path.empty()){
         sprite = std::make_unique<olc::Sprite>(decal_path);
         GUIItem::decal = std::make_unique<olc::Decal>(sprite.get());
@@ -42,7 +42,6 @@ void GUIItem::onMouseEntered(){
 }
 
 void GUIItem::onMouseClick(){
-    std::cout << "clicked" << std::endl;
 }
 
 void GUIItem::onMouseLeft(){

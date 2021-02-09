@@ -20,11 +20,24 @@ bool Scene::draw(){
         app->DrawDecal({0, 0}, background.get());
     }
 
-    for(std::string s : items){
+    for(GUIItem* item : items){
         if(!item->draw()){
             return false;
         }
     }
 
+    checkForInput();
+
     return true;
+}
+
+void Scene::checkForInput(){
+    for(GUIItem* i : items){
+        if(i->area_clicked){
+            onGUIItemClicked(i->name);
+        }
+    }
+}
+
+void Scene::onGUIItemClicked(const std::string& name){
 }

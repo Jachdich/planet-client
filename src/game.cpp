@@ -48,7 +48,10 @@ bool Game::OnUserCreate() {
     galaxyView = true;
     menuView = false;
 	*/
-    current_scene = new MainMenu();
+    mainMenu = std::make_unique<MainMenu>();
+    multiPlayerMenu = std::make_unique<MultiplayerMenu>();
+    connectToIPMenu = std::make_unique<ConnectToIpMenu>();
+    current_scene = mainMenu.get();
     return true;
 }
 
@@ -93,7 +96,7 @@ void Game::connectToServer() {
 bool Game::OnUserUpdate(float fElapsedTime) {
 	Clear(olc::BLACK);
 
-    current_scene->draw();
+    if(current_scene != NULL)current_scene->draw();
     
     //menu.draw(this);
     
@@ -132,10 +135,6 @@ bool Game::OnUserUpdate(float fElapsedTime) {
         lastMouseY = GetMouseY();
     }
 
-    if (GetKey(olc::Key::L).bPressed) {
-        std::cout << "L pressed\n";
-    }
-
 	if (GetKey(olc::Key::T).bPressed) {
 		loadSprites();
 	}
@@ -164,6 +163,8 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 		DrawStringDecal({0, 0}, std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
 		DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
 	}
+
+    if(exit) return false;
 
 
     return true;

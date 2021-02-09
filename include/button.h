@@ -9,6 +9,7 @@ private:
     std::unique_ptr<olc::Sprite> left_part_sprite;
     std::unique_ptr<olc::Sprite> middle_part_sprite;
     std::unique_ptr<olc::Sprite> right_part_sprite;
+    std::unique_ptr<olc::Sprite> decal_sprite;
 
 protected:
     bool resize_button_to_text;
@@ -16,10 +17,11 @@ protected:
     std::unique_ptr<olc::Decal> left_part;
     std::unique_ptr<olc::Decal> middle_part;
     std::unique_ptr<olc::Decal> right_part;
+    std::unique_ptr<olc::Decal> decal;
 public:
-    Button(olc::vf2d position, const std::string decal_path, const std::string text, bool resize_button_to_text = false, float size = 1.0, int alternative_size = 5, int left_text_margin = 10, int top_text_margin = 5, const std::string left_part_path = "textures/buttons/default/left.png", const std::string middle_part_path = "textures/buttons/default/middle.png", const std::string right_part_path = "textures/buttons/default/right.png");
+    Button(const std::string name, olc::vf2d position, const std::string decal_path, const std::string text, bool resize_button_to_text = false, float size = 1.0, int alternative_size = 5, int left_text_margin = 10, int top_text_margin = 5, const std::string left_part_path = "textures/buttons/default/left.png", const std::string middle_part_path = "textures/buttons/default/middle.png", const std::string right_part_path = "textures/buttons/default/right.png");
 
-    bool draw();
+    bool draw() override;
 
 };
 
