@@ -27,14 +27,13 @@ bool Scene::draw(){
     }
 
     checkForInput();
-
     return true;
 }
 
 void Scene::checkForInput(){
     for(GUIItem* i : items){
-        if(i->area_clicked){
-            onGUIItemClicked(i->name);
+        if(i->getAreaClicked()){
+            onGUIItemClicked(i->getName());
         }
     }
 }

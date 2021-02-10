@@ -5,6 +5,8 @@
 #include "client.h"
 #include "text_input_field.h"
 
+using namespace GUI;
+
 MainMenu::MainMenu() : Scene("textures/backgrounds/background_main.png"){
     Button* item =  new Button("singleplayer", {0, 400}, "", "Singleplayer", false, 1.5, 16);
     Button* item2 = new Button("multiplayer", {0,430}, "", "Multiplayer", false, 1.5, 16);

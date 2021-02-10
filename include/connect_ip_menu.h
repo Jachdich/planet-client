@@ -4,15 +4,18 @@
 #include "scene.h"
 #include "text_input_field.h"
 
+using namespace GUI;
+
 class ConnectToIpMenu : public Scene{
 
 private:
-    TextInputField* ip = new TextInputField("ip", {0, 400}, "", true, 10, 2);
+    TextInputField* ip;
 
 public:
     ConnectToIpMenu();
     bool draw() override;
     void onGUIItemClicked(const std::string& name) override;
+    void onEnterPressed(const std::string& name, const std::string& text);
 };
 
 #endif

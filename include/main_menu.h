@@ -4,6 +4,8 @@
 #include "scene.h"
 #include "sprites.h"
 
+using namespace GUI;
+
 class MainMenu : public Scene{
 
 public:

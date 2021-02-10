@@ -7,6 +7,8 @@
 
 class Game;
 
+namespace GUI{
+
 class Scene{
 private:
     std::unique_ptr<olc::Sprite> background_sprite;
@@ -26,5 +28,7 @@ public:
     }
 
 };
+
+}
 
 #endif

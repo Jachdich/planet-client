@@ -3,6 +3,7 @@
 
 #include "button.h"
 
+namespace GUI{
 class TextInputField : public Button{
 
 private:
@@ -18,8 +19,9 @@ public:
     void onMouseClick() override;
     bool draw() override;
 
+    virtual void onEnterPressed();
     std::string getText();
     bool getEnterPressed();
 };
-
+}
 #endif

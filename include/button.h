@@ -3,6 +3,7 @@
 
 #include "gui_item.h"
 
+namespace GUI{
 class Button : public GUIItem{
 
 private:
@@ -24,5 +25,5 @@ public:
     bool draw() override;
 
 };
-
+}
 #endif
