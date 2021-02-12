@@ -63,7 +63,7 @@ TileSprite::TileSprite(std::string fName) {
 
 	//TODO this is a very bad idea!
     drawGround = (TileType)root["drawGround"].asInt();
-    
+
     for (Json::Value t : root["textures"]) {
         olc::Sprite * spr = new olc::Sprite(texturedir + "/" + t["imageFile"].asString());
         olc::Decal * dec = new olc::Decal(spr);

@@ -17,5 +17,7 @@ void MultiplayerMenu::onGUIItemClicked(const std::string& name){
         app->changeScene(app->mainMenu.get());
     else if(name == "connect_to_ip")
         app->changeScene(app->connectToIPMenu.get());
+    else if(name == "server_list")
+        app->changeScene(app->serverListMenu.get());
 
 }

@@ -16,6 +16,7 @@
 #include "main_menu.h"
 #include "multiplayer_menu.h"
 #include "connect_ip_menu.h"
+#include "server_list_menu.h"
 
 class Game : public olc::PixelGameEngine {
 
@@ -23,7 +24,7 @@ public: //scene
     std::unique_ptr<MultiplayerMenu> multiPlayerMenu;
     std::unique_ptr<MainMenu> mainMenu;
     std::unique_ptr<ConnectToIpMenu> connectToIPMenu;
-
+    std::unique_ptr<ServerListMenu> serverListMenu;
 public:
     bool exit = false;
     Scene* current_scene;

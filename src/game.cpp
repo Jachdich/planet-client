@@ -51,6 +51,7 @@ bool Game::OnUserCreate() {
     mainMenu = std::make_unique<MainMenu>();
     multiPlayerMenu = std::make_unique<MultiplayerMenu>();
     connectToIPMenu = std::make_unique<ConnectToIpMenu>();
+    serverListMenu = std::make_unique<ServerListMenu>();
     current_scene = mainMenu.get();
     return true;
 }
