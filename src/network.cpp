@@ -134,18 +134,22 @@ ClientNetwork::ClientNetwork() : ssl_ctx(asio::ssl::context::tls), socket(ctx, s
     
 }
 
-void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * cache) {
+bool ClientNetwork::connect(std::string address, uint16_t port, SectorCache * cache) {
     this->cache = cache;
     asio::error_code ec;
-
     asio::ip::tcp::resolver resolver(ctx);
     auto endpoint = resolver.resolve(address, std::to_string(port));
-    asio::connect(socket.next_layer(), endpoint);
+    asio::connect(socket.next_layer(), endpoint, ec);
+    if(!ec){}
+    else{
+        std::cout << "Couldnt connect to the server: " << ec.message() << std::endl;
+        return false;
+    }
     socket.handshake(asio::ssl::stream_base::client);
-
     readUntil();
     std::thread asioThread = std::thread([&]() {ctx.run();});
     asioThread.detach();
+    return true;
 }
 
 void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {

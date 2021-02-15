@@ -51,6 +51,8 @@ bool Game::OnUserCreate() {
     mainMenu = std::make_unique<MainMenu>();
     multiPlayerMenu = std::make_unique<MultiplayerMenu>();
     connectToIPMenu = std::make_unique<ConnectToIpMenu>();
+    galaxy = std::make_unique<Galaxy>();
+    starViewScene = std::make_unique<StarView>();
     current_scene = mainMenu.get();
     return true;
 }
@@ -60,7 +62,7 @@ std::vector<int> Game::getCurrentPlanetsurfaceLocator() {
 }
 
 void Game::mousePressed() {
-    if (galaxyView) {
+    /*if (galaxyView) {
         Sector * s = map.getSectorAt(floor((GetMouseX() - trx.tx) / trx.zoom / 256),
                                      floor((GetMouseY() - trx.ty) / trx.zoom / 256));
         lastClickedSector = s;
@@ -86,25 +88,22 @@ void Game::mousePressed() {
         	}
             trx = {0, 0, 1};
         }
-    }
+    }*/
 }
 
-void Game::connectToServer() {
-    client.connect(address, 5555, &map);
+bool Game::connectToServer() {
+    if(client.connect(address, 5555, &map)) return true;
+    else return false;
 }
 
 bool Game::OnUserUpdate(float fElapsedTime) {
-	Clear(olc::BLACK);
+	Clear(olc::BLACK); 
+
+    current_scene->fElapsedTime = fElapsedTime;
 
     if(current_scene != NULL)current_scene->draw();
     
-    //menu.draw(this);
-    
-    if (galaxyView) {
-        map.draw(this, trx);
-    } else if (starView) {
-        selectedStar->drawWithPlanets(this, fElapsedTime, trx);
-    } else if (planetView) {
+    if (planetView) {
     	if (selectedPlanet->surface->generated) {
     	    selectedPlanet->surface->data->updateTimers(fElapsedTime);
 			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, trx);

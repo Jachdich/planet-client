@@ -23,7 +23,7 @@ public:
     void sendRequest(Json::Value request);
 
     ClientNetwork();
-    void connect(std::string address, uint16_t port, SectorCache * cache);
+    bool connect(std::string address, uint16_t port, SectorCache * cache);
     
 };
 

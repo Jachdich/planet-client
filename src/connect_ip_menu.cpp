@@ -20,6 +20,8 @@ bool ConnectToIpMenu::draw(){
     if(ip->getEnterPressed()){
         app->address = ip->getText();
         app->connectToServer();
+        app->changeScene(app->galaxy.get());
+        //app->galaxyView = true;
     }
     return true;
 }

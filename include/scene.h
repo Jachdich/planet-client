@@ -14,6 +14,7 @@ private:
     std::unique_ptr<olc::Sprite> background_sprite;
     std::unique_ptr<olc::Decal> background;
 public:
+    float fElapsedTime;
     Scene(const std::string background_path = "textures/backgrounds/background_default.png");
     ~Scene();
 

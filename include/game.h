@@ -16,6 +16,8 @@
 #include "main_menu.h"
 #include "multiplayer_menu.h"
 #include "connect_ip_menu.h"
+#include "galaxyview.h"
+#include "starview.h"
 
 class Game : public olc::PixelGameEngine {
 
@@ -23,7 +25,8 @@ public: //scene
     std::unique_ptr<MultiplayerMenu> multiPlayerMenu;
     std::unique_ptr<MainMenu> mainMenu;
     std::unique_ptr<ConnectToIpMenu> connectToIPMenu;
-
+    std::unique_ptr<Galaxy> galaxy;
+    std::unique_ptr<StarView> starViewScene;
 public:
     bool exit = false;
     Scene* current_scene;
@@ -47,7 +50,7 @@ public:
 	Game();
     Game(int argc, char ** argv);
 
-    void connectToServer();
+    bool connectToServer();
 
     olc::vd2d getLastMousePos(){
         return olc::vd2d((double)lastMouseX, (double)lastMouseY);
