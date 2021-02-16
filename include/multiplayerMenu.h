@@ -10,8 +10,6 @@ class MultiplayerMenu : public Scene{
 public:
     MultiplayerMenu();
         
-    void onGUIItemClicked(const std::string& name) override;
-
 };
 
 #endif

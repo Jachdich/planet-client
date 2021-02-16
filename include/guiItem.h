@@ -23,6 +23,7 @@ protected:
     bool mouse_inside;
     bool area_clicked;
     AABB aabb;
+    std::function<void()> onClick;
 
 public:
     GUIItem(const std::string name, olc::vf2d position, const std::string& decal_path, const std::string& text, float size = 1.0, int left_text_margin = 5, int top_text_margin = 5);
@@ -32,6 +33,8 @@ public:
     virtual void onMouseEntered();
     virtual void onMouseLeft();
     virtual void onMouseClick();
+
+    void setOnClick(std::function<void()> onClick);
 
     const std::string& getName()const;
 

@@ -37,11 +37,16 @@ bool GUIItem::draw(){
     return true;
 }
 
+void GUIItem::setOnClick(std::function<void()> onClick){
+    this->onClick = onClick;
+}
+
 void GUIItem::onMouseEntered(){
     this->mouse_inside = true;
 }
 
 void GUIItem::onMouseClick(){
+    if(onClick != NULL)onClick();
 }
 
 void GUIItem::onMouseLeft(){

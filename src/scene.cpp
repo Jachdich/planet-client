@@ -27,17 +27,5 @@ bool Scene::draw(){
         }
     }
 
-    checkForInput();
     return true;
-}
-
-void Scene::checkForInput(){
-    for(GUIItem* i : items){
-        if(i->getAreaClicked()){
-            onGUIItemClicked(i->getName());
-        }
-    }
-}
-
-void Scene::onGUIItemClicked(const std::string& name){
 }

@@ -58,7 +58,7 @@ bool TextInputField::draw(){
         }
         //if((int)text.length() == alternative_size && resize_button_to_text) alternative_size = (int)text.length() + 1;
                 
-        if(app->GetKey(olc::ENTER).bPressed)enter_pressed = true;
+        if(app->GetKey(olc::ENTER).bPressed && onEnter != NULL)onEnter();
         else enter_pressed = false;
     }
 
@@ -69,13 +69,13 @@ bool TextInputField::draw(){
     return true;
 }
 
+void TextInputField::setOnEnter(std::function<void()> onEnter){
+    this->onEnter = onEnter;
+}
+
 void TextInputField::onMouseClick(){
     Button::onMouseClick();
     focus = true;
-}
-
-void TextInputField::onEnterPressed(){
-
 }
 
 std::string TextInputField::getText(){

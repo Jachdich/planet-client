@@ -21,8 +21,6 @@ public:
     std::vector<GUIItem*> items;
 
     virtual bool draw();
-    virtual void checkForInput();
-    virtual void onGUIItemClicked(const std::string& name);
 
 };
 

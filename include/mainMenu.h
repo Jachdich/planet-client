@@ -13,8 +13,6 @@ public:
     MainMenu();
 
     bool draw() override;
-    void onGUIItemClicked(const std::string& name) override;
-    void checkForInput() override;
 
 };
 
