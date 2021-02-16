@@ -1,9 +1,9 @@
-#include "main_menu.h"
-#include "multiplayer_menu.h"
+#include "mainMenu.h"
+#include "multiplayerMenu.h"
 #include "game.h"
 #include "button.h"
 #include "client.h"
-#include "text_input_field.h"
+#include "textInputField.h"
 
 using namespace GUI;
 

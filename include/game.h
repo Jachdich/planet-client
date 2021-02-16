@@ -10,14 +10,14 @@
 #include "sectorcache.h"
 #include "sprites.h"
 #include "star.h"
-#include "menu.h"
-#include "gui_item.h"
+#include "guiItem.h"
 #include "scene.h"
-#include "main_menu.h"
-#include "multiplayer_menu.h"
-#include "connect_ip_menu.h"
+#include "mainMenu.h"
+#include "multiplayerMenu.h"
+#include "connectIpMenu.h"
 #include "galaxyview.h"
 #include "starview.h"
+#include "planetview.h"
 
 class Game : public olc::PixelGameEngine {
 
@@ -27,9 +27,10 @@ public: //scene
     std::unique_ptr<ConnectToIpMenu> connectToIPMenu;
     std::unique_ptr<Galaxy> galaxy;
     std::unique_ptr<StarView> starViewScene;
+    std::unique_ptr<PlanetView> planetViewScene;
 public:
     bool exit = false;
-    Scene* current_scene;
+    Scene* currentScene;
     int lastMouseX;
     int lastMouseY;
     bool test;
@@ -38,11 +39,7 @@ public:
     Star * selectedStar = nullptr;
     Planet * selectedPlanet = nullptr;
     Sector * lastClickedSector = nullptr;
-    bool galaxyView = false;
-    bool planetView = false;
-    bool starView = false;
     bool menuView = true;
-    Menu menu;
     SectorCache map;
     ClientNetwork client;
     std::string address;
@@ -61,8 +58,8 @@ public:
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float fElapsedTime) override;
     void zoom(int count);
-    void mousePressed();
     void changeScene(Scene* scene);
+    void updateCamParams();
 
 	std::vector<int> getCurrentPlanetsurfaceLocator();
 };

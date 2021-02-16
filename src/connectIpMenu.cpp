@@ -1,7 +1,7 @@
-#include "connect_ip_menu.h"
-#include "text_input_field.h"
+#include "connectIpMenu.h"
+#include "textInputField.h"
 #include "client.h"
-#include "main_menu.h"
+#include "mainMenu.h"
 
 using namespace GUI;
 
@@ -19,7 +19,7 @@ bool ConnectToIpMenu::draw(){
     Scene::draw();
     if(ip->getEnterPressed()){
         app->address = ip->getText();
-        app->connectToServer();
+        if(!app->connectToServer())return true;
         app->changeScene(app->galaxy.get());
         //app->galaxyView = true;
     }

@@ -1,7 +1,7 @@
 #ifndef __SCENE_H
 #define __SCENE_H
 
-#include "gui_item.h"
+#include "guiItem.h"
 
 #include "sprites.h"
 
@@ -23,10 +23,6 @@ public:
     virtual bool draw();
     virtual void checkForInput();
     virtual void onGUIItemClicked(const std::string& name);
-
-    void setBackground(olc::Decal* dec){
-        //this->background.reset(dec);
-    }
 
 };
 

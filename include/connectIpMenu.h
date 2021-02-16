@@ -2,7 +2,7 @@
 #define __CONNECT_IP_MENU_H
 
 #include "scene.h"
-#include "text_input_field.h"
+#include "textInputField.h"
 
 using namespace GUI;
 

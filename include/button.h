@@ -1,7 +1,7 @@
 #ifndef __BUTTON_H
 #define __BUTTON_H
 
-#include "gui_item.h"
+#include "guiItem.h"
 
 namespace GUI{
 class Button : public GUIItem{
