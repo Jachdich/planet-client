@@ -54,7 +54,6 @@ public:
     }
     
     void drawTile(int x, int y, int thing, olc::PixelGameEngine * e);
-    void destruct();
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float fElapsedTime) override;
     void zoom(int count);

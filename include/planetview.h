@@ -3,7 +3,7 @@
 
 #include "scene.h"
 
-class PlanetView : public GUI::Scene{
+class PlanetView : public Scene{
 
 public:
     PlanetView();

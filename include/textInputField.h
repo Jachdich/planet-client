@@ -3,7 +3,6 @@
 
 #include "button.h"
 
-namespace GUI{
 class TextInputField : public Button{
 
 private:
@@ -24,5 +23,5 @@ public:
     std::string getText();
     bool getEnterPressed();
 };
-}
+
 #endif

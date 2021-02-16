@@ -3,7 +3,6 @@
 
 #include "guiItem.h"
 
-namespace GUI{
 class Button : public GUIItem{
 
 private:
@@ -22,8 +21,10 @@ protected:
 public:
     Button(const std::string name, olc::vf2d position, const std::string decal_path, const std::string text, bool resize_button_to_text = false, float size = 1.0, int alternative_size = 5, int left_text_margin = 10, int top_text_margin = 5, const std::string left_part_path = "textures/buttons/default/left.png", const std::string middle_part_path = "textures/buttons/default/middle.png", const std::string right_part_path = "textures/buttons/default/right.png");
 
+    void setLeftPart(const std::string& left_part_path);
+    void setMiddlePart(const std::string& middle_part_path);
+    void setRightPart(const std::string & right_part_path);
     bool draw() override;
 
 };
-}
 #endif

@@ -3,8 +3,6 @@
 
 #include "scene.h"
 
-using namespace GUI;
-
 class MultiplayerMenu : public Scene{
 
 public:

@@ -1,8 +1,6 @@
 #include "textInputField.h"
 #include "client.h"
 
-using namespace GUI;
-
 TextInputField::TextInputField(const std::string name, olc::vf2d position, const std::string decal_path, bool resize, int default_size, float size, int alternative_size, int left_text_margin, int top_text_margin, const std::string left_part_path, const std::string middle_part_path, const std::string right_part_path)
 : Button(name, position, decal_path, "", false, size, default_size, left_text_margin, top_text_margin), resize(resize), default_size(default_size){
 }

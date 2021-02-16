@@ -3,7 +3,7 @@
 
 #include "scene.h"
 
-class Galaxy : public GUI::Scene{
+class Galaxy : public Scene{
 
 public:
     Galaxy();

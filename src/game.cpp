@@ -37,10 +37,6 @@ Game::Game(int argc, char ** argv) : map() {
     }
 }
 
-void Game::destruct() {
-
-}
-
 bool Game::OnUserCreate() {
     loadSprites();
     /*
@@ -73,7 +69,6 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     updateCamParams();
 
     if(currentScene != NULL){currentScene->fElapsedTime = fElapsedTime; currentScene->draw();}
-
     if(exit) return false;
 
     return true;

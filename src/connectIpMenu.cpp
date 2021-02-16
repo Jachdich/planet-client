@@ -3,8 +3,6 @@
 #include "client.h"
 #include "mainMenu.h"
 
-using namespace GUI;
-
 ConnectToIpMenu::ConnectToIpMenu() : Scene(){
 
     ip = new TextInputField("ip", {0, 380}, "textures/buttons/multiplayer/connecttoip.png", false, 16, 1.5, 5, 18, 38);

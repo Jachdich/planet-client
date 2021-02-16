@@ -142,6 +142,5 @@ int main(int argc, char ** argv) {
 	app = new Game(argc, argv);
 	if (app->Construct(WIDTH, HEIGHT, scale, scale, fullScreen))
 		app->Start();
-    app->destruct();
 	return 0;
 }

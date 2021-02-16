@@ -4,8 +4,6 @@
 #include "scene.h"
 #include "textInputField.h"
 
-using namespace GUI;
-
 class ConnectToIpMenu : public Scene{
 
 private:

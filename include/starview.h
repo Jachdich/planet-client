@@ -3,7 +3,7 @@
 
 #include "scene.h"
 
-class StarView : public GUI::Scene{
+class StarView : public Scene{
 
 public:
     StarView();

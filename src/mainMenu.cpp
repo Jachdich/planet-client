@@ -5,8 +5,6 @@
 #include "client.h"
 #include "textInputField.h"
 
-using namespace GUI;
-
 MainMenu::MainMenu() : Scene("textures/backgrounds/background_main.png"){
     Button* item =  new Button("singleplayer", {0, 400}, "", "Singleplayer", false, 1.5, 16);
     item->setOnClick([](){std::cout << "hello" << std::endl;});
@@ -14,7 +12,7 @@ MainMenu::MainMenu() : Scene("textures/backgrounds/background_main.png"){
     item2->setOnClick([](){app->changeScene(app->multiPlayerMenu.get());});
     Button* item3 = new Button("options", {0,460}, "", "Options", false, 1.5, 16);
     Button* item4 = new Button("exit_game", {0,490}, "", "Exit game", false, 1.5, 16);
-    item3->setOnClick([](){app->exit = true;});
+    item4->setOnClick([](){app->exit = true;});
     //TextInputField* field = new TextInputField("input_field", {0, 0}, "", true, 5, 1.0f, 10);
     items.push_back(item);
     items.push_back(item2);

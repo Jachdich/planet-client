@@ -48,3 +48,18 @@ bool Button::draw(){
     return true;
 
 }
+
+void Button::setLeftPart(const std::string& left_part_path){
+    this->left_part_sprite = std::make_unique<olc::Sprite>(left_part_path);
+    this->left_part = std::make_unique<olc::Decal>(left_part_sprite.get());
+}
+
+void Button::setMiddlePart(const std::string& middle_part_path){
+    this->middle_part_sprite = std::make_unique<olc::Sprite>(middle_part_path);
+    this->middle_part = std::make_unique<olc::Decal>(middle_part_sprite.get());
+}
+
+void Button::setRightPart(const std::string& right_part_path){
+    this->right_part_sprite = std::make_unique<olc::Sprite>(right_part_path);
+    this->right_part = std::make_unique<olc::Decal>(right_part_sprite.get());
+}

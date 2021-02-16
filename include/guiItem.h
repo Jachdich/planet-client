@@ -6,7 +6,6 @@
 
 class Game;
 
-namespace GUI{
 class GUIItem{
 
 protected:
@@ -62,5 +61,4 @@ public:
     bool getAreaClicked()const;
 
 };
-}
 #endif
