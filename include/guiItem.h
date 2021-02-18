@@ -11,7 +11,6 @@ class GUIItem{
 protected:
     std::unique_ptr<olc::Sprite> sprite;
     std::unique_ptr<olc::Decal> decal;
-    const std::string name;
     olc::vf2d position; 
     std::string text;
     Game* game;
@@ -25,7 +24,8 @@ protected:
     std::function<void()> onClick;
 
 public:
-    GUIItem(const std::string name, olc::vf2d position, const std::string& decal_path, const std::string& text, float size = 1.0, int left_text_margin = 5, int top_text_margin = 5);
+    bool hidden = false;
+    GUIItem(olc::vf2d position, const std::string& decal_path, const std::string& text, float size = 1.0, int left_text_margin = 5, int top_text_margin = 5);
     virtual ~GUIItem();
 
     virtual bool draw();
@@ -33,9 +33,10 @@ public:
     virtual void onMouseLeft();
     virtual void onMouseClick();
 
-    void setOnClick(std::function<void()> onClick);
+    void hide();
+    void show();
 
-    const std::string& getName()const;
+    virtual void setOnClick(std::function<void()> onClick);
 
     const olc::vf2d& getPosition()const;
     void setPosition(const olc::vf2d& position);

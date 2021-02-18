@@ -1,8 +1,8 @@
 #include "guiItem.h"
 #include "game.h"
 #include "client.h"
-GUIItem::GUIItem(const std::string name, olc::vf2d position, const std::string& decal_path, const std::string& text, float size, int left_text_margin, int top_text_margin) 
-: name(name), position(position), text(text), game(app), size(size), text_size(size), left_text_margin(left_text_margin), top_text_margin(top_text_margin){
+GUIItem::GUIItem(olc::vf2d position, const std::string& decal_path, const std::string& text, float size, int left_text_margin, int top_text_margin) 
+:position(position), text(text), game(app), size(size), text_size(size), left_text_margin(left_text_margin), top_text_margin(top_text_margin){
     if(!decal_path.empty()){
         sprite = std::make_unique<olc::Sprite>(decal_path);
         GUIItem::decal = std::make_unique<olc::Decal>(sprite.get());
@@ -14,6 +14,7 @@ GUIItem::~GUIItem(){
 }
 
 bool GUIItem::draw(){
+    if(!hidden){
     if(!mouse_inside && aabb.isInside(olc::vd2d(game->GetMouseX(), game->GetMouseY()))){
         onMouseEntered();
     }else if(mouse_inside && !aabb.isInside(olc::vd2d(game->GetMouseX(), game->GetMouseY()))){
@@ -34,6 +35,7 @@ bool GUIItem::draw(){
     if(!text.empty()){
         game->DrawStringDecal({position.x + left_text_margin * size, position.y + top_text_margin * size}, text, olc::BLACK, {text_size, text_size});
     }
+    }
     return true;
 }
 
@@ -46,15 +48,11 @@ void GUIItem::onMouseEntered(){
 }
 
 void GUIItem::onMouseClick(){
-    if(onClick != NULL)onClick();
+    if(onClick != NULL){onClick();}
 }
 
 void GUIItem::onMouseLeft(){
     this->mouse_inside = false;
-}
-
-const std::string& GUIItem::getName()const{
-    return name;
 }
 
 const olc::vf2d& GUIItem::getPosition()const{
