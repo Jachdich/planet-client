@@ -12,6 +12,7 @@
 #include "planethud.h"
 #include "planetdata.h"
 #include "tile.h"
+#include "dropdownButton.h"
 
 olc::Pixel PlanetSurface::getTint(int x, int y) {
     int xb = x - parent->radius;
@@ -92,6 +93,9 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 			return;
 		}
 	}
+	curr_ddb = new DropdownButton({0, 0}, "", "Demolition", true);
+	curr_ddb->hidden = true;
+	app->currentScene->items.push_back(curr_ddb);
 	float mx = (max - trx.tx) / trx.zoom;
 	float my = (may - trx.ty) / trx.zoom;
 
@@ -145,17 +149,29 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 				lastSelectX = j;
 				lastSelectY = i;
 				if (mouseClicked) {
-					this->hud->showClickMenu(&tiles[i * rad * 2 + j]);
+					curr_ddb->hidden = false;
+					Tile* tile = &tiles[i * rad * 2 + j];
+					curr_ddb->setPosition(tile->getTextureCoordinates());
+						//curr_ddb->removeAllDropdownItems();
+					//this->hud->showClickMenu(&tiles[i * rad * 2 + j]);
+					for (TaskType type : this->data->getPossibleTasks(tile)) {
+						Button* b = new Button({0, 0}, "", getTaskTypeName(type), true);
+						curr_ddb->addDropdownItem(b);
+						b->setOnClick([this, type, tile]() { data->dispatchTask(type, tile); std::cout << "hello" << std::endl;});
+					}
+					tile->selected = true;
 				}
 				return;
 			}
 		}
 	}
-
-	//if not tile and not hud
-	if (mouseClicked) {
-		this->hud->closeClickMenu();
-	}
+	/*if (btn != nullptr) {
+		if((mouseClicked && !btn->dropDownItemsClicked) && (mouseClicked && !btn->getAreaClicked())){
+			app->currentScene->items.pop_back();
+		}
+		//this->hud->closeClickMenu();
+		//delete app->currentScene->items[(int)app->currentScene->items.size()];
+	}*/
 }
 /*
 new code once Ive figured it out

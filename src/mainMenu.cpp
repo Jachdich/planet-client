@@ -8,7 +8,7 @@
 
 MainMenu::MainMenu() : Scene("textures/backgrounds/background_main.png"){
     Button* item =  new Button({0, 400}, "", "Singleplayer", false, 1.5, 16);
-    item->setOnClick([](){std::cout << "hello" << std::endl;});
+    item->setOnClick([](){});
     Button* item2 = new Button({0,430}, "", "Multiplayer", false, 1.5, 16);
     item2->setOnClick([](){app->changeScene(app->multiPlayerMenu.get());});
     Button* item3 = new Button({0,460}, "", "Options", false, 1.5, 16);

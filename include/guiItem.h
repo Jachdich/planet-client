@@ -21,7 +21,7 @@ protected:
     bool mouse_inside;
     bool area_clicked;
     AABB aabb;
-    std::function<void()> onClick;
+    std::function<void()> onClick = [](){};
 
 public:
     bool hidden = false;

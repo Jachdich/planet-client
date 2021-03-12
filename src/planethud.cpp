@@ -9,6 +9,7 @@
 #include "sprites.h"
 #include "star.h"
 #include "sector.h"
+#include "dropdownButton.h"
 
 #include <iostream>
 //#include <functional>
@@ -139,10 +140,15 @@ void PlanetHUD::showClickMenu(Tile * t) {
 	}
 
 	//this->ddmenu = new DropdownMenu(olc::vf2d(128, 0), "Building");
-	this->ddmenu = new DropdownMenu(t->getTextureCoordinates() - olc::vf2d(32, 32), "Demolition");
+	DropdownButton* button = new DropdownButton(t->getTextureCoordinates() - olc::vf2d(32, 32), "", "Demolition", true);
+	app->currentScene->items.push_back(button);
+	//this->ddmenu = new DropdownMenu(t->getTextureCoordinates() - olc::vf2d(32, 32), "Demolition");
 	for (TaskType type : this->data->getPossibleTasks(t)) {
-		this->ddmenu->registerItem(DropdownMenuItem(getTaskTypeName(type),
-		[this, type]() { data->dispatchTask(type, this->selectedTile); }));
+		Button* b = new Button({0, 0}, "", getTaskTypeName(type), true);
+		b->setOnClick([this, type]() { data->dispatchTask(type, this->selectedTile); });
+		button->addDropdownItem(b);
+		//this->ddmenu->registerItem(DropdownMenuItem(getTaskTypeName(type),
+		//[this, type]() { data->dispatchTask(type, this->selectedTile); }));
 	}
 	//this->ddmenu->registerItem(DropdownMenuItem("Tree", [this]() { sendChangeTileRequest(TileType::TREE); }));
 	//this->ddmenu->registerItem(DropdownMenuItem("Grass", [this]() { sendChangeTileRequest(TileType::GRASS); }));
@@ -156,9 +162,11 @@ void PlanetHUD::closeClickMenu() {
 		//DON'T delete the tile, since it's a pointer to something that still exists and is needed
 		this->selectedTile->selected = false;
 		this->selectedTile = nullptr;
-
+		
 		//delete the ddmenu since it has no references
-		delete this->ddmenu;
-		this->ddmenu = nullptr;
+		delete app->currentScene->items[(int)app->currentScene->items.size()];
+		app->currentScene->items.pop_back();
+		//delete this->ddmenu;
+		//this->ddmenu = nullptr;
 	}
 }

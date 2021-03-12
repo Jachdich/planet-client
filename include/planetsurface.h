@@ -6,6 +6,7 @@
 #include "helperfunctions.h"
 #include "olcPixelGameEngine.h"
 #include "planethud.h"
+#include "dropdownButton.h"
 //#include "planet.h"
 
 class Planet;
@@ -22,6 +23,7 @@ public:
 	Planet * parent;
 	PlanetHUD * hud;
 	PlanetData * data;
+    DropdownButton* curr_ddb;
 
     PlanetSurface();
     PlanetSurface(Json::Value root, Planet * p);
