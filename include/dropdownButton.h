@@ -17,6 +17,7 @@ private:
     void setOnClick(std::function<void()> onClick)override;
 
 public:
+    bool mouseNeeded = false;
     DropdownButton(olc::vf2d position, const std::string& decal_path, const std::string& text, bool resize_button_to_text = false, float size = 1.0, int alternative_size = 5, int left_text_margin = 10, int top_text_margin = 5, const std::string& left_part_path = "textures/buttons/default/standard/left.png", const std::string& middle_part_path = "textures/buttons/default/standard/middle.png", const std::string& right_part_path_closed = "textures/buttons/default/dropdown/right_closed.png", const std::string& right_part_path_opened = "textures/buttons/default/dropdown/right_open.png");
 
     void addDropdownItem(Button* item);

@@ -86,16 +86,13 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 	this->hud = new PlanetHUD(this, this->data);
 }
 
-void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams trx) {
+void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams trx, DropdownButton* curr_ddb) {
 	if (mouseClicked) {
 		if (hud->mousePressed(max, may, trx)) {
 		    //HUD was clicked on, do not click on anything below HUD
 			return;
 		}
 	}
-	curr_ddb = new DropdownButton({0, 0}, "", "Demolition", true);
-	curr_ddb->hidden = true;
-	app->currentScene->items.push_back(curr_ddb);
 	float mx = (max - trx.tx) / trx.zoom;
 	float my = (may - trx.ty) / trx.zoom;
 
@@ -128,7 +125,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 		for (int ja = 2; ja >= -2; ja--) {
 			int i = ia + wx;
 			int j = ja + ia + wy;*/
-
+	if(!curr_ddb->getAreaClicked()){
 	for (int i = rad * 2 - 1; i >= 0; i--) {
 		for (int j = rad * 2 - 1; j >= 0; j--) {
 			if (((i - rad) * (i - rad) + (j - rad) * (j - rad)) >= (this->rad * this->rad)) {
@@ -150,27 +147,32 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 				lastSelectY = i;
 				if (mouseClicked) {
 					curr_ddb->hidden = false;
-					Tile* tile = &tiles[i * rad * 2 + j];
-					curr_ddb->setPosition(tile->getTextureCoordinates());
-						//curr_ddb->removeAllDropdownItems();
+					if(selected_tile != nullptr){
+						selected_tile->selected = false;
+					}
+					selected_tile = &tiles[i * rad * 2 + j];
+					curr_ddb->setPosition(selected_tile->getTextureCoordinates());
+					curr_ddb->removeAllDropdownItems();
 					//this->hud->showClickMenu(&tiles[i * rad * 2 + j]);
-					for (TaskType type : this->data->getPossibleTasks(tile)) {
+					for (TaskType type : this->data->getPossibleTasks(selected_tile)) {
 						Button* b = new Button({0, 0}, "", getTaskTypeName(type), true);
 						curr_ddb->addDropdownItem(b);
-						b->setOnClick([this, type, tile]() { data->dispatchTask(type, tile); std::cout << "hello" << std::endl;});
+						b->setOnClick([this, type]() { data->dispatchTask(type, selected_tile); std::cout << "hello" << std::endl;});
 					}
-					tile->selected = true;
+					selected_tile->selected = true;
 				}
 				return;
 			}
 		}
 	}
-	/*if (btn != nullptr) {
-		if((mouseClicked && !btn->dropDownItemsClicked) && (mouseClicked && !btn->getAreaClicked())){
-			app->currentScene->items.pop_back();
+	}
+
+	/*if(mouseClicked && !curr_ddb->getAreaClicked()){
+		curr_ddb->setPosition({0, 0});
+		curr_ddb->hidden = true;
+		if(selected_tile != nullptr){
+			selected_tile->selected = false;
 		}
-		//this->hud->closeClickMenu();
-		//delete app->currentScene->items[(int)app->currentScene->items.size()];
 	}*/
 }
 /*

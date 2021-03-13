@@ -23,14 +23,14 @@ public:
 	Planet * parent;
 	PlanetHUD * hud;
 	PlanetData * data;
-    DropdownButton* curr_ddb;
+    Tile* selected_tile = nullptr;
 
     PlanetSurface();
     PlanetSurface(Json::Value root, Planet * p);
 
     void drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx);
     void draw(olc::PixelGameEngine * e, CamParams trx);
-	void mouseOver(int x, int y, bool mouseClicked, bool mousePressed, CamParams trx);
+	void mouseOver(int x, int y, bool mouseClicked, bool mousePressed, CamParams trx, DropdownButton* curr_ddb);
     olc::Pixel getTint(int x, int y);
 };
 

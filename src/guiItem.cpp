@@ -59,6 +59,7 @@ const olc::vf2d& GUIItem::getPosition()const{
     return position;
 }
 void GUIItem::setPosition(const olc::vf2d& position){
+    this->aabb.pos = position;
     this->position = position;
 }
 

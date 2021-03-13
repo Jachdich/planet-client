@@ -7,6 +7,7 @@
 #include "dropdownButton.h"
 
 MainMenu::MainMenu() : Scene("textures/backgrounds/background_main.png"){
+
     Button* item =  new Button({0, 400}, "", "Singleplayer", false, 1.5, 16);
     item->setOnClick([](){});
     Button* item2 = new Button({0,430}, "", "Multiplayer", false, 1.5, 16);
