@@ -7,7 +7,7 @@ class Galaxy : public Scene{
 
 public:
     Galaxy();
-    bool draw() override;
+    bool draw(float fElapsedTime) override;
 
 };
 

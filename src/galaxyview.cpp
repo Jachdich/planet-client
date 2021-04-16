@@ -4,7 +4,7 @@
 Galaxy::Galaxy() : Scene(""){
 }
 
-bool Galaxy::draw(){
+bool Galaxy::draw(float fElapsedTime){
     Scene::draw();
 
     if(app->GetMouse(0).bPressed){

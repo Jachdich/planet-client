@@ -3,26 +3,25 @@
 #include "client.h"
 #include "sprites.h"
 
-Scene::Scene(const std::string background_path){
+Scene::Scene(const std::string background_path) {
     background_sprite = std::make_unique<olc::Sprite>(background_path);
     background = std::make_unique<olc::Decal>(background_sprite.get());
-    fElapsedTime = 0;
 }
 
 Scene::~Scene(){
-    for(GUIItem* item : items){
+    for (GUIItem* item : items) {
         delete item;
     }
 }
 
-bool Scene::draw(){
+bool Scene::draw(float fElapsedTime) {
     
-    if(background != NULL){
+    if (background != NULL) {
         app->DrawDecal({0, 0}, background.get());
     }
 
     for(GUIItem* item : items){
-        if(!item->draw()){
+        if (!item->draw()) {
             return false;
         }
     }

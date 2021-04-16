@@ -5,7 +5,7 @@
 #include "olcPixelGameEngine.h"
 #include "helperfunctions.h"
 #include "common/enums.h"
-#include "common/stats.h"
+#include "common/resources.h"
 
 class PlanetSurface;
 struct Tile;
@@ -19,7 +19,7 @@ class PlanetData {
 public:
 	PlanetSurface * surface;
 	std::vector<Timer> timers;
-	Stats stats;
+	Resources stats;
 	
 	PlanetData();
 	PlanetData(PlanetSurface * surface, Json::Value root);

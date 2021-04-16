@@ -10,6 +10,7 @@
 #include "tile.h"
 #include "planetdata.h"
 #include "common/surfacelocator.h"
+#include "common/surfacelocator_test.h"
 
 void ClientNetwork::sendRequest(Json::Value request) {
     Json::Value totalJSON;
@@ -95,10 +96,10 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	}
     	if (root["serverRequest"].asString() == "statsChange") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
-    	    surface->data->stats.wood = root["wood"].asInt();
-    	    surface->data->stats.stone = root["stone"].asInt();
-    	    surface->data->stats.people = root["people"].asInt();
-    	    surface->data->stats.peopleIdle = root["peopleIdle"].asInt();
+    	    surface->data->stats["wood"] = root["wood"].asInt();
+    	    surface->data->stats["stone"] = root["stone"].asInt();
+    	    surface->data->stats["people"] = root["people"].asInt();
+    	    surface->data->stats["peopleIdle"] = root["peopleIdle"].asInt();
     	}
     	if (root["serverRequest"].asString() == "changeTile") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);

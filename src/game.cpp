@@ -68,7 +68,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 
     updateCamParams();
 
-    if(currentScene != NULL){currentScene->fElapsedTime = fElapsedTime; currentScene->draw();}
+    if(currentScene != nullptr) { currentScene->draw(fElapsedTime); }
     if(exit) return false;
 
     return true;

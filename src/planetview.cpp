@@ -8,7 +8,7 @@ PlanetView::PlanetView() : Scene(""){
 	curr_ddb->hidden = true;
 }
 
-bool PlanetView::draw(){
+bool PlanetView::draw(float fElapsedTime){
     
     if (app->selectedPlanet->surface->generated) {
     	    app->selectedPlanet->surface->data->updateTimers(fElapsedTime);

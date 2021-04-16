@@ -3,11 +3,11 @@
 
 #include "scene.h"
 
-class StarView : public Scene{
+class StarView : public Scene {
 
 public:
     StarView();
-    bool draw() override;
+    bool draw(float fElapsedTime) override;
 
 };
 

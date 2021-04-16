@@ -6,7 +6,7 @@ StarView::StarView() : Scene(""){
 
 }
 
-bool StarView::draw(){
+bool StarView::draw(float fElapsedTime){
     Scene::draw();
 
     app->trx = {0, 0, 1};

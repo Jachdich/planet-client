@@ -88,10 +88,10 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 }
 
 void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
-    e->DrawStringDecal({0, 30}, "Stone       " + std::to_string(this->data->stats.stone), olc::WHITE);
-    e->DrawStringDecal({0, 40}, "Wood        " + std::to_string(this->data->stats.wood),  olc::WHITE);
-    e->DrawStringDecal({0, 50}, "People      " + std::to_string(this->data->stats.people),  olc::WHITE);
-    e->DrawStringDecal({0, 60}, "People Idle " + std::to_string(this->data->stats.peopleIdle),  olc::WHITE);
+    e->DrawStringDecal({0, 30}, "Stone       " + std::to_string(this->data->stats["stone"]), olc::WHITE);
+    e->DrawStringDecal({0, 40}, "Wood        " + std::to_string(this->data->stats["wood"]),  olc::WHITE);
+    e->DrawStringDecal({0, 50}, "People      " + std::to_string(this->data->stats["people"]),  olc::WHITE);
+    e->DrawStringDecal({0, 60}, "People Idle " + std::to_string(this->data->stats["peopleIdle"]),  olc::WHITE);
 
 	if (this->ddmenu != nullptr) {
 		this->ddmenu->draw(e, trx);

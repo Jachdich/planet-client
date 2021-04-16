@@ -17,6 +17,7 @@ void DropdownButton::removeAllDropdownItems(){
     for(Button* item : subButtons){
         delete item;
     }
+    subButtons.clear();
 }
 
 void DropdownButton::setOnClick(std::function<void()> onClick){
@@ -24,6 +25,7 @@ void DropdownButton::setOnClick(std::function<void()> onClick){
 }
 
 void DropdownButton::removeDropdownItem(){
+    delete subButtons.back();
     subButtons.pop_back();
 }
 

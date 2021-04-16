@@ -9,7 +9,7 @@ class PlanetView : public Scene{
 public:
     DropdownButton* curr_ddb;
     PlanetView();
-    bool draw() override;
+    bool draw(float fElapsedTime) override;
 
 };
 

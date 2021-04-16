@@ -125,7 +125,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 		for (int ja = 2; ja >= -2; ja--) {
 			int i = ia + wx;
 			int j = ja + ia + wy;*/
-	if(!curr_ddb->getAreaClicked()){
+	if (curr_ddb->getAreaClicked()) return;
 	for (int i = rad * 2 - 1; i >= 0; i--) {
 		for (int j = rad * 2 - 1; j >= 0; j--) {
 			if (((i - rad) * (i - rad) + (j - rad) * (j - rad)) >= (this->rad * this->rad)) {
@@ -164,7 +164,6 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 				return;
 			}
 		}
-	}
 	}
 
 	/*if(mouseClicked && !curr_ddb->getAreaClicked()){
