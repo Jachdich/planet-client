@@ -13,7 +13,7 @@ class PlanetSurface;
 PlanetData::PlanetData() {}
 PlanetData::PlanetData(PlanetSurface * surface, Json::Value root) {
 	this->surface = surface;
-	stats = getStatsFromJson(root["stats"]);
+	stats = getResourcesFromJson(root["stats"]);
 }
 
 std::string pad(std::string str, int n = 2, char chr = '0') {
@@ -48,7 +48,7 @@ std::vector<TaskType> PlanetData::getPossibleTasks(Tile * target) {
 		v.push_back(TaskType::FELL_TREE);
 	}
 	if (isMineral(target->type)) {
-		v.push_back(TaskType::GATHER_MINERALS);
+		v.push_back(TaskType::MINE_ROCK);
 	}
 	if (isClearable(target->type)) {
 		v.push_back(TaskType::CLEAR);

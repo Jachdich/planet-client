@@ -10,6 +10,7 @@
 #include "tile.h"
 #include "planetdata.h"
 #include "common/surfacelocator.h"
+#include "common/surfacelocator_test.h"
 
 void ClientNetwork::sendRequest(Json::Value request) {
     Json::Value totalJSON;
@@ -95,10 +96,9 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	}
     	if (root["serverRequest"].asString() == "statsChange") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
-    	    surface->data->stats.wood = root["wood"].asInt();
-    	    surface->data->stats.stone = root["stone"].asInt();
-    	    surface->data->stats.people = root["people"].asInt();
-    	    surface->data->stats.peopleIdle = root["peopleIdle"].asInt();
+    	    for (auto &elem: root["resources"].getMemberNames()) {
+        	    surface->data->stats[elem] = root["resources"][elem].asDouble();
+    	    }
     	}
     	if (root["serverRequest"].asString() == "changeTile") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
@@ -112,8 +112,8 @@ void sendUserAction(Tile * target, TaskType task) {
 	Json::Value json;
 	json["request"] = "userAction";
 	json["action"] = (int)task;
-	json["x"] = target->x; //TODO WHY IN GODS NAME DO I HAVE TO COMMIT THIS ATROSITY
-	json["y"] = target->y; //OF SWAPPING THE X AND Y VALUES? WHAT DARK MAGIC IS GOING ON?
+	json["x"] = target->x;
+	json["y"] = target->y;
 
 	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
 	json["secX"] = x[0];
