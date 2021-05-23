@@ -56,6 +56,9 @@ std::vector<TaskType> PlanetData::getPossibleTasks(Tile * target) {
 	if (target->type == TileType::GRASS) {
 		v.push_back(TaskType::PLANT_TREE);
 		v.push_back(TaskType::BUILD_HOUSE);
+		v.push_back(TaskType::BUILD_FARM);
+		v.push_back(TaskType::BUILD_GREENHOUSE);
+		v.push_back(TaskType::BUILD_WATERPUMP);
 	}
 	return v;
 }
