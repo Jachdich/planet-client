@@ -74,7 +74,7 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
             if (rand() % 1000000 == 0) {
             	type = (int)TileType::TONK;
             }
-			tiles.push_back(Tile((TileType)(type), z, j, i, this->getTint(j, i)));
+			tiles.push_back(Tile((TileType)(type), z, j, i, this->getTint(i, j))); //TODO WHY DO I HAVE TO SWAP J AND I HERE?
 		}
 	}
 	generated = true;

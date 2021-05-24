@@ -13,7 +13,7 @@ class PlanetSurface;
 PlanetData::PlanetData() {}
 PlanetData::PlanetData(PlanetSurface * surface, Json::Value root) {
 	this->surface = surface;
-	stats = getResourcesFromJson(root["stats"]);
+	stats = getResourcesFromJson(root["resources"]);
 }
 
 std::string pad(std::string str, int n = 2, char chr = '0') {
