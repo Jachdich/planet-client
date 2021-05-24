@@ -1,0 +1,7 @@
+{"drawGround": 1,
+ "textures": [
+     {"imageFile": "tiles/png/warehouse.png",
+      "tint": false,
+       "width": 96}
+     ]
+}

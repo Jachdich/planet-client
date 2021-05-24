@@ -1,0 +1,7 @@
+{"drawGround": 1,
+ "textures": [
+     {"imageFile": "tiles/png/farm.png",
+      "tint": false,
+       "width": 96}
+     ]
+}
