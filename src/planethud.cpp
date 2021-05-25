@@ -67,7 +67,7 @@ bool DropdownMenu::click(olc::vf2d screenPos, CamParams trx) {
 	}
 
 	//check X value since all items are the same width
-	if (delta.x <= 100 * trx.zoom  && delta.x >= 0 && this->open) {
+	if (delta.x <= 160 * trx.zoom  && delta.x >= 0 && this->open) {
 		int componentIndex = floor(delta.y / (17 * trx.zoom)) - 1; //-1 for the menu header itself
 		if ((unsigned long int)componentIndex >= items.size()) {
 			return false;

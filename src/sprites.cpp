@@ -77,9 +77,9 @@ void registerTileSprite(std::string x) {
     tileSprites.push_back(TileSprite(x));
 }
 
-void registerUISprite(std::string filename, std::string name) {
+void registerUISprite(std::string filename, std::string name, olc::vi2d text_offset) {
 	olc::Sprite * temp = new olc::Sprite(texturedir + "/" + filename);
-	UIComponents[name] = {new olc::Decal(temp), olc::vi2d(3, 3)};
+	UIComponents[name] = {new olc::Decal(temp), text_offset};
 	sprites.push_back(temp);
 }
 
@@ -126,10 +126,10 @@ void loadSprites() {
 		registerTileSprite("tiles/json/" + names[i]);
 	}
 
-	registerUISprite("hud/menu_closed.png", "menu_closed");
-	registerUISprite("hud/menu_open.png", "menu_open");
-	registerUISprite("hud/menu_item.png", "menu_item");
-	registerUISprite("hud/error_popup.png", "error_popup");
+	registerUISprite("hud/menu_closed.png", "menu_closed", olc::vi2d(3, 3));
+	registerUISprite("hud/menu_open.png", "menu_open", olc::vi2d(3, 3));
+	registerUISprite("hud/menu_item.png", "menu_item", olc::vi2d(6, 3));
+	registerUISprite("hud/error_popup.png", "error_popup", olc::vi2d(3, 3));
 
 	registerMenuSprite("menu/main/main.json", "main");
 	registerMenuSprite("menu/multiplayer/multiplayer.json", "multiplayer");
