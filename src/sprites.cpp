@@ -44,7 +44,7 @@ Json::Value getJsonFromTextureFile(std::string fName) {
 
 void TileSprite::draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, olc::Pixel tint) {
 
-    if (drawGround != TileType::VOID) {
+    if (drawGround != TileType::AIR) {
          tileSprites[(int)drawGround].draw(e, trx, pos, tint);
     }
 

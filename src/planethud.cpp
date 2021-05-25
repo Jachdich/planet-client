@@ -89,7 +89,7 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
     float n = 10;
     for (auto &[k, v]: this->data->stats.data) {
-        e->DrawStringDecal({0, n += 10}, k + " " + std::to_string(v), olc::WHITE);
+        e->DrawStringDecal({0, n += 10}, k + " " + std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
     }
 
 	if (this->ddmenu != nullptr) {

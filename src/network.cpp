@@ -97,7 +97,8 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	if (root["serverRequest"].asString() == "statsChange") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
     	    for (auto &elem: root["resources"].getMemberNames()) {
-        	    surface->data->stats[elem] = root["resources"][elem].asDouble();
+        	    surface->data->stats.data[elem].value = root["resources"][elem]["value"].asDouble();
+        	    surface->data->stats.data[elem].capacity = root["resources"][elem]["capacity"].asDouble();
     	    }
     	}
     	if (root["serverRequest"].asString() == "changeTile") {
