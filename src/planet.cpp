@@ -38,7 +38,6 @@ Planet::Planet(Json::Value res, int posInStar) {
         generationZValues[i] = res["generationZValues"][i].asInt();
         generationNoise[i]   = res["generationNoise"][i].asDouble();
     }
-    surface = new PlanetSurface();
     this->posInStar = posInStar;
 }
 
@@ -108,6 +107,9 @@ void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {
 }
 
 void Planet::loadSurface(int secX, int secY, int starPos, int planetPos) {
+    if (surface == nullptr) {
+        surface = new PlanetSurface();
+    }
 	if (!surface->generated) {
 		if (!surface->requested) {
 		    Json::Value root;
@@ -120,6 +122,11 @@ void Planet::loadSurface(int secX, int secY, int starPos, int planetPos) {
 		    app->client.sendRequest(root);
 		}
 	}
+}
+
+void Planet::unloadSurface() {
+    delete surface;
+    surface = nullptr;
 }
 
 void Planet::drawSurface(olc::PixelGameEngine * e, CamParams trx) {

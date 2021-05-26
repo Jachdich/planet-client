@@ -24,6 +24,9 @@ public:
     bool planetView = false;
     bool starView = false;
     bool menuView = true;
+
+    bool connectImmediately = false;
+    
     Menu menu;
     SectorCache map;
     ClientNetwork client;

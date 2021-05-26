@@ -29,7 +29,7 @@ void ClientNetwork::sendRequest(Json::Value request) {
 }
 
 void handleNetworkPacket(Json::Value root, SectorCache * cache) {
-	std::cout << root << "\n\n\n";
+	//std::cout << root << "\n\n\n";
     if (root.get("status", 0).asInt() != 0) {
         std::cerr << "Server sent non-zero status: " << root["status"].asInt() << "\n";
         return;
@@ -49,25 +49,29 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
                 case ErrorCode::OUT_OF_BOUNDS:
                     std::cerr << "Server sent non-zero status for request '" << req["request"]
                                           << "': " << res["status"].asInt() << "\n";
-            	case ErrorCode::NO_PEOPLE_AVAILABLE: {
-            	    PlanetSurface * surf = getSurfaceFromJson(req, cache);
-            	    surf->hud->showPopup("No people available to\ncomplete action!");
-            	    break;
-            	}
-                case ErrorCode::INSUFFICIENT_RESOURCES: {
-                    PlanetSurface * surf = getSurfaceFromJson(req, cache);
-                    surf->hud->showPopup("Insufficient resources!");
                     break;
-                }
-                case ErrorCode::TASK_ALREADY_STARTED: {
+                default: {
                     PlanetSurface * surf = getSurfaceFromJson(req, cache);
-                    surf->hud->showPopup("There is already a task\non this tile!");
-                    break;
-                }
-                case ErrorCode::TASK_ON_WRONG_TILE: {
-                    PlanetSurface * surf = getSurfaceFromJson(req, cache);
-                    surf->hud->showPopup("This task is not available\non this tile!");
-                    break;
+                    if (surf == nullptr) {
+            	        std::cout << "[WARNING] discarding error packet on non-existant PlanetSurface\n";
+            	        return;
+            	    }
+
+                    switch (e) {
+                    	case ErrorCode::NO_PEOPLE_AVAILABLE:
+                    	    surf->hud->showPopup("No people available to\ncomplete action!");
+                    	    break;
+                        case ErrorCode::INSUFFICIENT_RESOURCES:
+                            surf->hud->showPopup("Insufficient resources!");
+                            break;
+                        case ErrorCode::TASK_ALREADY_STARTED:
+                            surf->hud->showPopup("There is already a task\non this tile!");
+                            break;
+                        case ErrorCode::TASK_ON_WRONG_TILE:
+                            surf->hud->showPopup("This task is not available\non this tile!");
+                            break;
+                        default: break;
+                    }
                 }
             }
             continue;
@@ -91,18 +95,30 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     if (root.get("serverRequest", "NONE").asString() != "NONE") {
     	if (root["serverRequest"].asString() == "setTimer") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
+    	    if (surface == nullptr) {
+    	        std::cout << "[WARNING] discarding setTimer packet on non-existant PlanetSurface\n";
+    	        return;
+    	    }
             Tile * target = &surface->tiles[root["tile"].asInt()];
             surface->data->timers.push_back(Timer{target, root["time"].asDouble()});
     	}
     	if (root["serverRequest"].asString() == "statsChange") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
-    	    for (auto &elem: root["resources"].getMemberNames()) {
+    	    if (surface == nullptr) {
+    	        std::cout << "[WARNING] discarding statsChange packet on non-existant PlanetSurface\n";
+    	        return;
+    	    }
+     	    for (auto &elem: root["resources"].getMemberNames()) {
         	    surface->data->stats.data[elem].value = root["resources"][elem]["value"].asDouble();
         	    surface->data->stats.data[elem].capacity = root["resources"][elem]["capacity"].asDouble();
     	    }
     	}
     	if (root["serverRequest"].asString() == "changeTile") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
+    	    if (surface == nullptr) {
+    	        std::cout << "[WARNING] discarding changeTile packet on non-existant PlanetSurface\n";
+    	        return;
+    	    }
             surface->tiles[root["tilePos"].asInt()].type = (TileType)root["type"].asInt();
     	}
     	

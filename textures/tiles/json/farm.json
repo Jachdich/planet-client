@@ -2,6 +2,6 @@
  "textures": [
      {"imageFile": "tiles/png/farm.png",
       "tint": false,
-       "width": 96}
+       "width": 64}
      ]
 }

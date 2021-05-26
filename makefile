@@ -18,7 +18,7 @@ obj/FastNoise.o: src/FastNoise.cpp
 	g++ -c -o $@ $< -Wall -g -O3 -Iinclude
 
 debug: client
-	gdb client
+	gdb --args client 127.0.0.1
 
 .PHONY: release
 release: $(OBJECTS_OPTIMISED)
@@ -27,6 +27,10 @@ release: $(OBJECTS_OPTIMISED)
 .PHONY: run
 run: client
 	./client
+
+.PHONY: connect
+connect: client
+	./client 127.0.0.1
 
 .PHONY: clean
 clean:

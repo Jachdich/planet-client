@@ -34,6 +34,7 @@ Game::Game(int argc, char ** argv) : map() {
     address = "127.0.0.1";
     if (args.size() > 1) {
         address = args[1];
+        connectImmediately = true;
     }
 }
 
@@ -43,11 +44,12 @@ void Game::destruct() {
 
 bool Game::OnUserCreate() {
     loadSprites();
-    /*
-    connectToServer();
-    galaxyView = true;
-    menuView = false;
-	*/
+    if (connectImmediately) {
+        connectToServer();
+        galaxyView = true;
+        menuView = false;
+    }
+	
     return true;
 }
 
@@ -77,7 +79,7 @@ void Game::mousePressed() {
             galaxyView = false;
             starView = false;
             planetView = true;
-            if (!selectedPlanet->surface->generated and !selectedPlanet->surface->requested) {
+            if (selectedPlanet->surface == nullptr || (!selectedPlanet->surface->generated && !selectedPlanet->surface->requested)) {
         		selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
         	}
             trx = {0, 0, 1};
@@ -101,6 +103,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     } else if (starView) {
         selectedStar->drawWithPlanets(this, fElapsedTime, trx);
     } else if (planetView) {
+        std::cout << "DRAWING & EVENTS ON PLANETSURFACE\n";
     	if (selectedPlanet->surface->generated) {
     	    selectedPlanet->surface->data->updateTimers(fElapsedTime);
 			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, trx);
@@ -141,10 +144,20 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 
     if (GetKey(olc::Key::ESCAPE).bPressed) {
         if (planetView) {
+            std::cout << "ESCAPE PRESSED ON PLANETSURFACE\n";
             starView = true;
             planetView = false;
             galaxyView = false;
             trx = {0, 0, 1};
+            std::vector<int> surface = getCurrentPlanetsurfaceLocator();
+            Json::Value root;
+		    root["request"] = "unloadSurface";
+		    root["secX"] = surface[0];
+		    root["secY"] = surface[1];
+		    root["starPos"] = surface[2];
+		    root["planetPos"] = surface[3];
+		    client.sendRequest(root);
+		    selectedPlanet->unloadSurface();
         } else if (starView) {
             starView = false;
             galaxyView = true;

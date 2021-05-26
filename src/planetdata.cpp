@@ -59,6 +59,7 @@ std::vector<TaskType> PlanetData::getPossibleTasks(Tile * target) {
 		v.push_back(TaskType::BUILD_FARM);
 		v.push_back(TaskType::BUILD_GREENHOUSE);
 		v.push_back(TaskType::BUILD_WATERPUMP);
+		v.push_back(TaskType::BUILD_MINE);
 	}
 	return v;
 }
