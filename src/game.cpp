@@ -103,7 +103,6 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     } else if (starView) {
         selectedStar->drawWithPlanets(this, fElapsedTime, trx);
     } else if (planetView) {
-        std::cout << "DRAWING & EVENTS ON PLANETSURFACE\n";
     	if (selectedPlanet->surface->generated) {
     	    selectedPlanet->surface->data->updateTimers(fElapsedTime);
 			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, trx);
@@ -144,7 +143,6 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 
     if (GetKey(olc::Key::ESCAPE).bPressed) {
         if (planetView) {
-            std::cout << "ESCAPE PRESSED ON PLANETSURFACE\n";
             starView = true;
             planetView = false;
             galaxyView = false;
@@ -175,6 +173,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 	if (debugMode) {
 		DrawStringDecal({0, 0}, std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
 		DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
+		DrawStringDecal({0, 20}, std::to_string(1.0 / fElapsedTime), olc::Pixel(255, 255, 255));
 	}
 
     return true;
