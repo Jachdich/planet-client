@@ -38,7 +38,13 @@ Sector * SectorCache::getSectorAt(int32_t x, int32_t y) {
 void SectorCache::draw(olc::PixelGameEngine * e, CamParams trx) {
     int32_t sectorX = ((-trx.tx) / trx.zoom) / 256;
     int32_t sectorY = ((-trx.ty) / trx.zoom) / 256;
+
+    if (trx.tx > 0) sectorX -= 1;
+    if (trx.ty > 0) sectorY -= 1;
+    
+
     float num = ceil((WIDTH) / 256.0 / trx.zoom);
+    
     std::lock_guard<std::mutex> lock(cache_mutex);
     for (int32_t x = 0; x < num + 1; x++) {
         for (int32_t y = 0; y < num + 1; y++) {
