@@ -17,6 +17,13 @@ public:
     bool selected;
     int randomDissapearChance;
     int posInSector;
+
+    double noiseZ;
+    double noiseScl;
+    double noiseEffect;
+
+    olc::Sprite *buf = nullptr;
+    olc::Decal *decBuf = nullptr;
     
     Star();
     Star(Json::Value root, int posInSector);
@@ -24,6 +31,7 @@ public:
     void drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamParams trx);
     void draw(olc::PixelGameEngine * e, CamParams trx, int secOffsetX, int secOffsetY);
     void select();
+    void drawTexture(olc::PixelGameEngine *e, uint32_t scale);
     Planet * getPlanetAt(int x, int y, CamParams trx);
 };
 #endif
