@@ -13,6 +13,6 @@ public:
 };
 
 Json::Value makeJSON(std::string x);
-
+std::string toHexString(std::string initText, olc::Pixel colour);
 
 #endif

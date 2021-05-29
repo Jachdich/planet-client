@@ -9,6 +9,7 @@
 #include "sprites.h"
 #include "star.h"
 #include "sector.h"
+#include "helperfunctions.h"
 
 #include <iostream>
 //#include <functional>
@@ -90,6 +91,26 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
     float n = 10;
     for (auto &[k, v]: this->data->stats.data) {
         e->DrawStringDecal({0, n += 10}, k + " " + std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
+    }
+
+    n = 0;
+    float xpos = WIDTH - 256;
+    if (parent->selectedTile != nullptr) {
+        olc::Pixel col = parent->selectedTile->tint;
+        TileMinerals minerals = getTileMinerals(col.r << 16 | col.g << 8 | col.b);
+        e->DrawStringDecal({xpos, n += 10}, "Selected tile X: " + std::to_string(parent->selectedTile->x) + 
+                                                         " Y: " + std::to_string(parent->selectedTile->y) +
+                                                         " Z: " + std::to_string(parent->selectedTile->z));
+
+        e->DrawStringDecal({xpos, n += 10}, "Type:      " + getTileTypeName(parent->selectedTile->type));
+        e->DrawStringDecal({xpos, n += 10}, "Colour:    " + toHexString("#", parent->selectedTile->tint));
+        e->DrawStringDecal({xpos, n += 10}, "Iron:      " + std::to_string(minerals.iron * 100) + "%");
+        e->DrawStringDecal({xpos, n += 10}, "Copper:    " + std::to_string(minerals.copper * 100) + "%");
+        e->DrawStringDecal({xpos, n += 10}, "Aluminium: " + std::to_string(minerals.aluminium * 100) + "%");
+        e->DrawStringDecal({xpos, n += 10}, "Sand:      " + std::to_string(minerals.sand * 100) + "%");
+        
+    } else {
+        e->DrawStringDecal({xpos, n += 10}, "No tile selected");
     }
 
 	if (this->ddmenu != nullptr) {

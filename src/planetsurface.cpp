@@ -146,6 +146,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 				lastSelectY = i;
 				if (mouseClicked) {
 					this->hud->showClickMenu(&tiles[i * rad * 2 + j]);
+					selectedTile = &tiles[i * rad * 2 + j];
 				}
 				return;
 			}
@@ -155,6 +156,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 	//if not tile and not hud
 	if (mouseClicked) {
 		this->hud->closeClickMenu();
+		selectedTile = nullptr;
 	}
 }
 /*

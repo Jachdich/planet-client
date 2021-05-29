@@ -17,6 +17,7 @@ public:
 	int pos;
 	int lastSelectX = 0;
 	int lastSelectY = 0;
+	Tile *selectedTile = nullptr;
     bool generated = false;
     bool requested = false;
 	Planet * parent;
