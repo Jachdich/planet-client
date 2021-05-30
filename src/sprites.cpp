@@ -121,7 +121,7 @@ void loadSprites() {
 	sprites.clear();
 	std::string names[] = {"void.json", "ground.json", "bush.json", "tree.json", "pine.json",
 	                       "water.json", "rock.json", "house.json", "pineforest.json", "forest.json", "tonk.json",
-	                       "farm.json", "greenhouse.json", "waterpump.json", "mine.json", "blastfurnace.json", "warehouse.json"};
+	                       "farm.json", "greenhouse.json", "waterpump.json", "mine.json", "blastfurnace.json", "warehouse.json", "forestry.json"};
 	for (int i = 0; i < *(&names + 1) - names; i++) {
 		registerTileSprite("tiles/json/" + names[i]);
 	}
