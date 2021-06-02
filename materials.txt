@@ -1,0 +1,9 @@
+PLANT_TREE         wood: 1
+BUILD_HOUSE        wood: 6  stone: 3
+BUILD_FARM         wood: 5  stone: 7
+BUILD_GREENHOUSE   wood: 3            iron: 1  glass: 8
+BUILD_WATERPUMP    wood: 2  stone: 3  iron: 6
+BUILD_MINE         wood: 8  stone: 8
+BUILD_BLASTFURNACE wood: 2  stone: 8
+BUILD_WAREHOUSE    wood: 16 stone: 12
+BUILD_FORESTRY     wood: 24 stone: 6  iron: 5

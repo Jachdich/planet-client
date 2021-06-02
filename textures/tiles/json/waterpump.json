@@ -2,6 +2,6 @@
  "textures": [
      {"imageFile": "tiles/png/waterpump.png",
       "tint": false,
-       "width": 96}
+       "width": 64}
      ]
 }

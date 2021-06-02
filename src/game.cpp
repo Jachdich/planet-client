@@ -92,7 +92,12 @@ void Game::connectToServer() {
 }
 
 bool Game::OnUserUpdate(float fElapsedTime) {
-	Clear(olc::BLACK);
+    if (planetView) {
+        Clear(olc::Pixel(50, 100, 160));
+    } else {
+	    Clear(olc::BLACK);
+	}
+	
 
 	if (menuView) {
 	    return menu.draw(this);
