@@ -70,7 +70,7 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 		for (int j = 0; j < root["rad"].asInt() * 2; j++) {
 			uint64_t val = root["tiles"][j + i * root["rad"].asInt() * 2].asUInt64();
 			int32_t type = val & 0xFFFFFFFF;
-            int32_t z    = (val >> 32) & 0xFFFFFFFF;
+            int32_t z    = (val >> 32) & 0x7FFFFFFF;
             if (rand() % 1000000 == 0) {
             	type = (int)TileType::TONK;
             }
