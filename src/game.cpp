@@ -148,19 +148,23 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 
     if (GetKey(olc::Key::ESCAPE).bPressed) {
         if (planetView) {
-            starView = true;
-            planetView = false;
-            galaxyView = false;
-            trx = {0, 0, 1};
-            std::vector<int> surface = getCurrentPlanetsurfaceLocator();
-            Json::Value root;
-		    root["request"] = "unloadSurface";
-		    root["secX"] = surface[0];
-		    root["secY"] = surface[1];
-		    root["starPos"] = surface[2];
-		    root["planetPos"] = surface[3];
-		    client.sendRequest(root);
-		    selectedPlanet->unloadSurface();
+            if (selectedPlanet->surface->hud->popupMessage != "") {
+                selectedPlanet->surface->hud->popupMessage = "";
+            } else {
+                starView = true;
+                planetView = false;
+                galaxyView = false;
+                trx = {0, 0, 1};
+                std::vector<int> surface = getCurrentPlanetsurfaceLocator();
+                Json::Value root;
+    		    root["request"] = "unloadSurface";
+    		    root["secX"] = surface[0];
+    		    root["secY"] = surface[1];
+    		    root["starPos"] = surface[2];
+    		    root["planetPos"] = surface[3];
+    		    client.sendRequest(root);
+    		    selectedPlanet->unloadSurface();
+		    }
         } else if (starView) {
             starView = false;
             galaxyView = true;

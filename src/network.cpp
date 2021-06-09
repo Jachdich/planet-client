@@ -40,7 +40,7 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
         Json::Value res = root["results"][i];
 
         if (res["status"].asInt() != 0) {
-            ErrorCode e = (ErrorCode)res["status"].asInt();
+            ErrorCode::ErrorType e = (ErrorCode::ErrorType)res["status"].asInt();
             switch (e) {
                 case ErrorCode::OK:
                     break;
@@ -50,28 +50,14 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
                     std::cerr << "Server sent non-zero status for request '" << req["request"]
                                           << "': " << res["status"].asInt() << "\n";
                     break;
-                default: {
+                case ErrorCode::INVALID_ACTION: {
                     PlanetSurface * surf = getSurfaceFromJson(req, cache);
                     if (surf == nullptr) {
             	        std::cout << "[WARNING] discarding error packet on non-existant PlanetSurface\n";
             	        return;
             	    }
 
-                    switch (e) {
-                    	case ErrorCode::NO_PEOPLE_AVAILABLE:
-                    	    surf->hud->showPopup("No people available to\ncomplete action!");
-                    	    break;
-                        case ErrorCode::INSUFFICIENT_RESOURCES:
-                            surf->hud->showPopup("Insufficient resources!");
-                            break;
-                        case ErrorCode::TASK_ALREADY_STARTED:
-                            surf->hud->showPopup("There is already a task\non this tile!");
-                            break;
-                        case ErrorCode::TASK_ON_WRONG_TILE:
-                            surf->hud->showPopup("This task is not available\non this tile!");
-                            break;
-                        default: break;
-                    }
+                    surf->hud->showPopup(res["error_message"].asString());
                 }
             }
             continue;
