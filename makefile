@@ -31,7 +31,7 @@ run: client
 .PHONY: connect
 connect: client
 	./client 127.0.0.1
-
+	
 .PHONY: clean
 clean:
 	rm obj/*.o
