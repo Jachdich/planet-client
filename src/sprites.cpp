@@ -11,6 +11,7 @@ std::vector<olc::Sprite *> sprites;
 std::vector<TileSprite> tileSprites;
 std::unordered_map<std::string, UIComponent> UIComponents;
 std::unordered_map<std::string, MenuComponent> menuComponents;
+std::unordered_map<std::string, olc::Decal*> icons;
 std::string texturedir = "textures";
 
 Json::Value getJsonFromTextureFile(std::string fName) {
@@ -98,6 +99,13 @@ void registerMenuSprite(std::string filename, std::string name) {
 	menuComponents[name] = c;
 }
 
+void registerIconSprite(std::string name) {
+    olc::Sprite *spr = new olc::Sprite(texturedir + "/hud/icons/" + name + ".png");
+    olc::Decal *dec = new olc::Decal(spr);
+    icons[name] = dec;
+    sprites.push_back(spr);
+}
+
 void loadSprites() {
 	for (TileSprite t : tileSprites) {
 		for (TileSpriteComponent tc : t.components) {
@@ -111,18 +119,25 @@ void loadSprites() {
 	for (std::pair<std::string, MenuComponent> element : menuComponents) {
 		delete element.second.decal;
 	}
+	for (auto &[k, v] : icons) {
+	    delete v;
+	}
 	
 	tileSprites.clear();
 	UIComponents.clear();
 	menuComponents.clear();
+	icons.clear();
 	for (olc::Sprite * spr : sprites) {
 	    delete spr;
 	}
+
 	sprites.clear();
 	std::string names[] = {"void.json", "ground.json", "bush.json", "tree.json", "pine.json",
 	                       "water.json", "rock.json", "house.json", "pineforest.json", "forest.json", "tonk.json",
 	                       "farm.json", "greenhouse.json", "waterpump.json", "mine.json", "blastfurnace.json", "warehouse.json", "forestry.json",
 	                       "capsule.json"};
+	//sidenote: what the fuck?
+	//the hell does this mean?
 	for (int i = 0; i < *(&names + 1) - names; i++) {
 		registerTileSprite("tiles/json/" + names[i]);
 	}
@@ -136,4 +151,8 @@ void loadSprites() {
 	registerMenuSprite("menu/multiplayer/multiplayer.json", "multiplayer");
 	registerMenuSprite("menu/background.json", "background");
 	registerMenuSprite("menu/multiplayer/serverconnect.json", "serverconnect");
+
+    for (std::string n: {"people", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "iron", "copper", "aluminium"}) {
+        registerIconSprite(n);
+    }
 }

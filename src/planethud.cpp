@@ -91,8 +91,10 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 
 void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
     float n = 10;
-    for (auto &[k, v]: this->data->stats.data) {
-        e->DrawStringDecal({0, n += 10}, k + " " + std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
+    for (std::string key : {"people", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "iron", "copper", "aluminium"}) {
+        auto v = this->data->stats.data[key];
+        e->DrawDecal({2, n + 6}, icons[key]);
+        e->DrawStringDecal({16, n += 12}, std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
     }
 
     n = 0;
