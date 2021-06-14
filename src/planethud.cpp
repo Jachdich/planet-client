@@ -16,6 +16,8 @@
 #include <jsoncpp/json/json.h>
 //#include <math>
 
+#define NUM_MENUS 2
+
 DropdownMenuItem::DropdownMenuItem(std::string text, std::function<void()> ptr) {
 	this->text = text;
 	this->click = ptr;
@@ -89,8 +91,10 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 
 void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
     float n = 10;
-    for (auto &[k, v]: this->data->stats.data) {
-        e->DrawStringDecal({0, n += 10}, k + " " + std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
+    for (std::string key : {"people", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "iron", "copper", "aluminium"}) {
+        auto v = this->data->stats.data[key];
+        e->DrawDecal({2, n + 6}, icons[key]);
+        e->DrawStringDecal({16, n += 12}, std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
     }
 
     n = 0;
@@ -114,7 +118,9 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
     }
 
 	if (this->ddmenu != nullptr) {
-		this->ddmenu->draw(e, trx);
+	    for (size_t i = 0; i < NUM_MENUS; i++) {
+		    this->ddmenu[i].draw(e, trx);
+		}
 	}
 	if (this->popupMessage != "") {
 	    UIComponent component = UIComponents["error_popup"];
@@ -149,7 +155,10 @@ bool PlanetHUD::mousePressed(int x, int y, CamParams trx) {
         }
     }
 	if (this->ddmenu != nullptr) {
-		return this->ddmenu->click(olc::vf2d(x, y), trx);
+	    for (size_t i = 0; i < NUM_MENUS; i++) {
+		    bool clicked = this->ddmenu[i].click(olc::vf2d(x, y), trx);
+		    if (clicked) return true;
+		}
 	}
 	return false;
 }
@@ -159,12 +168,34 @@ void PlanetHUD::showClickMenu(Tile * t) {
 		this->selectedTile->selected = false;
 	}
 
-	//this->ddmenu = new DropdownMenu(olc::vf2d(128, 0), "Building");
-	this->ddmenu = new DropdownMenu(t->getTextureCoordinates() - olc::vf2d(32, 32), "Demolition");
-	for (TaskType type : this->data->getPossibleTasks(t)) {
-		this->ddmenu->registerItem(DropdownMenuItem(getTaskTypeName(type),
-		[this, type]() { data->dispatchTask(type, this->selectedTile); }));
+	this->ddmenu = new DropdownMenu[2];
+	ddmenu[0] = DropdownMenu(t->getTextureCoordinates() - olc::vf2d(32, 32), "Building");
+	ddmenu[1] = DropdownMenu(t->getTextureCoordinates() - olc::vf2d(32 + 128, 32), "Demolition");
+
+	std::vector<TaskType> v;
+	
+	if (isTree(t->type)) {
+		v.push_back(TaskType::FELL_TREE);
+	} else if (isMineral(t->type)) {
+		v.push_back(TaskType::MINE_ROCK);
+	} else if (t->type != TileType::GRASS) {
+	    v.push_back(TaskType::CLEAR);
 	}
+	
+	if (t->type == TileType::GRASS) {
+	    for (TaskType type : {TaskType::PLANT_TREE, TaskType::BUILD_HOUSE, TaskType::BUILD_FARM,
+	    		 TaskType::BUILD_GREENHOUSE, TaskType::BUILD_WATERPUMP, TaskType::BUILD_MINE,
+	    		 TaskType::BUILD_BLASTFURNACE, TaskType::BUILD_FORESTRY, TaskType::BUILD_CAPSULE,
+	    		 TaskType::BUILD_WAREHOUSE}) {
+		    this->ddmenu[0].registerItem(DropdownMenuItem(getTaskTypeName(type),
+		    [this, type]() { data->dispatchTask(type, this->selectedTile); }));
+	    }
+	}
+
+    for (TaskType type : v) {
+        this->ddmenu[1].registerItem(DropdownMenuItem(getTaskTypeName(type),
+        [this, type]() { data->dispatchTask(type, this->selectedTile); }));
+    }
 	//this->ddmenu->registerItem(DropdownMenuItem("Tree", [this]() { sendChangeTileRequest(TileType::TREE); }));
 	//this->ddmenu->registerItem(DropdownMenuItem("Grass", [this]() { sendChangeTileRequest(TileType::GRASS); }));
 
@@ -179,7 +210,7 @@ void PlanetHUD::closeClickMenu() {
 		this->selectedTile = nullptr;
 
 		//delete the ddmenu since it has no references
-		delete this->ddmenu;
+		delete[] this->ddmenu;
 		this->ddmenu = nullptr;
 	}
 }

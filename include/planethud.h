@@ -26,6 +26,7 @@ public:
 	olc::vd2d pos;
 	std::vector<DropdownMenuItem> items;
 	DropdownMenu(olc::vf2d pos, std::string text);
+	inline DropdownMenu() {}
 	void draw(olc::PixelGameEngine * e, CamParams trx);
 	bool click(olc::vf2d pos, CamParams trx);
 	void registerItem(DropdownMenuItem item);

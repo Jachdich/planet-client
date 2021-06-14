@@ -42,6 +42,7 @@ void PlanetData::updateTimers(float elapsedTime) {
     timers.erase(std::remove_if(timers.begin(), timers.end(), [](const Timer& t) {return t.time < 0; } ), timers.end());
 }
 
+[[deprecated]]
 std::vector<TaskType> PlanetData::getPossibleTasks(Tile * target) {
 	std::vector<TaskType> v;
 	if (isTree(target->type)) {
@@ -49,9 +50,6 @@ std::vector<TaskType> PlanetData::getPossibleTasks(Tile * target) {
 	}
 	if (isMineral(target->type)) {
 		v.push_back(TaskType::MINE_ROCK);
-	}
-	if (isClearable(target->type)) {
-		v.push_back(TaskType::CLEAR);
 	}
 	if (target->type == TileType::GRASS) {
 		v.push_back(TaskType::PLANT_TREE);
@@ -64,6 +62,8 @@ std::vector<TaskType> PlanetData::getPossibleTasks(Tile * target) {
 		v.push_back(TaskType::BUILD_FORESTRY);
 		v.push_back(TaskType::BUILD_CAPSULE);
 		v.push_back(TaskType::BUILD_WAREHOUSE);
+	} else {
+	    v.push_back(TaskType::CLEAR);
 	}
 	return v;
 }

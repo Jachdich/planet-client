@@ -54,4 +54,5 @@ extern std::vector<olc::Sprite *> sprites;
 extern std::vector<TileSprite> tileSprites;
 extern std::unordered_map<std::string, UIComponent> UIComponents;
 extern std::unordered_map<std::string, MenuComponent> menuComponents;
+extern std::unordered_map<std::string, olc::Decal*> icons;
 #endif
