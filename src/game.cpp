@@ -150,6 +150,8 @@ bool Game::OnUserUpdate(float fElapsedTime) {
         if (planetView) {
             if (selectedPlanet->surface->hud->popupMessage != "") {
                 selectedPlanet->surface->hud->popupMessage = "";
+            } else if (selectedPlanet->surface->hud->ddmenu != nullptr) {
+                selectedPlanet->surface->hud->closeClickMenu();
             } else {
                 starView = true;
                 planetView = false;

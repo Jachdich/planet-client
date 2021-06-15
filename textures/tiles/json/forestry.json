@@ -1,6 +1,6 @@
 {"drawGround": 1,
  "textures": [
-     {"imageFile": "tiles/png/warehouse.png",
+     {"imageFile": "tiles/png/forestry.png",
       "tint": false,
        "width": 64}
      ]

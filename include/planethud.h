@@ -38,7 +38,6 @@ private:
 	int wood;
 	int population;
 	Tile * selectedTile = nullptr;
-	DropdownMenu * ddmenu = nullptr;
 	PlanetSurface * parent;
 	PlanetData * data;
 public:
@@ -51,6 +50,7 @@ public:
 	void showClickMenu(Tile * t);
 	void showPopup(std::string message);
     std::string popupMessage = "";
+	DropdownMenu * ddmenu = nullptr;
 };
 
 #endif

@@ -152,7 +152,7 @@ void loadSprites() {
 	registerMenuSprite("menu/background.json", "background");
 	registerMenuSprite("menu/multiplayer/serverconnect.json", "serverconnect");
 
-    for (std::string n: {"people", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "iron", "copper", "aluminium"}) {
+    for (std::string n: {"people", "food", "water", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "glass", "iron", "copper", "aluminium"}) {
         registerIconSprite(n);
     }
 }
