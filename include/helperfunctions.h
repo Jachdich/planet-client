@@ -9,6 +9,7 @@ public:
     int tx = 0;
     int ty = 0;
     float zoom = 1;
+    uint64_t animationStage = 0;
 	olc::vf2d toScreen(olc::vf2d pos);
 };
 

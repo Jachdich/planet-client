@@ -11,3 +11,4 @@ common
 common.a
 log.txt
 planet-client
+callgrind*

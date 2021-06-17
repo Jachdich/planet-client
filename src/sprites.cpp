@@ -52,9 +52,16 @@ void TileSprite::draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, ol
     for (TileSpriteComponent &c : components) {
         float scl = trx.zoom / (c.width / 128.0f);
         if (c.tint) {
-            e->DrawDecal(pos, c.decal, {scl, scl}, tint);
+            
+            e->DrawPartialDecal(pos, c.decal,
+                olc::vi2d(trx.animationStage % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height},
+                {scl, scl}, tint);
+            //e->DrawDecal(pos, c.decal, {scl, scl}, tint);
         } else {
-            e->DrawDecal(pos, c.decal, {scl, scl});
+            e->DrawPartialDecal(pos, c.decal,
+                olc::vi2d(trx.animationStage % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height},
+                {scl, scl});
+            //e->DrawDecal(pos, c.decal, {scl, scl});
         }
     }
 }
@@ -70,7 +77,10 @@ TileSprite::TileSprite(std::string fName) {
         olc::Decal * dec = new olc::Decal(spr);
         bool tint = t["tint"].asBool();
         uint32_t width = t.get("width", 128).asInt();
-        components.push_back({dec, tint, width});
+        uint32_t realWidth = spr->width;
+        uint32_t animations = realWidth / width;
+        if (animations == 0) animations = 1;
+        components.push_back({dec, tint, width, animations});
         sprites.push_back(spr);
     }
 }

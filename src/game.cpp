@@ -49,7 +49,7 @@ bool Game::OnUserCreate() {
         galaxyView = true;
         menuView = false;
     }
-	
+	SetPixelMode(olc::Pixel::MASK);
     return true;
 }
 
@@ -92,12 +92,11 @@ void Game::connectToServer() {
 }
 
 bool Game::OnUserUpdate(float fElapsedTime) {
-    if (planetView) {
+    /*if (planetView) {
         Clear(olc::Pixel(50, 100, 160));
     } else {
 	    Clear(olc::BLACK);
-	}
-	
+	}*/
 
 	if (menuView) {
 	    return menu.draw(this);
@@ -186,6 +185,10 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 		DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
 		DrawStringDecal({0, 20}, std::to_string(1.0 / fElapsedTime), olc::Pixel(255, 255, 255));
 	}
+	//SetPixelMode(olc::Pixel::NORMAL);
+
+    totalTime += fElapsedTime;
+    trx.animationStage = totalTime * 10;
 
     return true;
 }

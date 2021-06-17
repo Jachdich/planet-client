@@ -24,6 +24,7 @@ public:
     bool planetView = false;
     bool starView = false;
     bool menuView = true;
+    double totalTime = 0;
 
     bool connectImmediately = false;
     
