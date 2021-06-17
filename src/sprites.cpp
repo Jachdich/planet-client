@@ -165,4 +165,5 @@ void loadSprites() {
     for (std::string n: {"people", "food", "water", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "glass", "iron", "copper", "aluminium"}) {
         registerIconSprite(n);
     }
+    registerIconSprite("tile_error");
 }

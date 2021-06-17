@@ -107,6 +107,11 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	    }
             surface->tiles[root["tilePos"].asInt()].type = (TileType)root["type"].asInt();
     	}
+
+    	if (root["serverRequest"].asString() == "updateTileError") {
+    	    PlanetSurface *surf - getSurfaceFromJson(root, cache);
+            tiles[root["tileError"]["pos"].asUInt()].addError(root["tileError"]["msg"].asString());
+    	}
     	
     }
 }

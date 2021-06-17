@@ -110,12 +110,16 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
                                                          " Y: " + std::to_string(parent->selectedTile->y) +
                                                          " Z: " + std::to_string(parent->selectedTile->z));
 
-        e->DrawStringDecal({xpos, n += 10}, "Type:      " + getTileTypeName(parent->selectedTile->type));
-        e->DrawStringDecal({xpos, n += 10}, "Colour:    " + toHexString("#", parent->selectedTile->tint));
-        e->DrawStringDecal({xpos, n += 10}, "Iron:      " + std::to_string(minerals.iron * 100) + "%");
-        e->DrawStringDecal({xpos, n += 10}, "Copper:    " + std::to_string(minerals.copper * 100) + "%");
-        e->DrawStringDecal({xpos, n += 10}, "Aluminium: " + std::to_string(minerals.aluminium * 100) + "%");
-        e->DrawStringDecal({xpos, n += 10}, "Sand:      " + std::to_string(minerals.sand * 100) + "%");
+        e->DrawStringDecal({xpos, n += 10}, "Type:       " + getTileTypeName(parent->selectedTile->type));
+        e->DrawStringDecal({xpos, n += 10}, "Colour:     " + toHexString("#", parent->selectedTile->tint));
+        e->DrawStringDecal({xpos, n += 10}, "Iron:       " + std::to_string(minerals.iron * 100) + "%");
+        e->DrawStringDecal({xpos, n += 10}, "Copper:     " + std::to_string(minerals.copper * 100) + "%");
+        e->DrawStringDecal({xpos, n += 10}, "Aluminium:  " + std::to_string(minerals.aluminium * 100) + "%");
+        e->DrawStringDecal({xpos, n += 10}, "Sand:       " + std::to_string(minerals.sand * 100) + "%");
+        if (parent->selectedTile->errMsg != "") {
+            e->DrawStringDecal({xpos, n += 20}, "Tile Error: " + parent->selectedTile->errMsg);
+        }
+        
         
     } else {
         e->DrawStringDecal({xpos, n += 10}, "No tile selected");

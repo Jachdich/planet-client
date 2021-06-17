@@ -33,7 +33,8 @@ void Tile::draw(olc::PixelGameEngine * e, CamParams trx) {
 	olc::vf2d v = this->getTextureCoordinates(trx);
 	tileSprites[(int)type].draw(e, trx, v, olc::Pixel(r, g, b));
 	if (errMsg != "") {
-        e->DrawStringDecal(v, errMsg, olc::WHITE, {trx.zoom, trx.zoom});
+        //e->DrawStringDecal(v, errMsg, olc::WHITE, {trx.zoom, trx.zoom});
+        e->DrawDecal(v, icons["tile_error"], {trx.zoom * 2, trx.zoom * 2});
 	}
 }
 
