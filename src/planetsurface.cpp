@@ -77,6 +77,13 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 			tiles.push_back(Tile((TileType)(type), z, j, i, this->getTint(i, j))); //TODO WHY DO I HAVE TO SWAP J AND I HERE?
 		}
 	}
+
+    if (!root["tileErrors"].isNull()) {
+        for (uint32_t i = 0; i < root["tileErrors"].size(); i++) {
+            tiles[root["tileErrors"][i]["pos"].asUInt()].addError(root["tileErrors"][i]["msg"].asString());
+        }
+    }
+	
 	generated = true;
 	requested = false;
 	rad = root["rad"].asInt();

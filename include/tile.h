@@ -15,11 +15,13 @@ public:
 	bool hovered = false;
 	bool selected = false;
 	int x,y;
+	std::string errMsg = "";
 	olc::Pixel tint;
 	Tile(TileType type, int z, int x, int y, olc::Pixel tint);
 	olc::vf2d getTextureCoordinates(CamParams trx);
 	olc::vf2d getTextureCoordinates();
 	void draw(olc::PixelGameEngine * e, CamParams trx);
+	void addError(std::string msg);
 };
 
 #endif

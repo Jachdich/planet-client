@@ -32,6 +32,9 @@ void Tile::draw(olc::PixelGameEngine * e, CamParams trx) {
 	if (b > 255) b = 255;
 	olc::vf2d v = this->getTextureCoordinates(trx);
 	tileSprites[(int)type].draw(e, trx, v, olc::Pixel(r, g, b));
+	if (errMsg != "") {
+        e->DrawStringDecal(v, errMsg, olc::WHITE, {trx.zoom, trx.zoom});
+	}
 }
 
 olc::vf2d Tile::getTextureCoordinates() {
@@ -41,4 +44,8 @@ olc::vf2d Tile::getTextureCoordinates() {
 	float scx = sx - sy;
 	float scy = (sx + sy - TEXTURE_Z * z) / 2;
 	return olc::vf2d(scx, scy);
+}
+
+void Tile::addError(std::string msg) {
+    errMsg = msg;
 }
