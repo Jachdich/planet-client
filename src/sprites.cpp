@@ -54,13 +54,13 @@ void TileSprite::draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, ol
         if (c.tint) {
             
             e->DrawPartialDecal(pos, c.decal,
-                olc::vi2d(trx.animationStage % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height},
+                olc::vi2d((trx.animationStage / c.animationSpeed) % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height},
                 {scl, scl}, tint);
             //e->DrawDecal(pos, c.decal, {scl, scl}, tint);
         } else {
             e->DrawPartialDecal(pos, c.decal,
-                olc::vi2d(trx.animationStage % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height},
-                {scl, scl});
+                olc::vi2d((trx.animationStage / c.animationSpeed) % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height},
+                {scl, scl}, olc::Pixel(300, 300, 300));
             //e->DrawDecal(pos, c.decal, {scl, scl});
         }
     }
@@ -75,12 +75,13 @@ TileSprite::TileSprite(std::string fName) {
     for (Json::Value t : root["textures"]) {
         olc::Sprite * spr = new olc::Sprite(texturedir + "/" + t["imageFile"].asString());
         olc::Decal * dec = new olc::Decal(spr);
-        bool tint = t["tint"].asBool();
+        bool tint = t["tint"].asDouble();
+        uint32_t animationSpeed = t.get("animationSpeed", 1).asUInt();
         uint32_t width = t.get("width", 128).asInt();
         uint32_t realWidth = spr->width;
         uint32_t animations = realWidth / width;
         if (animations == 0) animations = 1;
-        components.push_back({dec, tint, width, animations});
+        components.push_back({dec, tint, animationSpeed, width, animations});
         sprites.push_back(spr);
     }
 }

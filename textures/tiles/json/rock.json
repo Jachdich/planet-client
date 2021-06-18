@@ -1,6 +1,6 @@
 {"drawGround": 1,
  "textures": [
      {"imageFile": "tiles/png/rock.png",
-      "tint": true}
+      "tint": false}
      ]
  }
