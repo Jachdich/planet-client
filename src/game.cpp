@@ -49,7 +49,6 @@ bool Game::OnUserCreate() {
         galaxyView = true;
         menuView = false;
     }
-	SetPixelMode(olc::Pixel::MASK);
     return true;
 }
 
@@ -95,9 +94,8 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     /*if (planetView) {
         Clear(olc::Pixel(50, 100, 160));
     } else {
-	    Clear(olc::BLACK);
 	}*/
-
+	Clear(olc::BLACK);
 	if (menuView) {
 	    return menu.draw(this);
 	}
