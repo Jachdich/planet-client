@@ -109,8 +109,8 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	}
 
     	if (root["serverRequest"].asString() == "updateTileError") {
-    	    PlanetSurface *surf - getSurfaceFromJson(root, cache);
-            tiles[root["tileError"]["pos"].asUInt()].addError(root["tileError"]["msg"].asString());
+    	    PlanetSurface *surf = getSurfaceFromJson(root, cache);
+            surf->tiles[root["tileError"]["pos"].asUInt()].addError(root["tileError"]["msg"].asString());
     	}
     	
     }
