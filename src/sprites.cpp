@@ -60,7 +60,7 @@ void TileSprite::draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, ol
         } else {
             e->DrawPartialDecal(pos, c.decal,
                 olc::vi2d((trx.animationStage / c.animationSpeed) % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height},
-                {scl, scl}, olc::Pixel(300, 300, 300));
+                {scl, scl});
             //e->DrawDecal(pos, c.decal, {scl, scl});
         }
     }
