@@ -93,7 +93,7 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
     float n = 10;
     for (std::string key : {"people", "food", "water", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "glass", "iron", "copper", "aluminium"}) {
         auto v = this->data->stats.data[key];
-        e->DrawDecal({2, n + 4}, icons[key]);
+        e->DrawDecal({2, n + 12}, icons[key]);
         if (key == "people") {
             e->DrawStringDecal({16, n += 12}, std::to_string((int)data->stats["peopleIdle"]) + "/" + std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
         } else {
