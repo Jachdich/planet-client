@@ -10,7 +10,7 @@ Tile::Tile(TileType type, int z, int x, int y, olc::Pixel tint) {
     this->y = y;
 }
 
-olc::vf2d Tile::getTextureCoordinates(CamParams trx) {
+olc::vf2d Tile::getTextureCoordinates(CamParams &trx) {
 	int sx = x * TEXTURE_W / 2;
 	int sy = y * TEXTURE_H;
 
@@ -19,7 +19,7 @@ olc::vf2d Tile::getTextureCoordinates(CamParams trx) {
 	return olc::vf2d(scx, scy);
 }
 
-void Tile::draw(olc::PixelGameEngine * e, CamParams trx) {
+void Tile::draw(olc::PixelGameEngine * e, CamParams &trx) {
     int r,g,b;
     r = tint.r;
     g = tint.g;

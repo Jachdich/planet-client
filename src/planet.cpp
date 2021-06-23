@@ -41,7 +41,7 @@ Planet::Planet(Json::Value res, int posInStar) {
     this->posInStar = posInStar;
 }
 
-void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {
+void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams &trx) {
 	if (this->surf == nullptr) {
 		this->surf = new olc::Sprite(radius * 2, radius * 2);
 		e->SetDrawTarget(this->surf);
@@ -123,6 +123,6 @@ void Planet::unloadSurface() {
     surface = nullptr;
 }
 
-void Planet::drawSurface(olc::PixelGameEngine * e, CamParams trx) {
+void Planet::drawSurface(olc::PixelGameEngine * e, CamParams &trx) {
     surface->draw(e, trx);
 }

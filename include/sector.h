@@ -15,7 +15,7 @@ public:
     Sector();
     void setRequested();
     Sector(Json::Value root);
-    Star * getStarAt(int x, int y, CamParams trx);
-    void draw(olc::PixelGameEngine * e, CamParams trx);
+    Star * getStarAt(int x, int y, CamParams &trx);
+    void draw(olc::PixelGameEngine * e, CamParams &trx);
 };
 #endif

@@ -18,6 +18,6 @@ public:
     void getSectorFromNetwork(uint32_t x, uint32_t y);
     void setSectorAt(int32_t sx, int32_t sy, Sector s);
     Sector * getSectorAt(int32_t x, int32_t y);
-    void draw(olc::PixelGameEngine * e, CamParams trx);
+    void draw(olc::PixelGameEngine * e, CamParams &trx);
 };
 #endif

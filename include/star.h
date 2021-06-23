@@ -28,10 +28,10 @@ public:
     Star();
     Star(Json::Value root, int posInSector);
     
-    void drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamParams trx);
-    void draw(olc::PixelGameEngine * e, CamParams trx, int secOffsetX, int secOffsetY);
+    void drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamParams &trx);
+    void draw(olc::PixelGameEngine * e, CamParams &trx, int secOffsetX, int secOffsetY);
     void select();
     void drawTexture(olc::PixelGameEngine *e, uint32_t scale);
-    Planet * getPlanetAt(int x, int y, CamParams trx);
+    Planet * getPlanetAt(int x, int y, CamParams &trx);
 };
 #endif

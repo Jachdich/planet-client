@@ -13,7 +13,7 @@ struct AABB {
 	inline AABB(double x, double y, double w, double h) : pos{x, y}, size{w, h} {}
 	inline AABB() {}
 
-	inline bool isInside(olc::vd2d point) {
+	inline bool isInside(olc::vd2d &point) {
 		if (point.x > pos.x &&
 			point.x < pos.x + size.x &&
 			point.y > pos.y &&
@@ -47,7 +47,7 @@ struct TileSpriteComponent {
 struct TileSprite {
 	TileType drawGround;
 	std::vector<TileSpriteComponent> components;
-	void draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, olc::Pixel tint);
+	void draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vf2d &pos, const olc::Pixel &tint);
 	TileSprite(std::string fName);
 };
 

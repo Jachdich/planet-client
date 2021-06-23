@@ -23,7 +23,7 @@ DropdownMenuItem::DropdownMenuItem(std::string text, std::function<void()> ptr) 
 	this->click = ptr;
 }
 
-void DropdownMenuItem::draw(olc::PixelGameEngine * e, CamParams trx) {
+void DropdownMenuItem::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	olc::vd2d pos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
 	UIComponent comp = UIComponents["menu_item"];
 	e->DrawDecal(pos + offset * trx.zoom, comp.decal, {trx.zoom, trx.zoom});
@@ -45,7 +45,7 @@ void DropdownMenu::registerItem(DropdownMenuItem item) {
 	this->items.push_back(item);
 }
 
-void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams trx) {
+void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	UIComponent component = this->open ? UIComponents["menu_open"] : UIComponents["menu_closed"];
 	olc::vd2d pos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
 	e->DrawDecal(pos, component.decal, {trx.zoom, trx.zoom});
@@ -57,7 +57,7 @@ void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams trx) {
 	}
 }
 
-bool DropdownMenu::click(olc::vf2d screenPos, CamParams trx) {
+bool DropdownMenu::click(olc::vf2d screenPos, CamParams &trx) {
 	olc::vd2d rectPos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
 
 	olc::vd2d delta = screenPos - rectPos;
@@ -89,7 +89,7 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 	this->data = data;
 }
 
-void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
+void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams &trx) {
     float n = 10;
     for (std::string key : {"people", "food", "water", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "glass", "iron", "copper", "aluminium"}) {
         auto v = this->data->stats.data[key];
@@ -142,7 +142,7 @@ void PlanetHUD::showPopup(std::string message) {
 	this->popupMessage = message;
 }
 
-bool PlanetHUD::mousePressed(int x, int y, CamParams trx) {
+bool PlanetHUD::mousePressed(int x, int y, CamParams &trx) {
 	if (this->popupMessage != "") {
 	    UIComponent component = UIComponents["error_popup"];
 	    olc::vi2d size = {component.decal->sprite->width, component.decal->sprite->height};

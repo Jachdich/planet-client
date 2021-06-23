@@ -43,7 +43,7 @@ Json::Value getJsonFromTextureFile(std::string fName) {
     return root;
 }
 
-void TileSprite::draw(olc::PixelGameEngine * e, CamParams trx, olc::vf2d pos, olc::Pixel tint) {
+void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vf2d &pos, const olc::Pixel &tint) {
 
     if (drawGround != TileType::AIR) {
          tileSprites[(int)drawGround].draw(e, trx, pos, tint);

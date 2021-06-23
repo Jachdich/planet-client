@@ -27,7 +27,7 @@ public:
 	void updateTimers(float elapsedTime);
 	std::vector<TaskType> getPossibleTasks(Tile * target);
 	bool dispatchTask(TaskType type, Tile * target);
-	void draw(olc::PixelGameEngine * e, CamParams trx);
+	void draw(olc::PixelGameEngine * e, CamParams &trx);
 };
 
 #endif

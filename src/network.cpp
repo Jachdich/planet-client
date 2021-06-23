@@ -81,7 +81,7 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     if (root.get("serverRequest", "NONE").asString() != "NONE") {
     	if (root["serverRequest"].asString() == "setTimer") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
-    	    if (surface == nullptr) {
+    	    if (surface == nullptr || !surface->generated) {
     	        std::cout << "[WARNING] discarding setTimer packet on non-existant PlanetSurface\n";
     	        return;
     	    }
@@ -90,8 +90,8 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	}
     	if (root["serverRequest"].asString() == "statsChange") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
-    	    if (surface == nullptr) {
-    	        std::cout << "[WARNING] discarding statsChange packet on non-existant PlanetSurface\n";
+    	    if (surface == nullptr || !surface->generated) {
+    	        std::cout << "[WARNING] discarding statsChange packet on non-existant or partially loaded PlanetSurface\n";
     	        return;
     	    }
      	    for (auto &elem: root["resources"].getMemberNames()) {
@@ -101,7 +101,7 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	}
     	if (root["serverRequest"].asString() == "changeTile") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
-    	    if (surface == nullptr) {
+    	    if (surface == nullptr || !surface->generated) {
     	        std::cout << "[WARNING] discarding changeTile packet on non-existant PlanetSurface\n";
     	        return;
     	    }
@@ -110,6 +110,10 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
 
     	if (root["serverRequest"].asString() == "updateTileError") {
     	    PlanetSurface *surf = getSurfaceFromJson(root, cache);
+    	    if (surf == nullptr || !surf->generated || surf->tiles.size() <= root["tileError"]["pos"].asUInt()) {
+     	        std::cout << "[WARNING] discarding updateTileError packet on non-existant or partially loaded PlanetSurface\n";
+     	        return;
+     	    }
             surf->tiles[root["tileError"]["pos"].asUInt()].addError(root["tileError"]["msg"].asString());
     	}
     	
@@ -196,7 +200,7 @@ void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
 
     } else {
         std::cerr << "ERROR: " <<  ec.message() << "\n";
-        readUntil();
+        //readUntil();
     }
 }
 

@@ -70,7 +70,7 @@ void Star::drawTexture(olc::PixelGameEngine *e, uint32_t scale) {
     decBuf = new olc::Decal(buf);
 }
 
-void Star::draw(olc::PixelGameEngine * e, CamParams trx, int secOffsetX, int secOffsetY) {
+void Star::draw(olc::PixelGameEngine * e, CamParams &trx, int secOffsetX, int secOffsetY) {
     if (radius * trx.zoom < 0.2 * randomDissapearChance) {
         return;
     }
@@ -93,7 +93,7 @@ void Star::draw(olc::PixelGameEngine * e, CamParams trx, int secOffsetX, int sec
     }
 }
 
-void Star::drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamParams trx) {
+void Star::drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamParams &trx) {
     if (decBuf == nullptr || buf == nullptr) {
         drawTexture(e, 6);
     } else if (buf->width != this->radius * 12) {
@@ -115,7 +115,7 @@ void Star::drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamPara
     }
 }
 
-Planet * Star::getPlanetAt(int ax, int ay, CamParams trx) {
+Planet * Star::getPlanetAt(int ax, int ay, CamParams &trx) {
     int x = (ax - trx.tx) / trx.zoom;
     int y = (ay - trx.ty) / trx.zoom;
     for (Planet & p: this->planets) {

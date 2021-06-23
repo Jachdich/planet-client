@@ -46,13 +46,13 @@ void PlanetSurface::drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx) {
 	t.draw(e, trx);
 }
 
-void PlanetSurface::draw(olc::PixelGameEngine * e, CamParams trx) {
+void PlanetSurface::draw(olc::PixelGameEngine * e, CamParams &trx) {
     for (int i = 0; i < parent->radius * 2; i++) {
         for (int j = 0; j < parent->radius * 2; j++) {
             int ia = i - parent->radius;
             int ja = j - parent->radius;
             if ((ia * ia + ja * ja) >= (parent->radius * parent->radius)) continue;
-            drawTile(tiles[i * parent->radius * 2 + j], e, trx);
+            tiles[i * parent->radius * 2 + j].draw(e, trx);
         }
     }
 	this->hud->draw(e, trx);
@@ -84,15 +84,15 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
         }
     }
 	
-	generated = true;
-	requested = false;
 	rad = root["rad"].asInt();
 
 	this->data = new PlanetData(this, root);
 	this->hud = new PlanetHUD(this, this->data);
+	generated = true;
+	requested = false;
 }
 
-void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams trx) {
+void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams &trx) {
 	if (mouseClicked) {
 		if (hud->mousePressed(max, may, trx)) {
 		    //HUD was clicked on, do not click on anything below HUD
