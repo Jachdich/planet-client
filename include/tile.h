@@ -15,6 +15,7 @@ public:
 	bool hovered = false;
 	bool selected = false;
 	int x,y;
+	uint16_t state = 0;
 	std::string errMsg = "";
 	olc::Pixel tint;
 	Tile(TileType type, int z, int x, int y, olc::Pixel tint);

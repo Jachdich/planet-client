@@ -44,11 +44,16 @@ struct TileSpriteComponent {
     uint32_t animations;
 };
 
-struct TileSprite {
+struct TileSpriteState {
 	TileType drawGround;
 	std::vector<TileSpriteComponent> components;
-	void draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vf2d &pos, const olc::Pixel &tint);
-	TileSprite(std::string fName);
+//	TileSprite(std::string fName);
+};
+
+struct TileSprite {
+    TileSprite(std::string fName);
+    std::vector<TileSpriteState> states;
+	void draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vf2d &pos, const olc::Pixel &tint, uint16_t state_idx);
 };
 
 void loadSprites();

@@ -106,6 +106,7 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	        return;
     	    }
             surface->tiles[root["tilePos"].asInt()].type = (TileType)root["type"].asInt();
+            surface->updateDirectionalTiles();
     	}
 
     	if (root["serverRequest"].asString() == "updateTileError") {

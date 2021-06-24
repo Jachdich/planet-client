@@ -43,16 +43,16 @@ Json::Value getJsonFromTextureFile(std::string fName) {
     return root;
 }
 
-void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vf2d &pos, const olc::Pixel &tint) {
+void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vf2d &pos, const olc::Pixel &tint, uint16_t state_idx) {
+    TileSpriteState &state = states[state_idx];
 
-    if (drawGround != TileType::AIR) {
-         tileSprites[(int)drawGround].draw(e, trx, pos, tint);
+    if (state.drawGround != TileType::AIR) {
+         tileSprites[(int)state.drawGround].draw(e, trx, pos, tint, 0);
     }
 
-    for (TileSpriteComponent &c : components) {
+    for (TileSpriteComponent &c : state.components) {
         float scl = trx.zoom / (c.width / 128.0f);
         if (c.tint) {
-            
             e->DrawPartialDecal(pos, c.decal,
                 olc::vi2d((trx.animationStage / c.animationSpeed) % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height},
                 {scl, scl}, tint);
@@ -67,22 +67,33 @@ void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc:
 }
 
 TileSprite::TileSprite(std::string fName) {
-	Json::Value root = getJsonFromTextureFile(fName);
+	Json::Value definition = getJsonFromTextureFile(fName);
 
-	//TODO this is a very bad idea!
-    drawGround = (TileType)root["drawGround"].asInt();
-    
-    for (Json::Value t : root["textures"]) {
-        olc::Sprite * spr = new olc::Sprite(texturedir + "/" + t["imageFile"].asString());
-        olc::Decal * dec = new olc::Decal(spr);
-        bool tint = t["tint"].asDouble();
-        uint32_t animationSpeed = t.get("animationSpeed", 1).asUInt();
-        uint32_t width = t.get("width", 128).asInt();
-        uint32_t realWidth = spr->width;
-        uint32_t animations = realWidth / width;
-        if (animations == 0) animations = 1;
-        components.push_back({dec, tint, animationSpeed, width, animations});
-        sprites.push_back(spr);
+    Json::Value e;
+	if (definition["states"].isNull()) {
+	    e["states"][0] = definition;
+	} else {
+        e = definition;
+	}
+
+    for (Json::Value root : e["states"]) {
+        TileSpriteState state;
+        //TODO this is a very bad idea!
+        state.drawGround = (TileType)root["drawGround"].asInt();
+
+        for (Json::Value t : root["textures"]) {
+            olc::Sprite * spr = new olc::Sprite(texturedir + "/" + t["imageFile"].asString());
+            olc::Decal * dec = new olc::Decal(spr);
+            bool tint = t["tint"].asDouble();
+            uint32_t animationSpeed = t.get("animationSpeed", 1).asUInt();
+            uint32_t width = t.get("width", 128).asInt();
+            uint32_t realWidth = spr->width;
+            uint32_t animations = realWidth / width;
+            if (animations == 0) animations = 1;
+            state.components.push_back({dec, tint, animationSpeed, width, animations});
+            sprites.push_back(spr);
+        }
+        states.push_back(state);
     }
 }
 void registerTileSprite(std::string x) {
@@ -119,8 +130,10 @@ void registerIconSprite(std::string name) {
 
 void loadSprites() {
 	for (TileSprite t : tileSprites) {
-		for (TileSpriteComponent tc : t.components) {
-			delete tc.decal;
+	    for (TileSpriteState state: t.states) {
+    		for (TileSpriteComponent tc : state.components) {
+    			delete tc.decal;
+    		}
 		}
 	}
 
@@ -146,7 +159,7 @@ void loadSprites() {
 	std::string names[] = {"void.json", "ground.json", "bush.json", "tree.json", "pine.json",
 	                       "water.json", "rock.json", "house.json", "pineforest.json", "forest.json", "tonk.json",
 	                       "farm.json", "greenhouse.json", "waterpump.json", "mine.json", "blastfurnace.json", "warehouse.json", "forestry.json",
-	                       "capsule.json"};
+	                       "capsule.json", "road.json", "pipe.json", "cable.json", "powerstation.json"};
 	//sidenote: what the fuck?
 	//the hell does this mean?
 	for (int i = 0; i < *(&names + 1) - names; i++) {

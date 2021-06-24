@@ -194,7 +194,8 @@ void PlanetHUD::showClickMenu(Tile * t) {
 	    for (TaskType type : {TaskType::PLANT_TREE, TaskType::BUILD_HOUSE, TaskType::BUILD_FARM,
 	    		 TaskType::BUILD_GREENHOUSE, TaskType::BUILD_WATERPUMP, TaskType::BUILD_MINE,
 	    		 TaskType::BUILD_BLASTFURNACE, TaskType::BUILD_FORESTRY, TaskType::BUILD_CAPSULE,
-	    		 TaskType::BUILD_WAREHOUSE}) {
+	    		 TaskType::BUILD_WAREHOUSE, TaskType::BUILD_ROAD, TaskType::BUILD_PIPE,
+	    		 TaskType::BUILD_CABLE, TaskType::BUILD_WAREHOUSE}) {
 		    this->ddmenu[0].registerItem(DropdownMenuItem(getTaskTypeName(type),
 		    [this, type]() { data->dispatchTask(type, this->selectedTile); }));
 	    }

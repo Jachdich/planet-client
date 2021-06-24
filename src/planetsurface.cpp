@@ -62,6 +62,44 @@ void PlanetSurface::draw(olc::PixelGameEngine * e, CamParams &trx) {
 PlanetSurface::PlanetSurface() {
 }
 
+bool isTileDirectional(const TileType &type) {
+    switch (type) {
+        case TileType::ROAD: return true;
+        case TileType::CABLE: return true;
+        case TileType::PIPE: return true;
+        default: return false;
+    }
+}
+
+void PlanetSurface::updateDirectionalTiles() {
+    uint32_t width = rad * 2;
+	for (int i = 0; i < rad * 2; i++) {
+		for (int j = 0; j < rad * 2; j++) {
+		    Tile &ctile = tiles[i * width + j];
+			if (isTileDirectional(ctile.type)) {
+                if (tiles[(i + 1) * width + j].type == ctile.type) ctile.state = 0;
+                if (tiles[(i - 1) * width + j].type == ctile.type) ctile.state = 0;
+                if (tiles[i * width + (j + 1)].type == ctile.type) ctile.state = 1;
+                if (tiles[i * width + (j - 1)].type == ctile.type) ctile.state = 1;
+                
+                if (tiles[(i + 1) * width + j].type == ctile.type && tiles[i * width + j + 1].type == ctile.type) ctile.state = 2;
+                if (tiles[(i + 1) * width + j].type == ctile.type && tiles[i * width + j - 1].type == ctile.type) ctile.state = 3;
+                if (tiles[(i - 1) * width + j].type == ctile.type && tiles[i * width + j + 1].type == ctile.type) ctile.state = 4;
+                if (tiles[(i - 1) * width + j].type == ctile.type && tiles[i * width + j - 1].type == ctile.type) ctile.state = 5;
+
+                if (tiles[(i + 1) * width + j].type == ctile.type && tiles[i * width + j + 1].type == ctile.type && tiles[i * width + j - 1].type == ctile.type) ctile.state = 6;
+                if (tiles[(i - 1) * width + j].type == ctile.type && tiles[i * width + j + 1].type == ctile.type && tiles[i * width + j - 1].type == ctile.type) ctile.state = 7;
+                if (tiles[(i - 1) * width + j].type == ctile.type && tiles[i * width + j + 1].type == ctile.type && tiles[(i + 1) * width + j].type == ctile.type) ctile.state = 8;
+                if (tiles[(i - 1) * width + j].type == ctile.type && tiles[i * width + j - 1].type == ctile.type && tiles[(i + 1) * width + j].type == ctile.type) ctile.state = 9;
+
+                if (tiles[(i + 1) * width + j].type == ctile.type && tiles[i * width + j + 1].type == ctile.type && tiles[(i - 1) * width + j].type == ctile.type && tiles[i * width + j - 1].type == ctile.type) ctile.state = 10;
+			} else {
+			    ctile.state = 0;
+			}
+		}
+	}
+}
+
 PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 	parent = p;
     int width = root["rad"].asInt() * 2;
@@ -77,6 +115,8 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 			tiles.push_back(Tile((TileType)(type), z, j, i, this->getTint(i, j))); //TODO WHY DO I HAVE TO SWAP J AND I HERE?
 		}
 	}
+
+    updateDirectionalTiles();
 
     if (!root["tileErrors"].isNull()) {
         for (uint32_t i = 0; i < root["tileErrors"].size(); i++) {

@@ -8,7 +8,7 @@ client: $(OBJECTS)
 
 obj/%.o: src/%.cpp $(HEADERS)
 	@mkdir -p obj
-	g++ -c -o $@ $< -Wall -Werror -g -ggdb -std=c++17 -Iinclude
+	g++ -c -o $@ $< -Wall -g -ggdb -std=c++17 -Iinclude
 
 obj/optimised/%.o: src/%.cpp $(HEADERS)
 	@mkdir -p obj/optimised

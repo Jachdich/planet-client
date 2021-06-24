@@ -30,6 +30,7 @@ public:
     void drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx);
     void draw(olc::PixelGameEngine * e, CamParams &trx);
 	void mouseOver(int x, int y, bool mouseClicked, bool mousePressed, CamParams &trx);
+	void updateDirectionalTiles();
     olc::Pixel getTint(int x, int y);
 };
 
