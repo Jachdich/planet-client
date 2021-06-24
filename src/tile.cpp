@@ -10,7 +10,7 @@ Tile::Tile(TileType type, int z, int x, int y, olc::Pixel tint) {
     this->y = y;
 }
 
-olc::vf2d Tile::getTextureCoordinates(CamParams trx) {
+olc::vf2d Tile::getTextureCoordinates(CamParams &trx) {
 	int sx = x * TEXTURE_W / 2;
 	int sy = y * TEXTURE_H;
 
@@ -19,7 +19,7 @@ olc::vf2d Tile::getTextureCoordinates(CamParams trx) {
 	return olc::vf2d(scx, scy);
 }
 
-void Tile::draw(olc::PixelGameEngine * e, CamParams trx) {
+void Tile::draw(olc::PixelGameEngine * e, CamParams &trx) {
     int r,g,b;
     r = tint.r;
     g = tint.g;
@@ -31,7 +31,7 @@ void Tile::draw(olc::PixelGameEngine * e, CamParams trx) {
 	if (g > 255) g = 255;
 	if (b > 255) b = 255;
 	olc::vf2d v = this->getTextureCoordinates(trx);
-	tileSprites[(int)type].draw(e, trx, v, olc::Pixel(r, g, b));
+	tileSprites[(int)type].draw(e, trx, v, olc::Pixel(r, g, b), state);
 	if (errMsg != "") {
         //e->DrawStringDecal(v, errMsg, olc::WHITE, {trx.zoom, trx.zoom});
         e->DrawDecal(v, icons["tile_error"], {trx.zoom * 2, trx.zoom * 2});

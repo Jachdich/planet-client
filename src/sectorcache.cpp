@@ -35,7 +35,7 @@ Sector * SectorCache::getSectorAt(int32_t x, int32_t y) {
     return &secs.at(index);
 }
 
-void SectorCache::draw(olc::PixelGameEngine * e, CamParams trx) {
+void SectorCache::draw(olc::PixelGameEngine * e, CamParams &trx) {
     int32_t sectorX = ((-trx.tx) / trx.zoom) / 256;
     int32_t sectorY = ((-trx.ty) / trx.zoom) / 256;
 

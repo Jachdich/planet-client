@@ -20,7 +20,7 @@ std::string pad(std::string str, int n = 2, char chr = '0') {
 	return std::string(n - str.size(), chr) + str;
 }
 
-void PlanetData::draw(olc::PixelGameEngine * e, CamParams trx) {
+void PlanetData::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	for (Timer &t : timers) {
 		olc::vf2d pos = t.target->getTextureCoordinates(trx);
 		olc::vf2d offset = {32 * trx.zoom, 64 * trx.zoom}; //TODO fractions of texture size not hardcoded values
@@ -62,6 +62,10 @@ std::vector<TaskType> PlanetData::getPossibleTasks(Tile * target) {
 		v.push_back(TaskType::BUILD_FORESTRY);
 		v.push_back(TaskType::BUILD_CAPSULE);
 		v.push_back(TaskType::BUILD_WAREHOUSE);
+		v.push_back(TaskType::BUILD_ROAD);
+		v.push_back(TaskType::BUILD_PIPE);
+		v.push_back(TaskType::BUILD_CABLE);
+		v.push_back(TaskType::BUILD_POWERSTATION);
 	} else {
 	    v.push_back(TaskType::CLEAR);
 	}

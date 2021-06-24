@@ -26,11 +26,11 @@ release: $(OBJECTS_OPTIMISED)
 
 .PHONY: run
 run: client
-	./client
+	vblank_mode=0 ./client
 
 .PHONY: connect
 connect: client
-	./client 127.0.0.1
+	vblank_mode=0 ./client 127.0.0.1
 	
 .PHONY: clean
 clean:

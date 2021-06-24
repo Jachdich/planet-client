@@ -31,8 +31,8 @@ public:
     Planet(Json::Value res, int posInStar);
     void loadSurface(int secX, int secY, int starPos, int planetPos);
     void unloadSurface();
-    void draw(olc::PixelGameEngine * e, double x, double y, CamParams trx);
-    void drawSurface(olc::PixelGameEngine * e, CamParams trx);
+    void draw(olc::PixelGameEngine * e, double x, double y, CamParams &trx);
+    void drawSurface(olc::PixelGameEngine * e, CamParams &trx);
 };
 
 #endif

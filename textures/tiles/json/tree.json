@@ -1,8 +1,10 @@
 {"drawGround": 1,
  "textures": [
      {"imageFile": "tiles/png/tree_trunk.png",
+      "width": 48,
       "tint": false},
      {"imageFile": "tiles/png/tree.png",
+      "width": 48,
       "tint": true}
      ]
  }
