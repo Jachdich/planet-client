@@ -95,7 +95,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
         Clear(olc::Pixel(50, 100, 160));
     } else {
 	}*/
-	Clear(olc::BLACK);
+	//Clear(olc::BLACK);
 	if (menuView) {
 	    return menu.draw(this);
 	}
