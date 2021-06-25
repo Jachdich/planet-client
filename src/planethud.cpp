@@ -18,7 +18,7 @@
 
 #define NUM_MENUS 2
 
-DropdownMenuItem::DropdownMenuItem(std::string text, std::function<void()> ptr) {
+DropdownMenuItem::DropdownMenuItem(std::string text, std::function<void(bool)> ptr) {
 	this->text = text;
 	this->click = ptr;
 }
@@ -57,7 +57,7 @@ void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	}
 }
 
-bool DropdownMenu::click(olc::vf2d screenPos, CamParams &trx) {
+bool DropdownMenu::click(olc::vf2d screenPos, bool right, CamParams &trx) {
 	olc::vd2d rectPos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
 
 	olc::vd2d delta = screenPos - rectPos;
@@ -76,7 +76,7 @@ bool DropdownMenu::click(olc::vf2d screenPos, CamParams &trx) {
 			return false;
 		}
 
-		this->items[componentIndex].click();
+		this->items[componentIndex].click(right);
 		return true;
 	}
 
@@ -125,6 +125,10 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams &trx) {
         e->DrawStringDecal({xpos, n += 10}, "No tile selected");
     }
 
+    if (this->selectedAction != TaskType::NONE) {
+        e->DrawStringDecal({10, 0}, "Selected task: " + getTaskTypeName(this->selectedAction) + " (<esc> to finish)");
+    }
+
 	if (this->ddmenu != nullptr) {
 	    for (size_t i = 0; i < NUM_MENUS; i++) {
 		    this->ddmenu[i].draw(e, trx);
@@ -142,7 +146,7 @@ void PlanetHUD::showPopup(std::string message) {
 	this->popupMessage = message;
 }
 
-bool PlanetHUD::mousePressed(int x, int y, CamParams &trx) {
+bool PlanetHUD::mousePressed(int x, int y, bool right, CamParams &trx) {
 	if (this->popupMessage != "") {
 	    UIComponent component = UIComponents["error_popup"];
 	    olc::vi2d size = {component.decal->sprite->width, component.decal->sprite->height};
@@ -162,9 +166,10 @@ bool PlanetHUD::mousePressed(int x, int y, CamParams &trx) {
             return true;
         }
     }
-	if (this->ddmenu != nullptr) {
+
+    if (this->ddmenu != nullptr) {
 	    for (size_t i = 0; i < NUM_MENUS; i++) {
-		    bool clicked = this->ddmenu[i].click(olc::vf2d(x, y), trx);
+		    bool clicked = this->ddmenu[i].click(olc::vf2d(x, y), right, trx);
 		    if (clicked) return true;
 		}
 	}
@@ -197,16 +202,34 @@ void PlanetHUD::showClickMenu(Tile * t) {
 	    		 TaskType::BUILD_WAREHOUSE, TaskType::BUILD_ROAD, TaskType::BUILD_PIPE,
 	    		 TaskType::BUILD_CABLE, TaskType::BUILD_WAREHOUSE}) {
 		    this->ddmenu[0].registerItem(DropdownMenuItem(getTaskTypeName(type),
-		    [this, type]() { data->dispatchTask(type, this->selectedTile); }));
+            [this, type](bool right) { 
+                if (right) {
+                    if (this->selectedAction == type) {
+                        this->selectedAction = TaskType::NONE;
+                    } else {
+                        this->selectedAction = type;
+                    }
+                } else {
+                    data->dispatchTask(type, this->selectedTile);
+                }
+            }));
 	    }
 	}
 
     for (TaskType type : v) {
         this->ddmenu[1].registerItem(DropdownMenuItem(getTaskTypeName(type),
-        [this, type]() { data->dispatchTask(type, this->selectedTile); }));
+        [this, type](bool right) { 
+            if (right) {
+                if (this->selectedAction == type) {
+                    this->selectedAction = TaskType::NONE;
+                } else {
+                    this->selectedAction = type;
+                }
+            } else {
+                data->dispatchTask(type, this->selectedTile);
+            }
+        }));
     }
-	//this->ddmenu->registerItem(DropdownMenuItem("Tree", [this]() { sendChangeTileRequest(TileType::TREE); }));
-	//this->ddmenu->registerItem(DropdownMenuItem("Grass", [this]() { sendChangeTileRequest(TileType::GRASS); }));
 
 	this->selectedTile = t;
 	t->selected = true;

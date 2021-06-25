@@ -132,9 +132,9 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 	requested = false;
 }
 
-void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, CamParams &trx) {
-	if (mouseClicked) {
-		if (hud->mousePressed(max, may, trx)) {
+void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePressed, bool rightClicked, CamParams &trx) {
+	if (mouseClicked || rightClicked) {
+		if (hud->mousePressed(max, may, rightClicked, trx)) {
 		    //HUD was clicked on, do not click on anything below HUD
 			return;
 		}
@@ -191,6 +191,10 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 				tiles[i * rad * 2 + j].hovered = true;
 				lastSelectX = j;
 				lastSelectY = i;
+				if (hud->selectedAction != TaskType::NONE && mouseClicked) {
+                    data->dispatchTask(hud->selectedAction, &tiles[i * rad * 2 + j]);
+                    return;
+                }
 				if (mouseClicked) {
 					this->hud->showClickMenu(&tiles[i * rad * 2 + j]);
 					selectedTile = &tiles[i * rad * 2 + j];
