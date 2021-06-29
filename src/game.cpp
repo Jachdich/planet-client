@@ -107,7 +107,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     } else if (planetView) {
     	if (selectedPlanet->surface->generated) {
     	    selectedPlanet->surface->data->updateTimers(fElapsedTime);
-			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, trx);
+			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, GetMouse(1).bPressed, trx);
     		selectedPlanet->drawSurface(this, trx);
     	}
     }
@@ -160,6 +160,8 @@ bool Game::OnUserUpdate(float fElapsedTime) {
                 selectedPlanet->surface->hud->popupMessage = "";
             } else if (selectedPlanet->surface->hud->ddmenu != nullptr) {
                 selectedPlanet->surface->hud->closeClickMenu();
+            } else if (selectedPlanet->surface->hud->selectedAction != TaskType::NONE) {
+                selectedPlanet->surface->hud->selectedAction = TaskType::NONE;
             } else {
                 starView = true;
                 planetView = false;

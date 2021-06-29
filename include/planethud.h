@@ -12,10 +12,10 @@ class PlanetData;
 class DropdownMenuItem {
 public:
 	std::string text;
-	std::function<void()> click;
+	std::function<void(bool)> click;
 	olc::vd2d pos;
 	olc::vd2d offset;
-	DropdownMenuItem(std::string text, std::function<void()> ptr);
+	DropdownMenuItem(std::string text, std::function<void(bool)> ptr);
 	void draw(olc::PixelGameEngine * e, CamParams &trx);
 };
 
@@ -28,7 +28,7 @@ public:
 	DropdownMenu(olc::vf2d pos, std::string text);
 	inline DropdownMenu() {}
 	void draw(olc::PixelGameEngine * e, CamParams &trx);
-	bool click(olc::vf2d pos, CamParams &trx);
+	bool click(olc::vf2d pos, bool right, CamParams &trx);
 	void registerItem(DropdownMenuItem item);
 };
 
@@ -43,7 +43,7 @@ private:
 public:
 	PlanetHUD();
 	PlanetHUD(PlanetSurface * parent, PlanetData * data);
-	bool mousePressed(int x, int y, CamParams &trx);
+	bool mousePressed(int x, int y, bool right, CamParams &trx);
 	void closeClickMenu();
 	void sendChangeTileRequest(TileType to);
 	void draw(olc::PixelGameEngine * e, CamParams &trx);
@@ -51,6 +51,7 @@ public:
 	void showPopup(std::string message);
     std::string popupMessage = "";
 	DropdownMenu * ddmenu = nullptr;
+	TaskType selectedAction = TaskType::NONE;
 };
 
 #endif
