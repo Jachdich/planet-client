@@ -47,7 +47,6 @@ struct TileSpriteComponent {
 struct TileSpriteState {
 	TileType drawGround;
 	std::vector<TileSpriteComponent> components;
-//	TileSprite(std::string fName);
 };
 
 struct TileSprite {

@@ -424,8 +424,6 @@ int main()
 	#define PGE_USE_CUSTOM_START
 #endif
 
-#define OLC_GFX_OPENGL33
-
 // Renderer
 #if !defined(OLC_GFX_OPENGL10) && !defined(OLC_GFX_OPENGL33) && !defined(OLC_GFX_DIRECTX10)
 	#if !defined(OLC_GFX_CUSTOM_EX)

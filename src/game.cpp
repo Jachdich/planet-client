@@ -56,13 +56,13 @@ std::vector<int> Game::getCurrentPlanetsurfaceLocator() {
 	return std::vector<int>{lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar};
 }
 
-void Game::mousePressed() {
+void Game::mousePressed(uint32_t x, uint32_t y) {
     if (galaxyView) {
-        Sector * s = map.getSectorAt(floor((GetMouseX() - trx.tx) / trx.zoom / 256),
-                                     floor((GetMouseY() - trx.ty) / trx.zoom / 256));
+        Sector * s = map.getSectorAt(floor((x - trx.tx) / trx.zoom / 256),
+                                     floor((y - trx.ty) / trx.zoom / 256));
         lastClickedSector = s;
  
-        Star * st = s->getStarAt(GetMouseX(), GetMouseY(), trx);
+        Star * st = s->getStarAt(x, y, trx);
 
         if (st != nullptr) {
             this->selectedStar = st;
@@ -72,7 +72,7 @@ void Game::mousePressed() {
             trx = {0, 0, 1};
         }
     } else if (starView) {
-        Planet * p = selectedStar->getPlanetAt(GetMouseX(), GetMouseY(), trx);
+        Planet * p = selectedStar->getPlanetAt(x, y, trx);
         if (p != nullptr) {
             this->selectedPlanet = p;
             galaxyView = false;
@@ -95,7 +95,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
         Clear(olc::Pixel(50, 100, 160));
     } else {
 	}*/
-	//Clear(olc::BLACK);
+	Clear(olc::BLACK);
 	if (menuView) {
 	    return menu.draw(this);
 	}
@@ -112,13 +112,24 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     	}
     }
 
+    if (GetKey(olc::Key::W).bHeld) trx.ty += fElapsedTime * 500;
+    if (GetKey(olc::Key::A).bHeld) trx.tx += fElapsedTime * 500;
+    if (GetKey(olc::Key::S).bHeld) trx.ty -= fElapsedTime * 500;
+    if (GetKey(olc::Key::D).bHeld) trx.tx -= fElapsedTime * 500;
+    if (GetKey(olc::Key::Q).bHeld) trx.zoom *= (1 + fElapsedTime * 0.6);
+    if (GetKey(olc::Key::E).bHeld) trx.zoom *= (1 - fElapsedTime * 0.6);
+
     int count = GetMouseWheel();
     if (count != 0) {
         zoom(-count);
     }
 
+    if (GetKey(olc::Key::ENTER).bPressed) {
+        mousePressed(WIDTH/2, HEIGHT/2);
+    }
+
     if (GetMouse(0).bPressed) {
-        mousePressed();
+        mousePressed(GetMouseX(), GetMouseY());
     }
 
     if (GetMouse(1).bPressed) {
@@ -184,6 +195,9 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 		DrawStringDecal({0, 20}, std::to_string(1.0 / fElapsedTime), olc::Pixel(255, 255, 255));
 	}
 	//SetPixelMode(olc::Pixel::NORMAL);
+
+    DrawLine({WIDTH/2 - 10, HEIGHT/2}, {WIDTH/2 + 10, HEIGHT/2}, olc::WHITE);
+    DrawLine({WIDTH/2, HEIGHT/2 - 10}, {WIDTH/2, HEIGHT/2 + 10}, olc::WHITE);
 
     totalTime += fElapsedTime;
     trx.animationStage = totalTime * 10;

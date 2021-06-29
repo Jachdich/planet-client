@@ -24,10 +24,10 @@ DropdownMenuItem::DropdownMenuItem(std::string text, std::function<void()> ptr) 
 }
 
 void DropdownMenuItem::draw(olc::PixelGameEngine * e, CamParams &trx) {
-	olc::vd2d pos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
+	olc::vd2d pos = {this->pos.x * trx.zoom + (int)trx.tx, this->pos.y * trx.zoom + (int)trx.ty};
 	UIComponent comp = UIComponents["menu_item"];
 	e->DrawDecal(pos + offset * trx.zoom, comp.decal, {trx.zoom, trx.zoom});
-	e->DrawStringDecal((this->pos + offset + comp.textPos) * trx.zoom + olc::vi2d{trx.tx, trx.ty}, this->text, olc::BLACK, {trx.zoom, trx.zoom});
+	e->DrawStringDecal((this->pos + offset + comp.textPos) * trx.zoom + olc::vi2d{(int)trx.tx, (int)trx.ty}, this->text, olc::BLACK, {trx.zoom, trx.zoom});
 }
 
 DropdownMenu::DropdownMenu(olc::vf2d pos, std::string text) {
@@ -49,7 +49,7 @@ void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	UIComponent component = this->open ? UIComponents["menu_open"] : UIComponents["menu_closed"];
 	olc::vd2d pos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
 	e->DrawDecal(pos, component.decal, {trx.zoom, trx.zoom});
-	e->DrawStringDecal((this->pos + component.textPos) * trx.zoom + olc::vi2d{trx.tx, trx.ty}, this->text, olc::BLACK, {trx.zoom, trx.zoom});
+	e->DrawStringDecal((this->pos + component.textPos) * trx.zoom + olc::vi2d{(int)trx.tx, (int)trx.ty}, this->text, olc::BLACK, {trx.zoom, trx.zoom});
 	if (this->open) {
 		for (DropdownMenuItem item : this->items) {
 			item.draw(e, trx);

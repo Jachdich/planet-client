@@ -43,7 +43,7 @@ public:
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float fElapsedTime) override;
     void zoom(int count);
-    void mousePressed();
+    void mousePressed(uint32_t x, uint32_t y);
 	std::vector<int> getCurrentPlanetsurfaceLocator();
 };
 

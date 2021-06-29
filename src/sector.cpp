@@ -42,7 +42,7 @@ Star * Sector::getStarAt(int ax, int ay, CamParams &trx) {
 void Sector::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	if (debugMode) {
 		e->DrawRect(this->x * this->r * trx.zoom + trx.tx, this->y * this->r * trx.zoom + trx.ty, r * trx.zoom, r * trx.zoom, olc::Pixel(255, 255, 255));
-        e->DrawStringDecal({this->x * this->r * trx.zoom + trx.tx, this->y * this->r * trx.zoom + trx.ty}, std::to_string(this->x) + ", " + std::to_string(this->y), olc::WHITE);
+        e->DrawStringDecal({this->x * this->r * trx.zoom + (int)trx.tx, this->y * this->r * trx.zoom + (int)trx.ty}, std::to_string(this->x) + ", " + std::to_string(this->y), olc::WHITE);
 	}
     for (int i = 0; i < this->numStars; i++) {
         this->stars[i].draw(e, trx, x * r, y * r);
