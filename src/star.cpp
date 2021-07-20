@@ -25,6 +25,8 @@ Star::Star(Json::Value root, int posInSector) {
     noiseScl = root["noiseScl"].asDouble();
     noiseZ = root["noiseZ"].asDouble();
     noiseEffect = root["noiseEffect"].asDouble();
+
+    factionColour = olc::Pixel(rand() % 256, rand() % 256, rand() % 256);
 }
 
 //fun algorithm, makes cool shapes gonna keep for reference maybe makin planets
@@ -62,7 +64,7 @@ void Star::drawTexture(olc::PixelGameEngine *e, uint32_t scale) {
                 uint8_t b = colour.b * noise;
                 e->Draw({(signed)lx, (signed)ly}, olc::Pixel(r, g, b));
             } else {
-                e->Draw({(signed)lx, (signed)ly}, olc::Pixel(0, 0, 0, 0));
+                e->Draw({(signed)lx, (signed)ly}, olc::Pixel(255, 255, 255, 0));
             }
         }
     }
@@ -80,6 +82,7 @@ void Star::draw(olc::PixelGameEngine * e, CamParams &trx, int secOffsetX, int se
         return;
     }
 
+
     if (buf == nullptr) {
         drawTexture(e, 1);
     } else if (buf->width != this->radius * 2) {
@@ -91,6 +94,9 @@ void Star::draw(olc::PixelGameEngine * e, CamParams &trx, int secOffsetX, int se
             e->DrawDecal({(float)(ax - radius * trx.zoom), (float)(ay - radius * trx.zoom)}, decBuf, {trx.zoom, trx.zoom});
         //e->FillCircle(ax, ay, this->radius * trx.zoom, this->colour);
     }
+    e->FillCircle(ax, ay, 32 * trx.zoom, olc::Pixel(factionColour.r, factionColour.g, factionColour.b, 64));
+    e->DrawCircle(ax, ay, 32 * trx.zoom, factionColour);
+
 }
 
 void Star::drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamParams &trx) {

@@ -22,6 +22,8 @@ public:
     double noiseScl;
     double noiseEffect;
 
+    olc::Pixel factionColour;
+
     olc::Sprite *buf = nullptr;
     olc::Decal *decBuf = nullptr;
     

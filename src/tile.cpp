@@ -10,13 +10,13 @@ Tile::Tile(TileType type, int z, int x, int y, olc::Pixel tint) {
     this->y = y;
 }
 
-olc::vf2d Tile::getTextureCoordinates(CamParams &trx) {
+olc::vi2d Tile::getTextureCoordinates(CamParams &trx) {
 	int sx = x * TEXTURE_W / 2;
 	int sy = y * TEXTURE_H;
 
-	float scx = (sx - sy) * trx.zoom + trx.tx;
-	float scy = ((sx + sy - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
-	return olc::vf2d(scx, scy);
+	int scx = (sx - sy) * trx.zoom + trx.tx;
+	int scy = ((sx + sy - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
+	return olc::vi2d(scx, scy);
 }
 
 void Tile::draw(olc::PixelGameEngine * e, CamParams &trx) {
@@ -38,13 +38,13 @@ void Tile::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	}
 }
 
-olc::vf2d Tile::getTextureCoordinates() {
+olc::vi2d Tile::getTextureCoordinates() {
 	int sx = x * TEXTURE_W / 2;
 	int sy = y * TEXTURE_H;
 
-	float scx = sx - sy;
-	float scy = (sx + sy - TEXTURE_Z * z) / 2;
-	return olc::vf2d(scx, scy);
+	int scx = sx - sy;
+	int scy = (sx + sy - TEXTURE_Z * z) / 2;
+	return olc::vi2d(scx, scy);
 }
 
 void Tile::addError(std::string msg) {

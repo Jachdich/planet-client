@@ -196,7 +196,7 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 		DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
 		DrawStringDecal({0, 20}, std::to_string(1.0 / fElapsedTime), olc::Pixel(255, 255, 255));
 	}
-	//SetPixelMode(olc::Pixel::NORMAL);
+	SetPixelMode(olc::Pixel::ALPHA);
 
     DrawLine({WIDTH/2 - 10, HEIGHT/2}, {WIDTH/2 + 10, HEIGHT/2}, olc::WHITE);
     DrawLine({WIDTH/2, HEIGHT/2 - 10}, {WIDTH/2, HEIGHT/2 + 10}, olc::WHITE);

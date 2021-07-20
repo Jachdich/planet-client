@@ -19,8 +19,8 @@ public:
 	std::string errMsg = "";
 	olc::Pixel tint;
 	Tile(TileType type, int z, int x, int y, olc::Pixel tint);
-	olc::vf2d getTextureCoordinates(CamParams &trx);
-	olc::vf2d getTextureCoordinates();
+	olc::vi2d getTextureCoordinates(CamParams &trx);
+	olc::vi2d getTextureCoordinates();
 	void draw(olc::PixelGameEngine * e, CamParams &trx);
 	void addError(std::string msg);
 };
