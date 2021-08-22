@@ -15,7 +15,7 @@ obj/optimised/%.o: src/%.cpp $(HEADERS)
 	g++ -c -o $@ $< -Wall -Werror -Wno-unknown-pragmas -O3 -std=c++17 -Iinclude
 
 obj/FastNoise.o: src/FastNoise.cpp
-	g++ -c -o $@ $< -Wall -g -O3 -Iinclude
+	g++ -c -o $@ $< -Wall -O3 -Iinclude
 
 debug: client
 	gdb --args client 127.0.0.1

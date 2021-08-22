@@ -170,11 +170,13 @@ void loadSprites() {
 	registerUISprite("hud/menu_open.png", "menu_open", olc::vi2d(3, 3));
 	registerUISprite("hud/menu_item.png", "menu_item", olc::vi2d(6, 3));
 	registerUISprite("hud/error_popup.png", "error_popup", olc::vi2d(3, 3));
+	registerUISprite("menu/cursor.png", "cursor", olc::vi2d(0, 0));
 
 	registerMenuSprite("menu/main/main.json", "main");
 	registerMenuSprite("menu/multiplayer/multiplayer.json", "multiplayer");
 	registerMenuSprite("menu/background.json", "background");
 	registerMenuSprite("menu/multiplayer/serverconnect.json", "serverconnect");
+	registerMenuSprite("menu/login/login.json", "login");
 
     for (std::string n: {"people", "food", "water", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "glass", "iron", "copper", "aluminium"}) {
         registerIconSprite(n);

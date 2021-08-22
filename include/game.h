@@ -32,6 +32,9 @@ public:
     SectorCache map;
     ClientNetwork client;
     std::string address;
+
+    std::string username = "";
+    std::string password = "";
     
 	Game();
     Game(int argc, char ** argv);
