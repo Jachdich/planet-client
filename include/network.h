@@ -23,7 +23,8 @@ public:
     void sendRequest(Json::Value request);
 
     ClientNetwork();
-    void connect(std::string address, uint16_t port, SectorCache * cache);
+    void connect(std::string address, uint16_t port, SectorCache * cache,
+        std::string username, std::string password);
     
 };
 

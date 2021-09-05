@@ -59,6 +59,10 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
 
                     surf->hud->showPopup(res["error_message"].asString());
                 }
+
+                case ErrorCode::INVALID_CREDENTIALS: {
+                    std::cout << "Invalid password\n";
+                }
             }
             continue;
         }
@@ -147,7 +151,8 @@ ClientNetwork::ClientNetwork() : ssl_ctx(asio::ssl::context::tls), socket(ctx, s
     
 }
 
-void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * cache) {
+void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * cache,
+    std::string username, std::string password) {
     this->cache = cache;
     asio::error_code ec;
 
@@ -159,6 +164,12 @@ void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * ca
     readUntil();
     std::thread asioThread = std::thread([&]() {ctx.run();});
     asioThread.detach();
+
+    Json::Value request;
+    request["request"] = "login";
+    request["username"] = username;
+    request["password"] = password;
+    app->client.sendRequest(request);
 }
 
 void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {

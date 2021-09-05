@@ -87,7 +87,7 @@ void Game::mousePressed(uint32_t x, uint32_t y) {
 }
 
 void Game::connectToServer() {
-    client.connect(address, 5555, &map);
+    client.connect(address, 5555, &map, username, password);
 }
 
 bool Game::OnUserUpdate(float fElapsedTime) {
