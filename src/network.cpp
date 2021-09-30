@@ -63,6 +63,8 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
                 case ErrorCode::INVALID_CREDENTIALS: {
                     std::cout << "Invalid password\n";
                 }
+                case ErrorCode::NOT_AUTHENTICATED: std::cout << "Not authenticated\n";
+                case ErrorCode::NOT_AUTHORISED:    std::cout << "Not authorised\n";
             }
             continue;
         }

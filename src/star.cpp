@@ -27,6 +27,7 @@ Star::Star(Json::Value root, int posInSector) {
     noiseEffect = root["noiseEffect"].asDouble();
 
     factionColour = olc::Pixel(rand() % 256, rand() % 256, rand() % 256);
+    isInFaction = false;
 }
 
 //fun algorithm, makes cool shapes gonna keep for reference maybe makin planets
@@ -64,7 +65,7 @@ void Star::drawTexture(olc::PixelGameEngine *e, uint32_t scale) {
                 uint8_t b = colour.b * noise;
                 e->Draw({(signed)lx, (signed)ly}, olc::Pixel(r, g, b));
             } else {
-                e->Draw({(signed)lx, (signed)ly}, olc::Pixel(255, 255, 255, 0));
+                e->Draw({(signed)lx, (signed)ly}, olc::Pixel(factionColour.r, factionColour.g, factionColour.b, isInFaction ? 64 : 0));
             }
         }
     }
@@ -94,8 +95,10 @@ void Star::draw(olc::PixelGameEngine * e, CamParams &trx, int secOffsetX, int se
             e->DrawDecal({(float)(ax - radius * trx.zoom), (float)(ay - radius * trx.zoom)}, decBuf, {trx.zoom, trx.zoom});
         //e->FillCircle(ax, ay, this->radius * trx.zoom, this->colour);
     }
-    e->FillCircle(ax, ay, 32 * trx.zoom, olc::Pixel(factionColour.r, factionColour.g, factionColour.b, 64));
-    e->DrawCircle(ax, ay, 32 * trx.zoom, factionColour);
+    if (isInFaction) {
+        e->FillCircle(ax, ay, 32 * trx.zoom, olc::Pixel(factionColour.r, factionColour.g, factionColour.b, 64));
+        e->DrawCircle(ax, ay, 32 * trx.zoom, factionColour);
+    }
 
 }
 

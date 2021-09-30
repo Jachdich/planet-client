@@ -23,6 +23,7 @@ public:
     double noiseEffect;
 
     olc::Pixel factionColour;
+    bool isInFaction;
 
     olc::Sprite *buf = nullptr;
     olc::Decal *decBuf = nullptr;

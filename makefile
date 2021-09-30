@@ -30,7 +30,7 @@ run: client
 
 .PHONY: connect
 connect: client
-	vblank_mode=0 ./client 127.0.0.1
+	vblank_mode=0 ./client 127.0.0.1 KingJellyfish password
 	
 .PHONY: clean
 clean:

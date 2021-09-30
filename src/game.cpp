@@ -32,8 +32,10 @@ Game::Game(int argc, char ** argv) : map() {
     }
 
     address = "127.0.0.1";
-    if (args.size() > 1) {
+    if (args.size() > 3) {
         address = args[1];
+        username = args[2];
+        password = args[3];
         connectImmediately = true;
     }
 }
