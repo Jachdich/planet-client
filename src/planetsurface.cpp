@@ -100,7 +100,7 @@ void PlanetSurface::updateDirectionalTiles() {
 	}
 }
 
-//TODO fix the other function so this one doesnt commit the ABSOLUTE ATTROSITY of 
+//TODO fix the other function so this one doesnt commit the ABSOLUTE ATTROSITY of taking y before x
 TileType PlanetSurface::getType(int32_t y, int32_t x) {
     if (x >= rad * 2 || y >= rad * 2 || x < 0 || y < 0) return TileType::AIR;
     return tiles[y * rad * 2 + x].type;
@@ -155,7 +155,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 	//float ay = (my - trx.ty) / trx.zoom;
 	//int wx = (ay / 64.0) + (ax / 128.0);
 	//int wy = (-ax / 128.0) + (ay / 64.0);
-
+    //The analysis is severely limited by my lack of understanding of what I am doing
 	//this is utterly fucking stupid but it works. DON'T U FUCKING DARE TOUCH THIS CODE IT TOOK ME 2 HOURS
 	//wx -= 8;
 	//wy += 6;
@@ -217,7 +217,6 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 	}
 }
 /*
-new code once Ive figured it out
 	//try to calculate without using
 	tiles[lastSelectY * radius * 2 + lastSelectX] = 0;
 	float ax = (mx - trx.tx) / trx.zoom;

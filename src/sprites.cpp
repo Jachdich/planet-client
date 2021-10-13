@@ -79,6 +79,8 @@ TileSprite::TileSprite(std::string fName) {
     for (Json::Value root : e["states"]) {
         TileSpriteState state;
         //TODO this is a very bad idea!
+        //TODO figure out why it's a bad idea?
+        //TODO the analysis is severely limited by my lack of understandinmg of what I am doing
         state.drawGround = (TileType)root["drawGround"].asInt();
 
         for (Json::Value t : root["textures"]) {

@@ -44,14 +44,38 @@ void SectorCache::draw(olc::PixelGameEngine * e, CamParams &trx) {
     
 
     float num = ceil((WIDTH) / 256.0 / trx.zoom);
-    
+
+    std::vector<olc::vi2d> starpos;
+    std::vector<olc::Pixel> starcol;
     std::lock_guard<std::mutex> lock(cache_mutex);
     for (int32_t x = 0; x < num + 1; x++) {
         for (int32_t y = 0; y < num + 1; y++) {
             Sector * s = getSectorAt(sectorX + x, sectorY + y);
             if (s != nullptr && s->generated) {
                 s->draw(e, trx);
+                for (Star &st : s->stars) {
+                    starpos.push_back(olc::vi2d{(int)((st.x + (sectorX + x) * 256) * trx.zoom + trx.tx), (int)((st.y + (sectorY + y) * 256) * trx.zoom + trx.ty)});
+                    starcol.push_back(st.factionColour);
+                }
             }
         }
     }
+    /*
+    if (starpos.size() <= 0) return;
+    for (int i = 0; i < WIDTH; i++) {
+        for (int j = 0; j < HEIGHT; j++) {
+            double minDist = WIDTH * HEIGHT * WIDTH * HEIGHT * 0xFF;
+            uint32_t minIdx = 0;
+            for (uint32_t k = 0; k < starpos.size(); k++) {
+                olc::vi2d delta = olc::vi2d{i, j} - starpos[k];
+                double dist = abs(delta.x) + abs(delta.y);//delta.mag2();
+                if (dist < minDist) {
+                    minDist = dist;
+                    minIdx = k;
+                }
+            }
+            olc::Pixel col = starcol[minIdx];
+            e->Draw(i, j, col);
+        }
+    }*/
 }
