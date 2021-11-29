@@ -1,7 +1,7 @@
 #include "tile.h"
 #include "olcPixelGameEngine.h"
 #include "sprites.h"
-
+#include <stdio.h>
 Tile::Tile(TileType type, int z, int x, int y, olc::Pixel tint) {
     this->tint = tint;
     this->type = type;
@@ -35,6 +35,25 @@ void Tile::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	if (errMsg != "") {
         //e->DrawStringDecal(v, errMsg, olc::WHITE, {trx.zoom, trx.zoom});
         e->DrawDecal(v, icons["tile_error"], {trx.zoom * 2, trx.zoom * 2});
+	}
+}
+
+void Tile::draw_absolute(olc::PixelGameEngine * e) {
+    int r,g,b;
+    r = tint.r;
+    g = tint.g;
+    b = tint.b;
+    r += (r * (selected || hovered)) / 5;
+	g += (g * (selected || hovered)) / 5;
+	b += (b * (selected || hovered)) / 5;
+	if (r > 255) r = 255;
+	if (g > 255) g = 255;
+	if (b > 255) b = 255;
+	olc::vf2d v = this->getTextureCoordinates();
+	//printf("%f %f\n", v.x, v.y);
+	tileSprites[(int)type].draw(e, {0, 0, 1}, v, olc::Pixel(r, g, b), state);
+	if (errMsg != "") {
+        e->DrawDecal(v, icons["tile_error"]);
 	}
 }
 

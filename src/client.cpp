@@ -138,7 +138,12 @@ int main(int argc, char ** argv) {
 
 	pixelsPerPixel = {scale, scale};
 	
-    noiseGen.SetNoiseType(FastNoise::Simplex);
+    noiseGen.SetNoiseType(FastNoise::SimplexFractal);
+    noiseGen.SetFractalType(FastNoise::FBM);
+    noiseGen.SetFractalOctaves(5);
+    noiseGen.SetFractalLacunarity(2);
+    noiseGen.SetFractalGain(0.5);
+    
 	app = new Game(argc, argv);
 	if (app->Construct(WIDTH, HEIGHT, scale, scale, fullScreen))
 		app->Start();

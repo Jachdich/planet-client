@@ -38,6 +38,7 @@ struct UIComponent {
 
 struct TileSpriteComponent {
     olc::Decal * decal;
+    olc::Sprite *sprite;
     bool tint;
     uint32_t animationSpeed;
     uint32_t width;

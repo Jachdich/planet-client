@@ -22,6 +22,7 @@ public:
 	olc::vi2d getTextureCoordinates(CamParams &trx);
 	olc::vi2d getTextureCoordinates();
 	void draw(olc::PixelGameEngine * e, CamParams &trx);
+	void draw_absolute(olc::PixelGameEngine * e);
 	void addError(std::string msg);
 };
 

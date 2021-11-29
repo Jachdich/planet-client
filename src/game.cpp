@@ -83,7 +83,7 @@ void Game::mousePressed(uint32_t x, uint32_t y) {
             if (selectedPlanet->surface == nullptr || (!selectedPlanet->surface->generated && !selectedPlanet->surface->requested)) {
         		selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
         	}
-            trx = {0, 0, 1};
+            trx = {0, 0, 0.3};
         }
     }
 }

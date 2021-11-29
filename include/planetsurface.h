@@ -24,6 +24,9 @@ public:
 	PlanetHUD * hud;
 	PlanetData * data;
 
+	olc::Sprite *mesh = nullptr;
+	olc::Decal *meshdecal = nullptr;
+
     PlanetSurface();
     PlanetSurface(Json::Value root, Planet * p);
 
