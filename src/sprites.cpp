@@ -42,8 +42,8 @@ Json::Value getJsonFromTextureFile(std::string fName) {
     afile.close();
     return root;
 }
-/*
-void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vf2d &pos, const olc::Pixel &tint, uint16_t state_idx) {
+
+void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vd2d &pos, const olc::Pixel &tint, uint16_t state_idx) {
     TileSpriteState &state = states[state_idx];
 
     if (state.drawGround != TileType::AIR) {
@@ -65,25 +65,7 @@ void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc:
         }
     }
 }
-*/
 
-void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vf2d &pos, const olc::Pixel &tint, uint16_t state_idx) {
-    TileSpriteState &state = states[state_idx];
-
-    if (state.drawGround != TileType::AIR) {
-         tileSprites[(int)state.drawGround].draw(e, trx, pos, tint, 0);
-    }
-
-    for (TileSpriteComponent &c : state.components) {
-        float scl = trx.zoom / (c.width / 128.0f);
-        if (c.tint) {
-  
-            e->DrawSprite(pos, c.sprite, scl);
-        } else {
-            e->DrawSprite(pos, c.sprite, scl);
-        }
-    }
-}
 TileSprite::TileSprite(std::string fName) {
 	Json::Value definition = getJsonFromTextureFile(fName);
 

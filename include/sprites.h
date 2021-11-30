@@ -53,7 +53,7 @@ struct TileSpriteState {
 struct TileSprite {
     TileSprite(std::string fName);
     std::vector<TileSpriteState> states;
-	void draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vf2d &pos, const olc::Pixel &tint, uint16_t state_idx);
+	void draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vd2d &pos, const olc::Pixel &tint, uint16_t state_idx);
 };
 
 void loadSprites();

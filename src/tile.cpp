@@ -10,16 +10,16 @@ Tile::Tile(TileType type, int z, int x, int y, olc::Pixel tint) {
     this->y = y;
 }
 
-olc::vi2d Tile::getTextureCoordinates(CamParams &trx) {
+olc::vd2d Tile::getTextureCoordinates(const CamParams &trx) const {
 	int sx = x * TEXTURE_W / 2;
 	int sy = y * TEXTURE_H;
 
-	int scx = (sx - sy) * trx.zoom + trx.tx;
-	int scy = ((sx + sy - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
-	return olc::vi2d(scx, scy);
+	double scx = (sx - sy) * trx.zoom + trx.tx;
+	double scy = ((sx + sy - TEXTURE_Z * z) / 2) * trx.zoom + trx.ty;
+	return olc::vd2d(scx, scy);
 }
 
-void Tile::draw(olc::PixelGameEngine * e, CamParams &trx) {
+void Tile::draw(olc::PixelGameEngine * e, const CamParams &trx) const {
     int r,g,b;
     r = tint.r;
     g = tint.g;
@@ -30,7 +30,7 @@ void Tile::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	if (r > 255) r = 255;
 	if (g > 255) g = 255;
 	if (b > 255) b = 255;
-	olc::vf2d v = this->getTextureCoordinates(trx);
+	olc::vd2d v = this->getTextureCoordinates(trx);
 	tileSprites[(int)type].draw(e, trx, v, olc::Pixel(r, g, b), state);
 	if (errMsg != "") {
         //e->DrawStringDecal(v, errMsg, olc::WHITE, {trx.zoom, trx.zoom});
@@ -38,26 +38,7 @@ void Tile::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	}
 }
 
-void Tile::draw_absolute(olc::PixelGameEngine * e) {
-    int r,g,b;
-    r = tint.r;
-    g = tint.g;
-    b = tint.b;
-    r += (r * (selected || hovered)) / 5;
-	g += (g * (selected || hovered)) / 5;
-	b += (b * (selected || hovered)) / 5;
-	if (r > 255) r = 255;
-	if (g > 255) g = 255;
-	if (b > 255) b = 255;
-	olc::vf2d v = this->getTextureCoordinates();
-	//printf("%f %f\n", v.x, v.y);
-	tileSprites[(int)type].draw(e, {0, 0, 1}, v, olc::Pixel(r, g, b), state);
-	if (errMsg != "") {
-        e->DrawDecal(v, icons["tile_error"]);
-	}
-}
-
-olc::vi2d Tile::getTextureCoordinates() {
+olc::vi2d Tile::getTextureCoordinates() const {
 	int sx = x * TEXTURE_W / 2;
 	int sy = y * TEXTURE_H;
 

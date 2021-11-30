@@ -47,22 +47,14 @@ void PlanetSurface::drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx) {
 }
 
 void PlanetSurface::draw(olc::PixelGameEngine * e, CamParams &trx) {
-    if (mesh == nullptr) {
-        mesh = new olc::Sprite(parent->radius * 2 * TEXTURE_W, parent->radius * 2 * TEXTURE_H);
-        e->SetDrawTarget(mesh);
-        for (int i = 0; i < parent->radius * 2; i++) {
-            for (int j = 0; j < parent->radius * 2; j++) {
-                int ia = i - parent->radius;
-                int ja = j - parent->radius;
-                if ((ia * ia + ja * ja) >= (parent->radius * parent->radius)) continue;
-                //tiles[i * parent->radius * 2 + j].draw(e, trx);
-                tiles[i * parent->radius * 2 + j].draw_absolute(e);
-            }
+    for (int i = 0; i < parent->radius * 2; i++) {
+        for (int j = 0; j < parent->radius * 2; j++) {
+            int ia = i - parent->radius;
+            int ja = j - parent->radius;
+            if ((ia * ia + ja * ja) >= (parent->radius * parent->radius)) continue;
+            tiles[i * parent->radius * 2 + j].draw(e, trx);
         }
-        e->SetDrawTarget(nullptr);
-        meshdecal = new olc::Decal(mesh);
     }
-    e->DrawDecal({(float)trx.tx, (float)trx.ty}, meshdecal, {trx.zoom, trx.zoom});
 	this->hud->draw(e, trx);
     this->data->draw(e, trx);
 }

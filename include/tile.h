@@ -6,7 +6,7 @@
 
 #define TEXTURE_W 128
 #define TEXTURE_H 64
-#define TEXTURE_Z 30
+#define TEXTURE_Z 24
 
 class Tile {
 public:
@@ -19,10 +19,9 @@ public:
 	std::string errMsg = "";
 	olc::Pixel tint;
 	Tile(TileType type, int z, int x, int y, olc::Pixel tint);
-	olc::vi2d getTextureCoordinates(CamParams &trx);
-	olc::vi2d getTextureCoordinates();
-	void draw(olc::PixelGameEngine * e, CamParams &trx);
-	void draw_absolute(olc::PixelGameEngine * e);
+	olc::vd2d getTextureCoordinates(const CamParams &trx) const;
+	olc::vi2d getTextureCoordinates() const;
+	void draw(olc::PixelGameEngine * e, const CamParams &trx) const;
 	void addError(std::string msg);
 };
 
