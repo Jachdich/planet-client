@@ -92,6 +92,10 @@ void Game::connectToServer() {
     client.connect(address, 5555, &map, username, password);
 }
 
+int pixelToInt(olc::Pixel p) {
+    return (p.r << 16) | (p.g << 8) | p.b;
+}
+
 bool Game::OnUserUpdate(float fElapsedTime) {
     /*if (planetView) {
         Clear(olc::Pixel(50, 100, 160));
@@ -137,6 +141,31 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     if (GetMouse(1).bPressed) {
         lastMouseX = GetMouseX();
         lastMouseY = GetMouseY();
+
+    }
+
+    if (GetMouse(2).bPressed && debugMode && starView) {
+        Planet * p = selectedStar->getPlanetAt(GetMouseX(), GetMouseY(), trx);
+        if (p != nullptr) {
+            std::string fname = "planet_s" + std::to_string(lastClickedSector->x) + "." + std::to_string(lastClickedSector->y) + "_t" + std::to_string(selectedStar->posInSector) + "_p" + std::to_string(p->posInStar) + ".json";
+            message = "Saved as " + fname;
+            message_life = 5;
+
+            Json::Value res;
+            res["baseColour"] = pixelToInt(p->baseColour);
+            res["numColours"] = p->numColours;
+            res["radius"] = p->radius;
+            for (int i = 0; i < p->numColours; i++) {
+                res["generationColours"].append(pixelToInt(p->generationColours[i]));
+                res["generationChances"].append(p->generationChances[i]);
+                res["generationZValues"].append(p->generationZValues[i]);
+                res["generationNoise"].append(  p->generationNoise[i]);
+            }
+
+            std::ofstream os(fname);
+            os << res << "\n";
+            os.close();
+        }
     }
 
     if (GetMouse(1).bHeld) {
@@ -203,9 +232,17 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     DrawLine({WIDTH/2 - 10, HEIGHT/2}, {WIDTH/2 + 10, HEIGHT/2}, olc::WHITE);
     DrawLine({WIDTH/2, HEIGHT/2 - 10}, {WIDTH/2, HEIGHT/2 + 10}, olc::WHITE);
 
+    DrawStringDecal({2.0f, (float)HEIGHT - 10}, message, olc::WHITE);
+
     totalTime += fElapsedTime;
     trx.animationStage = totalTime * 10;
 
+    if (message_life > 0) {
+        message_life -= fElapsedTime;   
+    } else {
+        message_life = 0;
+        message = "";
+    }
     return true;
 }
 

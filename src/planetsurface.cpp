@@ -110,12 +110,14 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 	parent = p;
     int width = root["rad"].asInt() * 2;
 	tiles.reserve(width * width);
+	rad = root["rad"].asInt();
+
 	for (int i = 0; i < root["rad"].asInt() * 2; i++) {
 		for (int j = 0; j < root["rad"].asInt() * 2; j++) {
 			uint64_t val = root["tiles"][j + i * root["rad"].asInt() * 2].asUInt64();
 			int32_t type = val & 0xFFFFFFFF;
-            int32_t z    = (val >> 32) & 0x7FFFFFFF;
-            if (rand() % 1000000 == 0) {
+            int32_t z    = (val >> 32) & 0xFFFFFFFF;
+            if (rand() % 100000 == 0) {
             	type = (int)TileType::TONK;
             }
 			tiles.push_back(Tile((TileType)(type), z, j, i, this->getTint(i, j))); //TODO WHY DO I HAVE TO SWAP J AND I HERE?
@@ -130,7 +132,6 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
         }
     }
 	
-	rad = root["rad"].asInt();
 
 	this->data = new PlanetData(this, root);
 	this->hud = new PlanetHUD(this, this->data);

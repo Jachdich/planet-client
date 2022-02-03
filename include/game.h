@@ -35,6 +35,9 @@ public:
 
     std::string username = "";
     std::string password = "";
+
+    std::string message = "";
+    double message_life = 0;
     
 	Game();
     Game(int argc, char ** argv);

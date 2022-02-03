@@ -6,7 +6,7 @@
 
 #define TEXTURE_W 128
 #define TEXTURE_H 64
-#define TEXTURE_Z 24
+#define TEXTURE_Z 20
 
 class Tile {
 public:

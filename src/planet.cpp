@@ -17,6 +17,7 @@ Planet::Planet(Json::Value res, int posInStar) {
     posFromStar = res["posFromStar"].asInt();
     theta = res["theta"].asDouble();
     angularVelocity = res["angularVelocity"].asDouble();
+    rotationTheta = 0;
 	
 	double lower_bound = 0;
     double upper_bound = 10;
@@ -84,7 +85,7 @@ void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams &trx) 
 		
 		this->dec = new olc::Decal(this->surf);
 	}
-	e->DrawRotatedDecal({(float)(x * trx.zoom + trx.tx), (float)(y * trx.zoom + trx.ty)}, this->dec, this->rotationTheta, {(float)radius, (float)radius}, {trx.zoom, trx.zoom}); 
+	e->DrawRotatedDecal({(float)(x * trx.zoom + trx.tx), (float)(y * trx.zoom + trx.ty)}, this->dec, this->rotationTheta, {(float)radius, (float)radius}, {trx.zoom, trx.zoom});
 	int sx = (x + radius * 2) * trx.zoom + trx.tx;
 	int sy = (y - radius * 2) * trx.zoom + trx.ty;
 	if (debugMode) {
