@@ -1,7 +1,7 @@
 
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
-#include "FastNoise.h"
+#include "FastNoiseLite.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -25,7 +25,7 @@
 
 using asio::ip::tcp;
 
-FastNoise noiseGen;
+FastNoiseLite noiseGen;
 std::mutex cache_mutex;
 bool debugMode = false;
 Game * app;
@@ -138,8 +138,8 @@ int main(int argc, char ** argv) {
 
 	pixelsPerPixel = {scale, scale};
 	
-    noiseGen.SetNoiseType(FastNoise::SimplexFractal);
-    noiseGen.SetFractalType(FastNoise::FBM);
+    noiseGen.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+    noiseGen.SetFractalType(FastNoiseLite::FractalType_FBm);
     noiseGen.SetFractalOctaves(5);
     noiseGen.SetFractalLacunarity(2);
     noiseGen.SetFractalGain(0.5);

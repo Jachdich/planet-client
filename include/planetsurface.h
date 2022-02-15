@@ -32,6 +32,7 @@ public:
 	void mouseOver(int x, int y, bool mouseClicked, bool mousePressed, bool rightClicked, CamParams &trx);
 	void updateDirectionalTiles();
     olc::Pixel getTint(int x, int y);
+    int32_t getHeight(int32_t x, int32_t y);
     TileType getType(int32_t y, int32_t x);
 };
 

@@ -24,6 +24,7 @@ public:
 	double rotationalAngularVelocity;
     double angularVelocity;
     int posInStar;
+    int32_t seaLevel;
 	    
     PlanetSurface * surface = nullptr;
     

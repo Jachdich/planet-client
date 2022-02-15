@@ -4,10 +4,10 @@
 #include <jsoncpp/json/json.h>
 #include <mutex>
 #include <condition_variable>
-#include "FastNoise.h"
+#include "FastNoiseLite.h"
 #include "game.h"
 
-extern FastNoise noiseGen;
+extern FastNoiseLite noiseGen;
 extern uint16_t WIDTH;
 extern uint16_t HEIGHT;
 extern std::mutex cache_mutex;

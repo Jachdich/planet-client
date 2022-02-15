@@ -11,6 +11,7 @@ Planet::Planet() {}
 Planet::Planet(Json::Value res, int posInStar) {
     mass = res["mass"].asDouble();
     radius = res["radius"].asInt();
+    seaLevel = res["seaLevel"].asInt();
     numColours = res["numColours"].asInt();
     int col = res["baseColour"].asInt();
     baseColour = olc::Pixel(col >> 16, (col >> 8) & 0xFF, col & 0xFF);
@@ -55,29 +56,34 @@ void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams &trx) 
 					e->Draw(xa, ya, olc::Pixel(0, 0, 0, 0));
 					continue;
 				}
-				
-				int r = 0;
-				int g = 0;
-				int b = 0;
-				int total = 0;
-				for (int i = 0; i < this->numColours; i++) {
-					if ((noiseGen.GetNoise(xb / this->generationNoise[i], yb / this->generationNoise[i], this->generationZValues[i]) + 1) / 2 > this->generationChances[i]) {
-						r += this->generationColours[i].r;
-						g += this->generationColours[i].g;
-						b += this->generationColours[i].b;
-						total += 1;
-					}
+
+            	double height = noiseGen.GetNoise(xb / this->generationNoise[0], yb / this->generationNoise[0], (double)this->generationZValues[0]) * 30;
+            	if (height <= this->seaLevel) {
+				    e->Draw(xa, ya, this->generationColours[0]);
+            	} else {	
+    				int r = 0;
+    				int g = 0;
+    				int b = 0;
+    				int total = 0;
+    				for (int i = 1; i < this->numColours; i++) {
+    					if ((noiseGen.GetNoise(xb / this->generationNoise[i], yb / this->generationNoise[i], (double)this->generationZValues[i]) + 1) / 2 > this->generationChances[i]) {
+    						r += this->generationColours[i].r;
+    						g += this->generationColours[i].g;
+    						b += this->generationColours[i].b;
+    						total += 1;
+    					}
+    				}
+    				if (total == 0) {
+    					r = this->baseColour.r;
+    					g = this->baseColour.g;
+    					b = this->baseColour.b;
+    				} else {
+    					r /= total;
+    					g /= total;
+    					b /= total;
+    				}
+				    e->Draw(xa, ya, olc::Pixel(r, g, b));
 				}
-				if (total == 0) {
-					r = this->baseColour.r;
-					g = this->baseColour.g;
-					b = this->baseColour.b;
-				} else {
-					r /= total;
-					g /= total;
-					b /= total;
-				}
-				e->Draw(xa, ya, olc::Pixel(r, g, b));
 			}
 		}
 		

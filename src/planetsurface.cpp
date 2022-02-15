@@ -13,7 +13,20 @@
 #include "planetdata.h"
 #include "tile.h"
 
-olc::Pixel PlanetSurface::getTint(int x, int y) {
+int32_t PlanetSurface::getHeight(int32_t x, int32_t y) {
+    double xb = x - this->rad;
+	double yb = y - this->rad;
+	double noise = noiseGen.GetNoise(xb / parent->generationNoise[0], yb / parent->generationNoise[0], (double)parent->generationZValues[0]);
+	int32_t height = noise * 30;
+	if (height < parent->seaLevel) height = parent->seaLevel;
+	return height;
+}
+
+olc::Pixel PlanetSurface::getTint(int32_t x, int32_t y) {
+    if (getHeight(x, y) <= parent->seaLevel) {
+        //water, return b l u e
+        return parent->generationColours[0];
+    }
     int xb = x - parent->radius;
     int yb = y - parent->radius;
 
@@ -21,8 +34,13 @@ olc::Pixel PlanetSurface::getTint(int x, int y) {
     int g = 0;
     int b = 0;
     int total = 0;
-    for (int i = 0; i < parent->numColours; i++) {
-        if ((noiseGen.GetNoise(xb / parent->generationNoise[i], yb / parent->generationNoise[i], parent->generationZValues[i]) + 1) / 2 > parent->generationChances[i]) {
+    for (int i = 1; i < parent->numColours; i++) {
+        double noiseVal = (noiseGen.GetNoise(
+            xb / parent->generationNoise[i],
+            yb / parent->generationNoise[i],
+            (double)parent->generationZValues[i]) + 1) / 2;
+
+        if (noiseVal > parent->generationChances[i]) {
             r += parent->generationColours[i].r;
             g += parent->generationColours[i].g;
             b += parent->generationColours[i].b;
