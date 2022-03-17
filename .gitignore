@@ -12,3 +12,5 @@ common.a
 log.txt
 planet-client
 callgrind*
+surface_renderer
+release_minimal
