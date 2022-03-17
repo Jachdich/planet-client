@@ -91,11 +91,12 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 
 void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams &trx) {
     float n = 10;
-    for (std::string key : {"people", "food", "water", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "glass", "iron", "copper", "aluminium"}) {
-        auto v = this->data->stats.data[key];
-        e->DrawDecal({2, n + 12}, icons[key]);
-        if (key == "people") {
-            e->DrawStringDecal({16, n += 12}, std::to_string((int)data->stats["peopleIdle"]) + "/" + std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
+    for (int r = 0; r < NUM_RESOURCES; r++) {
+        if (r == RES_PEOPLE_IDLE) continue;
+        ResourceValue v = this->data->stats.values[r];
+        e->DrawDecal({2, n + 12}, icons[std::string(res_names[r])]);
+        if (r == RES_PEOPLE) {
+            e->DrawStringDecal({16, n += 12}, std::to_string((int)data->stats.values[RES_PEOPLE_IDLE].value) + "/" + std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
         } else {
             e->DrawStringDecal({16, n += 12}, std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
         }
@@ -110,7 +111,7 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams &trx) {
                                                          " Y: " + std::to_string(parent->selectedTile->y) +
                                                          " Z: " + std::to_string(parent->selectedTile->z));
 
-        e->DrawStringDecal({xpos, n += 10}, "Type:       " + getTileTypeName(parent->selectedTile->type));
+        e->DrawStringDecal({xpos, n += 10}, "Type:       " + std::string(getTileTypeName(parent->selectedTile->type)));
         e->DrawStringDecal({xpos, n += 10}, "Colour:     " + toHexString("#", parent->selectedTile->tint));
         e->DrawStringDecal({xpos, n += 10}, "Iron:       " + std::to_string(minerals.iron * 100) + "%");
         e->DrawStringDecal({xpos, n += 10}, "Copper:     " + std::to_string(minerals.copper * 100) + "%");
@@ -125,8 +126,8 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams &trx) {
         e->DrawStringDecal({xpos, n += 10}, "No tile selected");
     }
 
-    if (this->selectedAction != TaskType::NONE) {
-        e->DrawStringDecal({10, 0}, "Selected task: " + getTaskTypeName(this->selectedAction) + " (<esc> to finish)");
+    if (this->selectedAction != TASK_NONE) {
+        e->DrawStringDecal({10, 0}, "Selected task: " + std::string(getTaskTypeName(this->selectedAction)) + " (<esc> to finish)");
     }
 
 	if (this->ddmenu != nullptr) {
@@ -188,24 +189,24 @@ void PlanetHUD::showClickMenu(Tile * t) {
 	std::vector<TaskType> v;
 	
 	if (isTree(t->type)) {
-		v.push_back(TaskType::FELL_TREE);
+		v.push_back(TASK_FELL_TREE);
 	} else if (isMineral(t->type)) {
-		v.push_back(TaskType::MINE_ROCK);
-	} else if (t->type != TileType::GRASS) {
-	    v.push_back(TaskType::CLEAR);
+		v.push_back(TASK_MINE_ROCK);
+	} else if (t->type != TILE_GRASS) {
+	    v.push_back(TASK_CLEAR);
 	}
 	
-	if (t->type == TileType::GRASS) {
-	    for (TaskType type : {TaskType::PLANT_TREE, TaskType::BUILD_HOUSE, TaskType::BUILD_FARM,
-	    		 TaskType::BUILD_GREENHOUSE, TaskType::BUILD_WATERPUMP, TaskType::BUILD_MINE,
-	    		 TaskType::BUILD_BLASTFURNACE, TaskType::BUILD_FORESTRY, TaskType::BUILD_CAPSULE,
-	    		 TaskType::BUILD_WAREHOUSE, TaskType::BUILD_ROAD, TaskType::BUILD_PIPE,
-	    		 TaskType::BUILD_CABLE, TaskType::BUILD_WAREHOUSE}) {
+	if (t->type == TILE_GRASS) {
+	    for (TaskType type : {TASK_PLANT_TREE, TASK_BUILD_HOUSE, TASK_BUILD_FARM,
+	    		 TASK_BUILD_GREENHOUSE, TASK_BUILD_WATERPUMP, TASK_BUILD_MINE,
+	    		 TASK_BUILD_BLASTFURNACE, TASK_BUILD_FORESTRY, TASK_BUILD_CAPSULE,
+	    		 TASK_BUILD_WAREHOUSE, TASK_BUILD_ROAD, TASK_BUILD_PIPE,
+	    		 TASK_BUILD_CABLE, TASK_BUILD_WAREHOUSE}) {
 		    this->ddmenu[0].registerItem(DropdownMenuItem(getTaskTypeName(type),
             [this, type](bool right) { 
                 if (right) {
                     if (this->selectedAction == type) {
-                        this->selectedAction = TaskType::NONE;
+                        this->selectedAction = TASK_NONE;
                     } else {
                         this->selectedAction = type;
                     }
@@ -221,7 +222,7 @@ void PlanetHUD::showClickMenu(Tile * t) {
         [this, type](bool right) { 
             if (right) {
                 if (this->selectedAction == type) {
-                    this->selectedAction = TaskType::NONE;
+                    this->selectedAction = TASK_NONE;
                 } else {
                     this->selectedAction = type;
                 }

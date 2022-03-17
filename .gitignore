@@ -13,3 +13,5 @@ libcommon-dbg.a
 log.txt
 planet-client
 callgrind*
+release_minimal
+vgcore*

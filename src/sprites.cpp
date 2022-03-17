@@ -1,4 +1,5 @@
 #include "sprites.h"
+#include "common/resources.h"
 
 #include "olcPixelGameEngine.h"
 
@@ -14,7 +15,18 @@ std::unordered_map<std::string, MenuComponent> menuComponents;
 std::unordered_map<std::string, olc::Decal*> icons;
 std::string texturedir = "textures";
 
-Json::Value getJsonFromTextureFile(std::string fName) {
+olc::Sprite *load_sprite(const std::string &fname) {
+    olc::Sprite *spr = new olc::Sprite();
+    olc::rcode status = spr->LoadFromFile(fname);
+    if (status == olc::rcode::NO_FILE) {
+        std::cerr << "Unable to load texture '" << fname << "': File not found\n";
+    } else if (status == olc::rcode::FAIL) {
+        std::cerr << "Unable to load texture '" << fname << "': Other error (invalid/corrupted file?)\n";
+    }
+    return spr;
+}
+
+Json::Value getJsonFromTextureFile(const std::string &fName) {
 	std::ifstream afile;
     afile.open(texturedir + "/" + fName);
 
@@ -46,7 +58,7 @@ Json::Value getJsonFromTextureFile(std::string fName) {
 void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vd2d &pos, const olc::Pixel &tint, uint16_t state_idx) {
     TileSpriteState &state = states[state_idx];
 
-    if (state.drawGround != TileType::AIR) {
+    if (state.drawGround != TILE_AIR) {
          tileSprites[(int)state.drawGround].draw(e, trx, pos, tint, 0);
     }
 
@@ -84,7 +96,7 @@ TileSprite::TileSprite(std::string fName) {
         state.drawGround = (TileType)root["drawGround"].asInt();
 
         for (Json::Value t : root["textures"]) {
-            olc::Sprite * spr = new olc::Sprite(texturedir + "/" + t["imageFile"].asString());
+            olc::Sprite * spr = load_sprite(texturedir + "/" + t["imageFile"].asString());
             olc::Decal * dec = new olc::Decal(spr);
             bool tint = t["tint"].asDouble();
             uint32_t animationSpeed = t.get("animationSpeed", 1).asUInt();
@@ -98,19 +110,19 @@ TileSprite::TileSprite(std::string fName) {
         states.push_back(state);
     }
 }
-void registerTileSprite(std::string x) {
+void registerTileSprite(const std::string &x) {
     tileSprites.push_back(TileSprite(x));
 }
 
-void registerUISprite(std::string filename, std::string name, olc::vi2d text_offset) {
-	olc::Sprite * temp = new olc::Sprite(texturedir + "/" + filename);
+void registerUISprite(const std::string &filename, const std::string &name, olc::vi2d text_offset) {
+	olc::Sprite * temp = load_sprite(texturedir + "/" + filename);
 	UIComponents[name] = {new olc::Decal(temp), text_offset};
 	sprites.push_back(temp);
 }
 
-void registerMenuSprite(std::string filename, std::string name) {
+void registerMenuSprite(const std::string &filename, const std::string &name) {
 	Json::Value root = getJsonFromTextureFile(filename);
-	olc::Sprite * temp = new olc::Sprite(texturedir + "/" + root["texture"].asString());
+	olc::Sprite * temp = load_sprite(texturedir + "/" + root["texture"].asString());
 	sprites.push_back(temp);
 	MenuComponent c;
 	c.decal = new olc::Decal(temp);
@@ -123,8 +135,8 @@ void registerMenuSprite(std::string filename, std::string name) {
 	menuComponents[name] = c;
 }
 
-void registerIconSprite(std::string name) {
-    olc::Sprite *spr = new olc::Sprite(texturedir + "/hud/icons/" + name + ".png");
+void registerIconSprite(const std::string &name) {
+    olc::Sprite *spr = load_sprite(texturedir + "/hud/icons/" + name + ".png");
     olc::Decal *dec = new olc::Decal(spr);
     icons[name] = dec;
     sprites.push_back(spr);
@@ -180,8 +192,10 @@ void loadSprites() {
 	registerMenuSprite("menu/multiplayer/serverconnect.json", "serverconnect");
 	registerMenuSprite("menu/login/login.json", "login");
 
-    for (std::string n: {"people", "food", "water", "wood", "stone", "sand", "ironOre", "copperOre", "aluminiumOre", "glass", "iron", "copper", "aluminium"}) {
-        registerIconSprite(n);
+    for (int i = 0; i < NUM_RESOURCES; i++) {
+        if (i == RES_PEOPLE_IDLE) continue;
+        registerIconSprite(std::string(res_names[i]));
     }
+
     registerIconSprite("tile_error");
 }

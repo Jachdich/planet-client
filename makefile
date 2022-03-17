@@ -3,7 +3,7 @@ HEADERS := include/client.h include/game.h include/helperfunctions.h include/men
 OBJECTS := $(patsubst src/%,obj/%,$(SOURCES:.cpp=.o))
 OBJECTS_OPTIMISED := $(patsubst src/%,obj/optimised/%,$(SOURCES:.cpp=.o)) obj/optimised/client.o
 
-LIBS := -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp -lssl -lcrypto
+LIBS := -L. -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp -lssl -lcrypto -lcommon
 
 client: $(OBJECTS) obj/client.o
 	g++ $(OBJECTS) obj/client.o -o $@ $(LIBS)

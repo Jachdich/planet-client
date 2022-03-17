@@ -5,7 +5,7 @@
 #include <iostream>
 
 Menu::Menu() {
-
+    state = MAIN;
 }
 
 void getInput(std::string &inp, olc::PixelGameEngine *m_pge) {
