@@ -8,9 +8,12 @@ line_counter.py
 JVector.h
 *~
 common
-common.a
+libcommon.a
+libcommon-dbg.a
 log.txt
 planet-client
 callgrind*
-surface_renderer
 release_minimal
+vgcore*
+shader.glsl
+surface_renderer

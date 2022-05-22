@@ -2,20 +2,21 @@ SOURCES := src/game.cpp src/helperfunctions.cpp src/menu.cpp src/network.cpp src
 HEADERS := include/client.h include/game.h include/helperfunctions.h include/menu.h include/network.h include/olcPixelGameEngine.h include/planet.h include/planetdata.h include/planethud.h include/planetsurface.h include/sector.h include/sectorcache.h include/sprites.h include/star.h include/tile.h
 OBJECTS := $(patsubst src/%,obj/%,$(SOURCES:.cpp=.o))
 OBJECTS_OPTIMISED := $(patsubst src/%,obj/optimised/%,$(SOURCES:.cpp=.o)) obj/optimised/client.o
+COMMON_HEADERS := $(find include/common -name *.h)
 
-LIBS := -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp -lssl -lcrypto
+LIBS := -L. -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp -lssl -lcrypto -lcommon-dbg
 
-client: $(OBJECTS) obj/client.o
+client: $(OBJECTS) obj/client.o libcommon-dbg.a
 	g++ $(OBJECTS) obj/client.o -o $@ $(LIBS)
 
 surface_renderer: $(OBJECTS) obj/surfacerenderer.o
 	g++ $(OBJECTS) obj/surfacerenderer.o -o $@ $(LIBS)
 
-obj/%.o: src/%.cpp $(HEADERS)
+obj/%.o: src/%.cpp $(HEADERS) $(COMMON_HEADERS)
 	@mkdir -p obj
 	g++ -c -o $@ $< -Wall -Werror -Wno-unknown-pragmas -g -ggdb -std=c++17 -Iinclude
 
-obj/optimised/%.o: src/%.cpp $(HEADERS)
+obj/optimised/%.o: src/%.cpp $(HEADERS) $(COMMON_HEADERS)
 	@mkdir -p obj/optimised
 	g++ -c -o $@ $< -Wall -Werror -Wno-unknown-pragmas -O3 -std=c++17 -Iinclude
 
@@ -24,7 +25,7 @@ debug: client
 
 .PHONY: release
 release: $(OBJECTS_OPTIMISED)
-	g++ $(OBJECTS_OPTIMISED) -o planet-client -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp -lssl -lcrypto
+	g++ $(OBJECTS_OPTIMISED) -o planet-client -L. -lcommon -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp -lssl -lcrypto
 
 .PHONY: run
 run: client

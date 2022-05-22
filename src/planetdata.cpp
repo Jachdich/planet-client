@@ -10,10 +10,13 @@
 //BUG: Tasks dont change if selected tile has a task and finishes the task
 class PlanetSurface;
 
+#define DEBUG(expr) std::cout << __FILE__ << ":" << __LINE__ << " " << expr
+
 PlanetData::PlanetData() {}
 PlanetData::PlanetData(PlanetSurface * surface, Json::Value root) {
 	this->surface = surface;
-	stats = getResourcesFromJson(root["resources"]);
+	stats = res_from_json(root["resources"]);
+	timers.clear();
 }
 
 std::string pad(std::string str, int n = 2, char chr = '0') {
@@ -30,7 +33,7 @@ void PlanetData::draw(olc::PixelGameEngine * e, CamParams &trx) {
 }
 
 bool PlanetData::dispatchTask(TaskType type, Tile * target) {
-	std::cout << "Task dispatch: type: " << (int)type << ": " << "x " << target->x << " y " << target->y << "\n";
+	DEBUG("Task dispatch: type: " << (int)type << ": " << "x " << target->x << " y " << target->y << "\n");
 	sendUserAction(target, type);
 	return false;
 }
@@ -46,28 +49,28 @@ void PlanetData::updateTimers(float elapsedTime) {
 std::vector<TaskType> PlanetData::getPossibleTasks(Tile * target) {
 	std::vector<TaskType> v;
 	if (isTree(target->type)) {
-		v.push_back(TaskType::FELL_TREE);
+		v.push_back(TASK_FELL_TREE);
 	}
 	if (isMineral(target->type)) {
-		v.push_back(TaskType::MINE_ROCK);
+		v.push_back(TASK_MINE_ROCK);
 	}
-	if (target->type == TileType::GRASS) {
-		v.push_back(TaskType::PLANT_TREE);
-		v.push_back(TaskType::BUILD_HOUSE);
-		v.push_back(TaskType::BUILD_FARM);
-		v.push_back(TaskType::BUILD_GREENHOUSE);
-		v.push_back(TaskType::BUILD_WATERPUMP);
-		v.push_back(TaskType::BUILD_MINE);
-		v.push_back(TaskType::BUILD_BLASTFURNACE);
-		v.push_back(TaskType::BUILD_FORESTRY);
-		v.push_back(TaskType::BUILD_CAPSULE);
-		v.push_back(TaskType::BUILD_WAREHOUSE);
-		v.push_back(TaskType::BUILD_ROAD);
-		v.push_back(TaskType::BUILD_PIPE);
-		v.push_back(TaskType::BUILD_CABLE);
-		v.push_back(TaskType::BUILD_POWERSTATION);
+	if (target->type == TILE_GRASS) {
+		v.push_back(TASK_PLANT_TREE);
+		v.push_back(TASK_BUILD_HOUSE);
+		v.push_back(TASK_BUILD_FARM);
+		v.push_back(TASK_BUILD_GREENHOUSE);
+		v.push_back(TASK_BUILD_WATERPUMP);
+		v.push_back(TASK_BUILD_MINE);
+		v.push_back(TASK_BUILD_BLASTFURNACE);
+		v.push_back(TASK_BUILD_FORESTRY);
+		v.push_back(TASK_BUILD_CAPSULE);
+		v.push_back(TASK_BUILD_WAREHOUSE);
+		v.push_back(TASK_BUILD_ROAD);
+		v.push_back(TASK_BUILD_PIPE);
+		v.push_back(TASK_BUILD_CABLE);
+		v.push_back(TASK_BUILD_POWERSTATION);
 	} else {
-	    v.push_back(TaskType::CLEAR);
+	    v.push_back(TASK_CLEAR);
 	}
 	return v;
 }

@@ -51,7 +51,7 @@ public:
 	void showPopup(std::string message);
     std::string popupMessage = "";
 	DropdownMenu * ddmenu = nullptr;
-	TaskType selectedAction = TaskType::NONE;
+	TaskType selectedAction = TASK_NONE;
 };
 
 #endif

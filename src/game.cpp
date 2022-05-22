@@ -191,8 +191,8 @@ bool Game::OnUserUpdate(float fElapsedTime) {
                 selectedPlanet->surface->hud->popupMessage = "";
             } else if (selectedPlanet->surface->hud->ddmenu != nullptr) {
                 selectedPlanet->surface->hud->closeClickMenu();
-            } else if (selectedPlanet->surface->hud->selectedAction != TaskType::NONE) {
-                selectedPlanet->surface->hud->selectedAction = TaskType::NONE;
+            } else if (selectedPlanet->surface->hud->selectedAction != TASK_NONE) {
+                selectedPlanet->surface->hud->selectedAction = TASK_NONE;
             } else {
                 starView = true;
                 planetView = false;

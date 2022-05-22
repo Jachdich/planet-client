@@ -82,9 +82,9 @@ PlanetSurface::PlanetSurface() {
 
 bool isTileDirectional(const TileType &type) {
     switch (type) {
-        case TileType::ROAD: return true;
-        case TileType::CABLE: return true;
-        case TileType::PIPE: return true;
+        case TILE_ROAD: return true;
+        case TILE_CABLE: return true;
+        case TILE_PIPE: return true;
         default: return false;
     }
 }
@@ -120,7 +120,7 @@ void PlanetSurface::updateDirectionalTiles() {
 
 //TODO fix the other function so this one doesnt commit the ABSOLUTE ATTROSITY of taking y before x
 TileType PlanetSurface::getType(int32_t y, int32_t x) {
-    if (x >= rad * 2 || y >= rad * 2 || x < 0 || y < 0) return TileType::AIR;
+    if (x >= rad * 2 || y >= rad * 2 || x < 0 || y < 0) return TILE_AIR;
     return tiles[y * rad * 2 + x].type;
 }
 
@@ -136,7 +136,7 @@ PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
 			int32_t type = val & 0xFFFFFFFF;
             int32_t z    = (val >> 32) & 0xFFFFFFFF;
             if (rand() % 100000 == 0) {
-            	type = (int)TileType::TONK;
+            	type = (int)TILE_TONK;
             }
 			tiles.push_back(Tile((TileType)(type), z, j, i, this->getTint(i, j))); //TODO WHY DO I HAVE TO SWAP J AND I HERE?
 		}
@@ -216,7 +216,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
 				tiles[i * rad * 2 + j].hovered = true;
 				lastSelectX = j;
 				lastSelectY = i;
-				if (hud->selectedAction != TaskType::NONE && mouseClicked) {
+				if (hud->selectedAction != TASK_NONE && mouseClicked) {
                     data->dispatchTask(hud->selectedAction, &tiles[i * rad * 2 + j]);
                     return;
                 }

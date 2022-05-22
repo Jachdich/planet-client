@@ -40,17 +40,17 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
         Json::Value res = root["results"][i];
 
         if (res["status"].asInt() != 0) {
-            ErrorCode::ErrorType e = (ErrorCode::ErrorType)res["status"].asInt();
+            int e = res["status"].asInt();
             switch (e) {
-                case ErrorCode::OK:
+                case ERR_OK:
                     break;
-                case ErrorCode::MALFORMED_JSON:
-                case ErrorCode::INVALID_REQUEST:
-                case ErrorCode::OUT_OF_BOUNDS:
+                case ERR_MALFORMED_JSON:
+                case ERR_INVALID_REQUEST:
+                case ERR_OUT_OF_BOUNDS:
                     std::cerr << "Server sent non-zero status for request '" << req["request"]
                                           << "': " << res["status"].asInt() << "\n";
                     break;
-                case ErrorCode::INVALID_ACTION: {
+                case ERR_INVALID_ACTION: {
                     PlanetSurface * surf = getSurfaceFromJson(req, cache);
                     if (surf == nullptr) {
             	        std::cout << "[WARNING] discarding error packet on non-existant PlanetSurface\n";
@@ -60,11 +60,11 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
                     surf->hud->showPopup(res["error_message"].asString());
                 }
 
-                case ErrorCode::INVALID_CREDENTIALS: {
+                case ERR_INVALID_CREDENTIALS: {
                     std::cout << "Invalid password\n";
                 }
-                case ErrorCode::NOT_AUTHENTICATED: std::cout << "Not authenticated\n";
-                case ErrorCode::NOT_AUTHORISED:    std::cout << "Not authorised\n";
+                case ERR_NOT_AUTHENTICATED: std::cout << "Not authenticated\n";
+                case ERR_NOT_AUTHORISED:    std::cout << "Not authorised\n";
             }
             continue;
         }
@@ -92,7 +92,7 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	        return;
     	    }
             Tile * target = &surface->tiles[root["tile"].asInt()];
-            surface->data->timers.push_back(Timer{target, root["time"].asDouble()});
+            surface->data->timers.push_back((Timer){target, root["time"].asDouble()});
     	}
     	if (root["serverRequest"].asString() == "statsChange") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
@@ -101,8 +101,15 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	        return;
     	    }
      	    for (auto &elem: root["resources"].getMemberNames()) {
-        	    surface->data->stats.data[elem].value = root["resources"][elem]["value"].asDouble();
-        	    surface->data->stats.data[elem].capacity = root["resources"][elem]["capacity"].asDouble();
+     	        int key = res_json_key_to_id(elem.c_str());
+     	        if (key < 0) {
+                    //Server sent nonsense?
+                    //ignore for now
+    	            std::cout << "[WARNING] resource key '" << elem << "' is not recognised. Ignoring\n";
+     	        } else {
+        	        surface->data->stats.values[key].value    = root["resources"][elem]["value"].asDouble();
+        	        surface->data->stats.values[key].capacity = root["resources"][elem]["capacity"].asDouble();
+        	    }
     	    }
     	}
     	if (root["serverRequest"].asString() == "changeTile") {
