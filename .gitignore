@@ -15,3 +15,4 @@ planet-client
 callgrind*
 release_minimal
 vgcore*
+shader.glsl
