@@ -17,13 +17,24 @@ public:
     bool selected;
     int randomDissapearChance;
     int posInSector;
+
+    double noiseZ;
+    double noiseScl;
+    double noiseEffect;
+
+    olc::Pixel factionColour;
+    bool isInFaction;
+
+    olc::Sprite *buf = nullptr;
+    olc::Decal *decBuf = nullptr;
     
     Star();
     Star(Json::Value root, int posInSector);
     
-    void drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamParams trx);
-    void draw(olc::PixelGameEngine * e, CamParams trx, int secOffsetX, int secOffsetY);
+    void drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamParams &trx);
+    void draw(olc::PixelGameEngine * e, CamParams &trx, int secOffsetX, int secOffsetY);
     void select();
-    Planet * getPlanetAt(int x, int y, CamParams trx);
+    void drawTexture(olc::PixelGameEngine *e, uint32_t scale);
+    Planet * getPlanetAt(int x, int y, CamParams &trx);
 };
 #endif

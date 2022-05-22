@@ -12,11 +12,11 @@ class PlanetData;
 class DropdownMenuItem {
 public:
 	std::string text;
-	std::function<void()> click;
+	std::function<void(bool)> click;
 	olc::vd2d pos;
 	olc::vd2d offset;
-	DropdownMenuItem(std::string text, std::function<void()> ptr);
-	void draw(olc::PixelGameEngine * e, CamParams trx);
+	DropdownMenuItem(std::string text, std::function<void(bool)> ptr);
+	void draw(olc::PixelGameEngine * e, CamParams &trx);
 };
 
 class DropdownMenu {
@@ -26,8 +26,9 @@ public:
 	olc::vd2d pos;
 	std::vector<DropdownMenuItem> items;
 	DropdownMenu(olc::vf2d pos, std::string text);
-	void draw(olc::PixelGameEngine * e, CamParams trx);
-	bool click(olc::vf2d pos, CamParams trx);
+	inline DropdownMenu() {}
+	void draw(olc::PixelGameEngine * e, CamParams &trx);
+	bool click(olc::vf2d pos, bool right, CamParams &trx);
 	void registerItem(DropdownMenuItem item);
 };
 
@@ -37,21 +38,20 @@ private:
 	int wood;
 	int population;
 	Tile * selectedTile = nullptr;
-	DropdownMenu * ddmenu = nullptr;
 	PlanetSurface * parent;
 	PlanetData * data;
 public:
 	PlanetHUD();
 	PlanetHUD(PlanetSurface * parent, PlanetData * data);
-	bool mousePressed(int x, int y, CamParams trx);
+	bool mousePressed(int x, int y, bool right, CamParams &trx);
 	void closeClickMenu();
 	void sendChangeTileRequest(TileType to);
-	void draw(olc::PixelGameEngine * e, CamParams trx);
+	void draw(olc::PixelGameEngine * e, CamParams &trx);
 	void showClickMenu(Tile * t);
 	void showPopup(std::string message);
-
-private:
     std::string popupMessage = "";
+	DropdownMenu * ddmenu = nullptr;
+	TaskType selectedAction = TASK_NONE;
 };
 
 #endif

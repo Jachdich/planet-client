@@ -1,0 +1,121 @@
+{"states": [
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_ns.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_ew.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_se.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_sw.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_ne.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_nw.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_wse.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_wne.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_sen.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_nws.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+
+    {
+        "drawGround": 1,
+        "textures": [
+            {
+                "imageFile": "tiles/png/road_nsew.png",
+                "tint": false,
+                "width": 64
+            }
+        ]
+    },
+]    
+ }

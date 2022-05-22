@@ -10,6 +10,7 @@
 #include "tile.h"
 #include "planetdata.h"
 #include "common/surfacelocator.h"
+#include "common/surfacelocator_test.h"
 
 void ClientNetwork::sendRequest(Json::Value request) {
     Json::Value totalJSON;
@@ -28,6 +29,7 @@ void ClientNetwork::sendRequest(Json::Value request) {
 }
 
 void handleNetworkPacket(Json::Value root, SectorCache * cache) {
+	//std::cout << root << "\n\n\n";
     if (root.get("status", 0).asInt() != 0) {
         std::cerr << "Server sent non-zero status: " << root["status"].asInt() << "\n";
         return;
@@ -38,42 +40,38 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
         Json::Value res = root["results"][i];
 
         if (res["status"].asInt() != 0) {
-            ErrorCode e = (ErrorCode)res["status"].asInt();
+            int e = res["status"].asInt();
             switch (e) {
-                case ErrorCode::OK:
+                case ERR_OK:
                     break;
-                case ErrorCode::MALFORMED_JSON:
-                case ErrorCode::INVALID_REQUEST:
-                case ErrorCode::OUT_OF_BOUNDS:
+                case ERR_MALFORMED_JSON:
+                case ERR_INVALID_REQUEST:
+                case ERR_OUT_OF_BOUNDS:
                     std::cerr << "Server sent non-zero status for request '" << req["request"]
                                           << "': " << res["status"].asInt() << "\n";
-            	case ErrorCode::NO_PEOPLE_AVAILABLE: {
-            	    PlanetSurface * surf = getSurfaceFromJson(req, cache);
-            	    surf->hud->showPopup("No people available to\ncomplete action!");
-            	    break;
-            	}
-                case ErrorCode::INSUFFICIENT_RESOURCES: {
-                    PlanetSurface * surf = getSurfaceFromJson(req, cache);
-                    surf->hud->showPopup("Insufficient resources!");
                     break;
-                }
-                case ErrorCode::TASK_ALREADY_STARTED: {
+                case ERR_INVALID_ACTION: {
                     PlanetSurface * surf = getSurfaceFromJson(req, cache);
-                    surf->hud->showPopup("There is already a task\non this tile!");
-                    break;
+                    if (surf == nullptr) {
+            	        std::cout << "[WARNING] discarding error packet on non-existant PlanetSurface\n";
+            	        return;
+            	    }
+
+                    surf->hud->showPopup(res["error_message"].asString());
                 }
-                case ErrorCode::TASK_ON_WRONG_TILE: {
-                    PlanetSurface * surf = getSurfaceFromJson(req, cache);
-                    surf->hud->showPopup("This task is not available\non this tile!");
-                    break;
+
+                case ERR_INVALID_CREDENTIALS: {
+                    std::cout << "Invalid password\n";
                 }
+                case ERR_NOT_AUTHENTICATED: std::cout << "Not authenticated\n";
+                case ERR_NOT_AUTHORISED:    std::cout << "Not authorised\n";
             }
             continue;
         }
         
         if (req["request"] == "getSector") {
             Sector s(res["result"]);
-            cache->setSectorAt(req["x"].asInt(), req["y"].asInt(), s);
+            cache->setSectorAt(req["x"].asUInt(), req["y"].asUInt(), s);
             
         } else if (req["request"] == "getSurface") {
         	SurfaceLocator loc = getSurfaceLocatorFromJson(req);
@@ -89,19 +87,48 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     if (root.get("serverRequest", "NONE").asString() != "NONE") {
     	if (root["serverRequest"].asString() == "setTimer") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
+    	    if (surface == nullptr || !surface->generated) {
+    	        std::cout << "[WARNING] discarding setTimer packet on non-existant PlanetSurface\n";
+    	        return;
+    	    }
             Tile * target = &surface->tiles[root["tile"].asInt()];
-            surface->data->timers.push_back(Timer{target, root["time"].asDouble()});
+            surface->data->timers.push_back((Timer){target, root["time"].asDouble()});
     	}
     	if (root["serverRequest"].asString() == "statsChange") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
-    	    surface->data->stats.wood = root["wood"].asInt();
-    	    surface->data->stats.stone = root["stone"].asInt();
-    	    surface->data->stats.people = root["people"].asInt();
-    	    surface->data->stats.peopleIdle = root["peopleIdle"].asInt();
+    	    if (surface == nullptr || !surface->generated) {
+    	        std::cout << "[WARNING] discarding statsChange packet on non-existant or partially loaded PlanetSurface\n";
+    	        return;
+    	    }
+     	    for (auto &elem: root["resources"].getMemberNames()) {
+     	        int key = res_json_key_to_id(elem.c_str());
+     	        if (key < 0) {
+                    //Server sent nonsense?
+                    //ignore for now
+    	            std::cout << "[WARNING] resource key '" << elem << "' is not recognised. Ignoring\n";
+     	        } else {
+        	        surface->data->stats.values[key].value    = root["resources"][elem]["value"].asDouble();
+        	        surface->data->stats.values[key].capacity = root["resources"][elem]["capacity"].asDouble();
+        	    }
+    	    }
     	}
     	if (root["serverRequest"].asString() == "changeTile") {
     	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
+    	    if (surface == nullptr || !surface->generated) {
+    	        std::cout << "[WARNING] discarding changeTile packet on non-existant PlanetSurface\n";
+    	        return;
+    	    }
             surface->tiles[root["tilePos"].asInt()].type = (TileType)root["type"].asInt();
+            surface->updateDirectionalTiles();
+    	}
+
+    	if (root["serverRequest"].asString() == "updateTileError") {
+    	    PlanetSurface *surf = getSurfaceFromJson(root, cache);
+    	    if (surf == nullptr || !surf->generated || surf->tiles.size() <= root["tileError"]["pos"].asUInt()) {
+     	        std::cout << "[WARNING] discarding updateTileError packet on non-existant or partially loaded PlanetSurface\n";
+     	        return;
+     	    }
+            surf->tiles[root["tileError"]["pos"].asUInt()].addError(root["tileError"]["msg"].asString());
     	}
     	
     }
@@ -111,8 +138,8 @@ void sendUserAction(Tile * target, TaskType task) {
 	Json::Value json;
 	json["request"] = "userAction";
 	json["action"] = (int)task;
-	json["x"] = target->x; //TODO WHY IN GODS NAME DO I HAVE TO COMMIT THIS ATROSITY
-	json["y"] = target->y; //OF SWAPPING THE X AND Y VALUES? WHAT DARK MAGIC IS GOING ON?
+	json["x"] = target->x;
+	json["y"] = target->y;
 
 	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
 	json["secX"] = x[0];
@@ -133,7 +160,8 @@ ClientNetwork::ClientNetwork() : ssl_ctx(asio::ssl::context::tls), socket(ctx, s
     
 }
 
-void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * cache) {
+void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * cache,
+    std::string username, std::string password) {
     this->cache = cache;
     asio::error_code ec;
 
@@ -145,6 +173,12 @@ void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * ca
     readUntil();
     std::thread asioThread = std::thread([&]() {ctx.run();});
     asioThread.detach();
+
+    Json::Value request;
+    request["request"] = "login";
+    request["username"] = username;
+    request["password"] = password;
+    app->client.sendRequest(request);
 }
 
 void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
@@ -187,7 +221,7 @@ void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
 
     } else {
         std::cerr << "ERROR: " <<  ec.message() << "\n";
-        readUntil();
+        //readUntil();
     }
 }
 

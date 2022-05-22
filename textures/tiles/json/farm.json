@@ -1,0 +1,8 @@
+{"drawGround": 1,
+ "textures": [
+     {"imageFile": "tiles/png/farm.png",
+      "animationSpeed": 20,
+      "tint": false,
+      "width": 64}
+     ]
+}

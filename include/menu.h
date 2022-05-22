@@ -10,13 +10,25 @@ enum MenuState {
 	SINGLE,
 	OPTIONS,
 	SERVER_LIST,
+	LOGIN,
 	CONNECT,
+};
+
+enum Focus {
+    IP_INPUT,
+    UNAME_INPUT,
+    PWORD_INPUT,
 };
 
 class Menu {
 private:
 	std::string ipInput = "";
+	std::string unameInput = "";
+	std::string pwordInput = "";
+	Focus focus = IP_INPUT;
     MenuState state;
+    MenuState lastState;
+    MenuState nextState;
 public:
     Menu();
     bool draw(Game * e);    

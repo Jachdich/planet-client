@@ -24,14 +24,16 @@ public:
 	double rotationalAngularVelocity;
     double angularVelocity;
     int posInStar;
+    int32_t seaLevel;
 	    
-    PlanetSurface * surface;
+    PlanetSurface * surface = nullptr;
     
     Planet();
     Planet(Json::Value res, int posInStar);
     void loadSurface(int secX, int secY, int starPos, int planetPos);
-    void draw(olc::PixelGameEngine * e, double x, double y, CamParams trx);
-    void drawSurface(olc::PixelGameEngine * e, CamParams trx);
+    void unloadSurface();
+    void draw(olc::PixelGameEngine * e, double x, double y, CamParams &trx);
+    void drawSurface(olc::PixelGameEngine * e, CamParams &trx);
 };
 
 #endif

@@ -12,8 +12,8 @@ void Sector::setRequested() {
 }
 
 Sector::Sector(Json::Value root) {
-    this->x = root["x"].asInt();
-    this->y = root["y"].asInt();
+    this->x = root["x"].asUInt();
+    this->y = root["y"].asUInt();
     this->r = root["r"].asInt();
     this->generated = true;
     this->requested = false;
@@ -24,7 +24,7 @@ Sector::Sector(Json::Value root) {
 
 }
 
-Star * Sector::getStarAt(int ax, int ay, CamParams trx) {
+Star * Sector::getStarAt(int ax, int ay, CamParams &trx) {
     int wx = (ax - trx.tx) / trx.zoom;
     int wy = (ay - trx.ty) / trx.zoom;
     int bx = wx - r * x;
@@ -39,12 +39,17 @@ Star * Sector::getStarAt(int ax, int ay, CamParams trx) {
     return nullptr;
 }
 
-void Sector::draw(olc::PixelGameEngine * e, CamParams trx) {
+void Sector::draw(olc::PixelGameEngine * e, CamParams &trx) {
+    olc::vi2d origin = {(int)(this->x * this->r * trx.zoom + trx.tx), (int)(this->y * this->r * trx.zoom + trx.ty)};
 	if (debugMode) {
-		e->DrawRect(this->x * this->r * trx.zoom + trx.tx, this->y * this->r * trx.zoom + trx.ty, r * trx.zoom, r * trx.zoom, olc::Pixel(255, 255, 255));
-        e->DrawStringDecal({this->x * this->r * trx.zoom + trx.tx, this->y * this->r * trx.zoom + trx.ty}, std::to_string(this->x) + ", " + std::to_string(this->y), olc::WHITE);
+		e->DrawRect(origin, {(int)(r * trx.zoom), (int)(r * trx.zoom)}, olc::Pixel(255, 255, 255));
+        e->DrawStringDecal(origin, std::to_string(this->x) + ", " + std::to_string(this->y), olc::WHITE);
 	}
     for (int i = 0; i < this->numStars; i++) {
         this->stars[i].draw(e, trx, x * r, y * r);
+	}
+
+	if (x == 0 && y == 0) { //debug lol
+        //e->FillRect(origin, {(int)(r * trx.zoom), (int)(r * trx.zoom)}, olc::Pixel(255, 0, 0, 64));
 	}
 }

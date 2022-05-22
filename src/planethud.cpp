@@ -9,22 +9,25 @@
 #include "sprites.h"
 #include "star.h"
 #include "sector.h"
+#include "helperfunctions.h"
 
 #include <iostream>
 //#include <functional>
 #include <jsoncpp/json/json.h>
 //#include <math>
 
-DropdownMenuItem::DropdownMenuItem(std::string text, std::function<void()> ptr) {
+#define NUM_MENUS 2
+
+DropdownMenuItem::DropdownMenuItem(std::string text, std::function<void(bool)> ptr) {
 	this->text = text;
 	this->click = ptr;
 }
 
-void DropdownMenuItem::draw(olc::PixelGameEngine * e, CamParams trx) {
-	olc::vd2d pos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
+void DropdownMenuItem::draw(olc::PixelGameEngine * e, CamParams &trx) {
+	olc::vd2d pos = {this->pos.x * trx.zoom + (int)trx.tx, this->pos.y * trx.zoom + (int)trx.ty};
 	UIComponent comp = UIComponents["menu_item"];
 	e->DrawDecal(pos + offset * trx.zoom, comp.decal, {trx.zoom, trx.zoom});
-	e->DrawStringDecal((this->pos + offset + comp.textPos) * trx.zoom + olc::vi2d{trx.tx, trx.ty}, this->text, olc::BLACK, {trx.zoom, trx.zoom});
+	e->DrawStringDecal((this->pos + offset + comp.textPos) * trx.zoom + olc::vi2d{(int)trx.tx, (int)trx.ty}, this->text, olc::BLACK, {trx.zoom, trx.zoom});
 }
 
 DropdownMenu::DropdownMenu(olc::vf2d pos, std::string text) {
@@ -42,11 +45,11 @@ void DropdownMenu::registerItem(DropdownMenuItem item) {
 	this->items.push_back(item);
 }
 
-void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams trx) {
+void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams &trx) {
 	UIComponent component = this->open ? UIComponents["menu_open"] : UIComponents["menu_closed"];
 	olc::vd2d pos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
 	e->DrawDecal(pos, component.decal, {trx.zoom, trx.zoom});
-	e->DrawStringDecal((this->pos + component.textPos) * trx.zoom + olc::vi2d{trx.tx, trx.ty}, this->text, olc::BLACK, {trx.zoom, trx.zoom});
+	e->DrawStringDecal((this->pos + component.textPos) * trx.zoom + olc::vi2d{(int)trx.tx, (int)trx.ty}, this->text, olc::BLACK, {trx.zoom, trx.zoom});
 	if (this->open) {
 		for (DropdownMenuItem item : this->items) {
 			item.draw(e, trx);
@@ -54,7 +57,7 @@ void DropdownMenu::draw(olc::PixelGameEngine * e, CamParams trx) {
 	}
 }
 
-bool DropdownMenu::click(olc::vf2d screenPos, CamParams trx) {
+bool DropdownMenu::click(olc::vf2d screenPos, bool right, CamParams &trx) {
 	olc::vd2d rectPos = {this->pos.x * trx.zoom + trx.tx, this->pos.y * trx.zoom + trx.ty};
 
 	olc::vd2d delta = screenPos - rectPos;
@@ -67,13 +70,13 @@ bool DropdownMenu::click(olc::vf2d screenPos, CamParams trx) {
 	}
 
 	//check X value since all items are the same width
-	if (delta.x <= 100 * trx.zoom  && delta.x >= 0 && this->open) {
+	if (delta.x <= 160 * trx.zoom  && delta.x >= 0 && this->open) {
 		int componentIndex = floor(delta.y / (17 * trx.zoom)) - 1; //-1 for the menu header itself
 		if ((unsigned long int)componentIndex >= items.size()) {
 			return false;
 		}
 
-		this->items[componentIndex].click();
+		this->items[componentIndex].click(right);
 		return true;
 	}
 
@@ -86,14 +89,51 @@ PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
 	this->data = data;
 }
 
-void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams trx) {
-    e->DrawStringDecal({0, 30}, "Stone       " + std::to_string(this->data->stats.stone), olc::WHITE);
-    e->DrawStringDecal({0, 40}, "Wood        " + std::to_string(this->data->stats.wood),  olc::WHITE);
-    e->DrawStringDecal({0, 50}, "People      " + std::to_string(this->data->stats.people),  olc::WHITE);
-    e->DrawStringDecal({0, 60}, "People Idle " + std::to_string(this->data->stats.peopleIdle),  olc::WHITE);
+void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams &trx) {
+    float n = 10;
+    for (int r = 0; r < NUM_RESOURCES; r++) {
+        if (r == RES_PEOPLE_IDLE) continue;
+        ResourceValue v = this->data->stats.values[r];
+        e->DrawDecal({2, n + 12}, icons[std::string(res_names[r])]);
+        if (r == RES_PEOPLE) {
+            e->DrawStringDecal({16, n += 12}, std::to_string((int)data->stats.values[RES_PEOPLE_IDLE].value) + "/" + std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
+        } else {
+            e->DrawStringDecal({16, n += 12}, std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
+        }
+    }
+
+    n = 0;
+    float xpos = WIDTH - 256;
+    if (parent->selectedTile != nullptr) {
+        olc::Pixel col = parent->selectedTile->tint;
+        TileMinerals minerals = getTileMinerals(col.r << 16 | col.g << 8 | col.b);
+        e->DrawStringDecal({xpos, n += 10}, "Selected tile X: " + std::to_string(parent->selectedTile->x) + 
+                                                         " Y: " + std::to_string(parent->selectedTile->y) +
+                                                         " Z: " + std::to_string(parent->selectedTile->z));
+
+        e->DrawStringDecal({xpos, n += 10}, "Type:       " + std::string(getTileTypeName(parent->selectedTile->type)));
+        e->DrawStringDecal({xpos, n += 10}, "Colour:     " + toHexString("#", parent->selectedTile->tint));
+        e->DrawStringDecal({xpos, n += 10}, "Iron:       " + std::to_string(minerals.iron * 100) + "%");
+        e->DrawStringDecal({xpos, n += 10}, "Copper:     " + std::to_string(minerals.copper * 100) + "%");
+        e->DrawStringDecal({xpos, n += 10}, "Aluminium:  " + std::to_string(minerals.aluminium * 100) + "%");
+        e->DrawStringDecal({xpos, n += 10}, "Sand:       " + std::to_string(minerals.sand * 100) + "%");
+        if (parent->selectedTile->errMsg != "") {
+            e->DrawStringDecal({xpos, n += 20}, "Tile Error: " + parent->selectedTile->errMsg);
+        }
+        
+        
+    } else {
+        e->DrawStringDecal({xpos, n += 10}, "No tile selected");
+    }
+
+    if (this->selectedAction != TASK_NONE) {
+        e->DrawStringDecal({10, 0}, "Selected task: " + std::string(getTaskTypeName(this->selectedAction)) + " (<esc> to finish)");
+    }
 
 	if (this->ddmenu != nullptr) {
-		this->ddmenu->draw(e, trx);
+	    for (size_t i = 0; i < NUM_MENUS; i++) {
+		    this->ddmenu[i].draw(e, trx);
+		}
 	}
 	if (this->popupMessage != "") {
 	    UIComponent component = UIComponents["error_popup"];
@@ -107,7 +147,7 @@ void PlanetHUD::showPopup(std::string message) {
 	this->popupMessage = message;
 }
 
-bool PlanetHUD::mousePressed(int x, int y, CamParams trx) {
+bool PlanetHUD::mousePressed(int x, int y, bool right, CamParams &trx) {
 	if (this->popupMessage != "") {
 	    UIComponent component = UIComponents["error_popup"];
 	    olc::vi2d size = {component.decal->sprite->width, component.decal->sprite->height};
@@ -127,8 +167,12 @@ bool PlanetHUD::mousePressed(int x, int y, CamParams trx) {
             return true;
         }
     }
-	if (this->ddmenu != nullptr) {
-		return this->ddmenu->click(olc::vf2d(x, y), trx);
+
+    if (this->ddmenu != nullptr) {
+	    for (size_t i = 0; i < NUM_MENUS; i++) {
+		    bool clicked = this->ddmenu[i].click(olc::vf2d(x, y), right, trx);
+		    if (clicked) return true;
+		}
 	}
 	return false;
 }
@@ -138,14 +182,55 @@ void PlanetHUD::showClickMenu(Tile * t) {
 		this->selectedTile->selected = false;
 	}
 
-	//this->ddmenu = new DropdownMenu(olc::vf2d(128, 0), "Building");
-	this->ddmenu = new DropdownMenu(t->getTextureCoordinates() - olc::vf2d(32, 32), "Demolition");
-	for (TaskType type : this->data->getPossibleTasks(t)) {
-		this->ddmenu->registerItem(DropdownMenuItem(getTaskTypeName(type),
-		[this, type]() { data->dispatchTask(type, this->selectedTile); }));
+	this->ddmenu = new DropdownMenu[2];
+	ddmenu[0] = DropdownMenu(t->getTextureCoordinates() - olc::vf2d(32, 32), "Building");
+	ddmenu[1] = DropdownMenu(t->getTextureCoordinates() - olc::vf2d(32 + 128, 32), "Demolition");
+
+	std::vector<TaskType> v;
+	
+	if (isTree(t->type)) {
+		v.push_back(TASK_FELL_TREE);
+	} else if (isMineral(t->type)) {
+		v.push_back(TASK_MINE_ROCK);
+	} else if (t->type != TILE_GRASS) {
+	    v.push_back(TASK_CLEAR);
 	}
-	//this->ddmenu->registerItem(DropdownMenuItem("Tree", [this]() { sendChangeTileRequest(TileType::TREE); }));
-	//this->ddmenu->registerItem(DropdownMenuItem("Grass", [this]() { sendChangeTileRequest(TileType::GRASS); }));
+	
+	if (t->type == TILE_GRASS) {
+	    for (TaskType type : {TASK_PLANT_TREE, TASK_BUILD_HOUSE, TASK_BUILD_FARM,
+	    		 TASK_BUILD_GREENHOUSE, TASK_BUILD_WATERPUMP, TASK_BUILD_MINE,
+	    		 TASK_BUILD_BLASTFURNACE, TASK_BUILD_FORESTRY, TASK_BUILD_CAPSULE,
+	    		 TASK_BUILD_WAREHOUSE, TASK_BUILD_ROAD, TASK_BUILD_PIPE,
+	    		 TASK_BUILD_CABLE, TASK_BUILD_WAREHOUSE}) {
+		    this->ddmenu[0].registerItem(DropdownMenuItem(getTaskTypeName(type),
+            [this, type](bool right) { 
+                if (right) {
+                    if (this->selectedAction == type) {
+                        this->selectedAction = TASK_NONE;
+                    } else {
+                        this->selectedAction = type;
+                    }
+                } else {
+                    data->dispatchTask(type, this->selectedTile);
+                }
+            }));
+	    }
+	}
+
+    for (TaskType type : v) {
+        this->ddmenu[1].registerItem(DropdownMenuItem(getTaskTypeName(type),
+        [this, type](bool right) { 
+            if (right) {
+                if (this->selectedAction == type) {
+                    this->selectedAction = TASK_NONE;
+                } else {
+                    this->selectedAction = type;
+                }
+            } else {
+                data->dispatchTask(type, this->selectedTile);
+            }
+        }));
+    }
 
 	this->selectedTile = t;
 	t->selected = true;
@@ -158,7 +243,7 @@ void PlanetHUD::closeClickMenu() {
 		this->selectedTile = nullptr;
 
 		//delete the ddmenu since it has no references
-		delete this->ddmenu;
+		delete[] this->ddmenu;
 		this->ddmenu = nullptr;
 	}
 }

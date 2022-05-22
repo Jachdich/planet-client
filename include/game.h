@@ -11,8 +11,6 @@
 #include "star.h"
 #include "menu.h"
 
-const olc::vd2d pixelsPerPixel{2, 2};
-
 class Game : public olc::PixelGameEngine {
 public:
     int lastMouseX;
@@ -26,10 +24,20 @@ public:
     bool planetView = false;
     bool starView = false;
     bool menuView = true;
+    double totalTime = 0;
+
+    bool connectImmediately = false;
+    
     Menu menu;
     SectorCache map;
     ClientNetwork client;
     std::string address;
+
+    std::string username = "";
+    std::string password = "";
+
+    std::string message = "";
+    double message_life = 0;
     
 	Game();
     Game(int argc, char ** argv);
@@ -41,7 +49,7 @@ public:
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float fElapsedTime) override;
     void zoom(int count);
-    void mousePressed();
+    void mousePressed(uint32_t x, uint32_t y);
 	std::vector<int> getCurrentPlanetsurfaceLocator();
 };
 

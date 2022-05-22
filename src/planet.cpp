@@ -11,12 +11,14 @@ Planet::Planet() {}
 Planet::Planet(Json::Value res, int posInStar) {
     mass = res["mass"].asDouble();
     radius = res["radius"].asInt();
+    seaLevel = res["seaLevel"].asInt();
     numColours = res["numColours"].asInt();
     int col = res["baseColour"].asInt();
     baseColour = olc::Pixel(col >> 16, (col >> 8) & 0xFF, col & 0xFF);
     posFromStar = res["posFromStar"].asInt();
     theta = res["theta"].asDouble();
     angularVelocity = res["angularVelocity"].asDouble();
+    rotationTheta = 0;
 	
 	double lower_bound = 0;
     double upper_bound = 10;
@@ -38,17 +40,10 @@ Planet::Planet(Json::Value res, int posInStar) {
         generationZValues[i] = res["generationZValues"][i].asInt();
         generationNoise[i]   = res["generationNoise"][i].asDouble();
     }
-    surface = new PlanetSurface();
     this->posInStar = posInStar;
 }
 
-std::string toHexString(std::string initText, olc::Pixel colour) {
-	std::stringstream stream;
-	stream << initText << std::setfill('0') << std::setw(6) << std::hex << ((((colour.r << 8) | colour.g) << 8) | colour.b);
-	return stream.str();
-}
-
-void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {
+void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams &trx) {
 	if (this->surf == nullptr) {
 		this->surf = new olc::Sprite(radius * 2, radius * 2);
 		e->SetDrawTarget(this->surf);
@@ -61,29 +56,34 @@ void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {
 					e->Draw(xa, ya, olc::Pixel(0, 0, 0, 0));
 					continue;
 				}
-				
-				int r = 0;
-				int g = 0;
-				int b = 0;
-				int total = 0;
-				for (int i = 0; i < this->numColours; i++) {
-					if ((noiseGen.GetNoise(xb / this->generationNoise[i], yb / this->generationNoise[i], this->generationZValues[i]) + 1) / 2 > this->generationChances[i]) {
-						r += this->generationColours[i].r;
-						g += this->generationColours[i].g;
-						b += this->generationColours[i].b;
-						total += 1;
-					}
+
+            	double height = noiseGen.GetNoise(xb / this->generationNoise[0], yb / this->generationNoise[0], (double)this->generationZValues[0]) * 30;
+            	if (height <= this->seaLevel) {
+				    e->Draw(xa, ya, this->generationColours[0]);
+            	} else {	
+    				int r = 0;
+    				int g = 0;
+    				int b = 0;
+    				int total = 0;
+    				for (int i = 1; i < this->numColours; i++) {
+    					if ((noiseGen.GetNoise(xb / this->generationNoise[i], yb / this->generationNoise[i], (double)this->generationZValues[i]) + 1) / 2 > this->generationChances[i]) {
+    						r += this->generationColours[i].r;
+    						g += this->generationColours[i].g;
+    						b += this->generationColours[i].b;
+    						total += 1;
+    					}
+    				}
+    				if (total == 0) {
+    					r = this->baseColour.r;
+    					g = this->baseColour.g;
+    					b = this->baseColour.b;
+    				} else {
+    					r /= total;
+    					g /= total;
+    					b /= total;
+    				}
+				    e->Draw(xa, ya, olc::Pixel(r, g, b));
 				}
-				if (total == 0) {
-					r = this->baseColour.r;
-					g = this->baseColour.g;
-					b = this->baseColour.b;
-				} else {
-					r /= total;
-					g /= total;
-					b /= total;
-				}
-				e->Draw(xa, ya, olc::Pixel(r, g, b));
 			}
 		}
 		
@@ -91,7 +91,7 @@ void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {
 		
 		this->dec = new olc::Decal(this->surf);
 	}
-	e->DrawRotatedDecal({(float)(x * trx.zoom + trx.tx), (float)(y * trx.zoom + trx.ty)}, this->dec, this->rotationTheta, {(float)radius, (float)radius}, {trx.zoom, trx.zoom}); 
+	e->DrawRotatedDecal({(float)(x * trx.zoom + trx.tx), (float)(y * trx.zoom + trx.ty)}, this->dec, this->rotationTheta, {(float)radius, (float)radius}, {trx.zoom, trx.zoom});
 	int sx = (x + radius * 2) * trx.zoom + trx.tx;
 	int sy = (y - radius * 2) * trx.zoom + trx.ty;
 	if (debugMode) {
@@ -108,6 +108,9 @@ void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams trx) {
 }
 
 void Planet::loadSurface(int secX, int secY, int starPos, int planetPos) {
+    if (surface == nullptr) {
+        surface = new PlanetSurface();
+    }
 	if (!surface->generated) {
 		if (!surface->requested) {
 		    Json::Value root;
@@ -122,6 +125,11 @@ void Planet::loadSurface(int secX, int secY, int starPos, int planetPos) {
 	}
 }
 
-void Planet::drawSurface(olc::PixelGameEngine * e, CamParams trx) {
+void Planet::unloadSurface() {
+    delete surface;
+    surface = nullptr;
+}
+
+void Planet::drawSurface(olc::PixelGameEngine * e, CamParams &trx) {
     surface->draw(e, trx);
 }

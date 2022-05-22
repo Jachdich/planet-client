@@ -6,13 +6,14 @@
 
 class CamParams {
 public:
-    int tx = 0;
-    int ty = 0;
+    double tx = 0;
+    double ty = 0;
     float zoom = 1;
+    uint64_t animationStage = 0;
 	olc::vf2d toScreen(olc::vf2d pos);
 };
 
 Json::Value makeJSON(std::string x);
-
+std::string toHexString(std::string initText, olc::Pixel colour);
 
 #endif

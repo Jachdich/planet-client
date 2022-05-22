@@ -17,6 +17,7 @@ public:
 	int pos;
 	int lastSelectX = 0;
 	int lastSelectY = 0;
+	Tile *selectedTile = nullptr;
     bool generated = false;
     bool requested = false;
 	Planet * parent;
@@ -27,9 +28,12 @@ public:
     PlanetSurface(Json::Value root, Planet * p);
 
     void drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx);
-    void draw(olc::PixelGameEngine * e, CamParams trx);
-	void mouseOver(int x, int y, bool mouseClicked, bool mousePressed, CamParams trx);
+    void draw(olc::PixelGameEngine * e, CamParams &trx);
+	void mouseOver(int x, int y, bool mouseClicked, bool mousePressed, bool rightClicked, CamParams &trx);
+	void updateDirectionalTiles();
     olc::Pixel getTint(int x, int y);
+    int32_t getHeight(int32_t x, int32_t y);
+    TileType getType(int32_t y, int32_t x);
 };
 
 #endif

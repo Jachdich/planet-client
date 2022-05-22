@@ -29,6 +29,12 @@ olc::vf2d CamParams::toScreen(olc::vf2d pos) {
 	return (pos * zoom) + olc::vf2d(tx, ty);
 }
 
+std::string toHexString(std::string initText, olc::Pixel colour) {
+	std::stringstream stream;
+	stream << initText << std::setfill('0') << std::setw(6) << std::hex << ((((colour.r << 8) | colour.g) << 8) | colour.b);
+	return stream.str();
+}
+
 //.kick (what if they're the last player?)
 //.leave (what if you're the last player?)
 //wining

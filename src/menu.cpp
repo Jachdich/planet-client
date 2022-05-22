@@ -2,9 +2,10 @@
 #include "sprites.h"
 #include "game.h"
 #include "client.h"
+#include <iostream>
 
 Menu::Menu() {
-
+    state = MAIN;
 }
 
 void getInput(std::string &inp, olc::PixelGameEngine *m_pge) {
@@ -37,26 +38,27 @@ void getInput(std::string &inp, olc::PixelGameEngine *m_pge) {
     if (inp.size() > 15) {
         inp.pop_back();
     }
-
-    if (m_pge->GetKey(olc::Key::ENTER).bPressed) {
-    	app->address = inp;
-    	app->connectToServer();
-    	app->menuView = false;
-    	app->galaxyView = true;
-    }
 }
 
 bool Menu::draw(Game *e) {
     MenuComponent bg = menuComponents["background"];
-    e->DrawDecal({0, 0}, bg.decal, 1.0f / pixelsPerPixel);
+    e->DrawDecal({0, 0}, bg.decal, 1.0 / (olc::vd2d)pixelsPerPixel);
+    if (e->username != "" && e->password != "") {
+        e->DrawStringDecal({4, 16}, "Logged in as: " + e->username);
+    } else {
+        e->DrawStringDecal({4, 16}, "Logged out");
+    }
+  
     if (e->GetKey(olc::Key::T).bPressed) {
 		loadSprites();
 	}
 
+    bool just_changed = state != lastState;
+    lastState = state;
     switch (state) {
 	   	case MAIN: {
 		    MenuComponent buttons = menuComponents["main"];
-		    e->DrawDecal({0, 0}, buttons.decal, 1.0f / pixelsPerPixel);
+		    e->DrawDecal({0, 0}, buttons.decal, 1.0 / (olc::vd2d)pixelsPerPixel);
 		    if (e->GetMouse(0).bPressed) {
 		    	olc::vd2d adjustedPos = {(double)e->GetMouseX() / (double)WIDTH, (double)e->GetMouseY() / (double)HEIGHT};
 				if (buttons.buttons["multiplayer"].isInside(adjustedPos)) {
@@ -65,36 +67,103 @@ bool Menu::draw(Game *e) {
 					return false;
 				}
 		    }
+		    if (e->GetKey(olc::Key::ESCAPE).bPressed) {
+		        return false;
+		    }
 		    break;
 		}
 	    case MULTI: {
 	    	MenuComponent buttons = menuComponents["multiplayer"];
-	    	e->DrawDecal({0, 0}, buttons.decal, 1.0f / pixelsPerPixel);
+	    	e->DrawDecal({0, 0}, buttons.decal, 1.0 / (olc::vd2d)pixelsPerPixel);
 			if (e->GetMouse(0).bPressed) {
 		    	olc::vd2d adjustedPos = {(double)e->GetMouseX() / (double)WIDTH, (double)e->GetMouseY() / (double)HEIGHT};
 				if (buttons.buttons["server_list"].isInside(adjustedPos)) {
 					state = SERVER_LIST;
 				} else if (buttons.buttons["connect"].isInside(adjustedPos)) {
-					state = CONNECT;
+				    if (e->username == "" || e->password == "") {
+				        state = LOGIN;
+				        nextState = CONNECT;
+				    } else {
+					    state = CONNECT;
+				    }
 				} else if (buttons.buttons["back"].isInside(adjustedPos)) {
 					state = MAIN;
 				}
+			}
+			if (e->GetKey(olc::Key::ESCAPE).bPressed) {
+			    state = MAIN;
 			}
 			break;
 	    }
 
 	    case CONNECT: {
+	        if (just_changed) {
+	            focus = IP_INPUT;
+	        }
 	    	MenuComponent buttons = menuComponents["serverconnect"];
-	    	e->DrawDecal({0, 0}, buttons.decal, 1.0f / pixelsPerPixel);
+	    	e->DrawDecal({0, 0}, buttons.decal, 1.0 / (olc::vd2d)pixelsPerPixel);
 	    	getInput(ipInput, e);
-	    	e->DrawStringDecal(buttons.buttons["box"].pos * olc::vd2d{(double)WIDTH, (double)HEIGHT}, ipInput, olc::Pixel(0, 0, 0), 3.0f / pixelsPerPixel);
+	    	e->DrawStringDecal(buttons.buttons["box"].pos * olc::vd2d{(double)WIDTH, (double)HEIGHT}, ipInput, olc::Pixel(0, 0, 0), 3.0 / (olc::vd2d)pixelsPerPixel);
 			if (e->GetKey(olc::Key::ESCAPE).bPressed) {
 				state = MULTI;
 			}
-			//if (e->GetMouse(0).bPressed) {
-		    	//olc::vd2d adjustedPos = {(double)e->GetMouseX() / (double)WIDTH, (double)e->GetMouseY() / (double)HEIGHT};
-			//}
+		    if (e->GetKey(olc::Key::ENTER).bPressed) {
+            	e->address = ipInput;
+            	e->connectToServer();
+            	e->menuView = false;
+            	e->galaxyView = true;
+            }
 			break;
+	    }
+
+	    case LOGIN: {
+	        if (just_changed) {
+	            focus = UNAME_INPUT;
+	        }
+	        MenuComponent buttons = menuComponents["login"];
+	        e->DrawDecal({0, 0}, buttons.decal, 1.0 / (olc::vd2d)pixelsPerPixel);
+	        olc::Decal *cursor = UIComponents["cursor"].decal;
+	        olc::vi2d stringSize;
+	        olc::vd2d textpos;
+	        if (focus == UNAME_INPUT) {
+	            getInput(unameInput, e);
+	            stringSize = e->GetTextSize(unameInput);
+	            textpos = buttons.buttons["username"].pos;
+	        } else if (focus == PWORD_INPUT) {
+	            getInput(pwordInput, e);
+	            stringSize = e->GetTextSize(pwordInput);
+	            textpos = buttons.buttons["password"].pos;
+	        }
+	        olc::vd2d pos = textpos * olc::vd2d{(double)WIDTH, (double)HEIGHT} +
+                            olc::vd2d{(double)stringSize.x, 0} * (3.0 / (olc::vd2d)pixelsPerPixel) + olc::vd2d{2, -2};
+            e->DrawDecal(pos, cursor);
+	        e->DrawStringDecal(buttons.buttons["username"].pos * olc::vd2d{(double)WIDTH, (double)HEIGHT},
+	                           unameInput, olc::Pixel(0, 0, 0), 3.0 / (olc::vd2d)pixelsPerPixel);
+	        e->DrawStringDecal(buttons.buttons["password"].pos * olc::vd2d{(double)WIDTH, (double)HEIGHT},
+	                           pwordInput, olc::Pixel(0, 0, 0), 3.0 / (olc::vd2d)pixelsPerPixel);
+
+	        if (e->GetKey(olc::Key::TAB).bPressed) {
+	            if (focus == UNAME_INPUT) {
+	                focus = PWORD_INPUT;
+	            } else {
+	                focus = UNAME_INPUT;
+	            }
+	        }
+
+	        if (e->GetKey(olc::Key::ENTER).bPressed) {
+	            if (focus == UNAME_INPUT) {
+	                focus = PWORD_INPUT;
+	            } else if (focus == PWORD_INPUT) {
+	                e->username = unameInput;
+	                e->password = pwordInput;
+	                state = nextState;
+	            }
+	        }
+	        
+	        if (e->GetKey(olc::Key::ESCAPE).bPressed) {
+	            state = MULTI;
+	        }
+	        //once logged in, go to `nextState`
 	    }
 	    default: break;
     }
