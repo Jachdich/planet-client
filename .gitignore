@@ -16,3 +16,4 @@ callgrind*
 release_minimal
 vgcore*
 shader.glsl
+surface_renderer
