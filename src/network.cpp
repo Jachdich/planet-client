@@ -29,7 +29,7 @@ void ClientNetwork::sendRequest(Json::Value request) {
 }
 
 void handleNetworkPacket(Json::Value root, SectorCache * cache) {
-	std::cout << root << "\n\n\n";
+	//std::cout << root << "\n\n\n";
     if (root.get("status", 0).asInt() != 0) {
         std::cerr << "Server sent non-zero status: " << root["status"].asInt() << "\n";
         return;
@@ -102,8 +102,14 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     	    }
      	    for (auto &elem: root["resources"].getMemberNames()) {
      	        int key = res_json_key_to_id(elem.c_str());
-        	    surface->data->stats.values[key].value    = root["resources"][elem]["value"].asDouble();
-        	    surface->data->stats.values[key].capacity = root["resources"][elem]["capacity"].asDouble();
+     	        if (key < 0) {
+                    //Server sent nonsense?
+                    //ignore for now
+    	            std::cout << "[WARNING] resource key '" << elem << "' is not recognised. Ignoring\n";
+     	        } else {
+        	        surface->data->stats.values[key].value    = root["resources"][elem]["value"].asDouble();
+        	        surface->data->stats.values[key].capacity = root["resources"][elem]["capacity"].asDouble();
+        	    }
     	    }
     	}
     	if (root["serverRequest"].asString() == "changeTile") {

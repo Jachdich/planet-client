@@ -10,6 +10,8 @@
 //BUG: Tasks dont change if selected tile has a task and finishes the task
 class PlanetSurface;
 
+#define DEBUG(expr) std::cout << __FILE__ << ":" << __LINE__ << " " << expr
+
 PlanetData::PlanetData() {}
 PlanetData::PlanetData(PlanetSurface * surface, Json::Value root) {
 	this->surface = surface;
@@ -31,7 +33,7 @@ void PlanetData::draw(olc::PixelGameEngine * e, CamParams &trx) {
 }
 
 bool PlanetData::dispatchTask(TaskType type, Tile * target) {
-	std::cout << "Task dispatch: type: " << (int)type << ": " << "x " << target->x << " y " << target->y << "\n";
+	DEBUG("Task dispatch: type: " << (int)type << ": " << "x " << target->x << " y " << target->y << "\n");
 	sendUserAction(target, type);
 	return false;
 }
