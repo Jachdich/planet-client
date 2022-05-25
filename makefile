@@ -23,6 +23,9 @@ obj/optimised/%.o: src/%.cpp $(HEADERS) $(COMMON_HEADERS)
 debug: client
 	gdb --args client 127.0.0.1
 
+debugconnect: client
+	gdb --args client 127.0.0.1 KingJellyfish password
+
 .PHONY: release
 release: $(OBJECTS_OPTIMISED)
 	g++ $(OBJECTS_OPTIMISED) -o planet-client -L. -lcommon -lX11 -lGL -lpthread -lpng -lstdc++fs -ljsoncpp -lssl -lcrypto
