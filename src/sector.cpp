@@ -12,9 +12,9 @@ void Sector::setRequested() {
 }
 
 Sector::Sector(Json::Value root) {
-    this->x = root["x"].asUInt();
-    this->y = root["y"].asUInt();
-    this->r = root["r"].asInt();
+    this->x = root["x"].asInt();
+    this->y = root["y"].asInt();
+    this->r = 256;
     this->generated = true;
     this->requested = false;
     this->numStars = root["numStars"].asInt();

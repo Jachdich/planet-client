@@ -90,6 +90,7 @@ void Game::mousePressed(uint32_t x, uint32_t y) {
 
 void Game::connectToServer() {
     client.connect(address, 28097, &map, username, password);
+//    client.connect(address, 5555, &map, username, password);
 }
 
 int pixelToInt(olc::Pixel p) {

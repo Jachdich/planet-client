@@ -11,7 +11,7 @@ using asio::ip::tcp;
 SectorCache::SectorCache() {
 }
 
-void SectorCache::getSectorFromNetwork(uint32_t x, uint32_t y) {
+void SectorCache::getSectorFromNetwork(int32_t x, int32_t y) {
     Json::Value json;
     json["request"] = "getSector";
     json["x"] = x;
@@ -28,7 +28,7 @@ Sector * SectorCache::getSectorAt(int32_t x, int32_t y) {
     uint64_t index = (uint64_t)x << 32 | (uint32_t)y;
 
     if (!secs[index].generated && !secs[index].requested) {
-        getSectorFromNetwork((uint32_t)x, (uint32_t)y);
+        getSectorFromNetwork(x, y);
         secs[index].setRequested();
     }
     
