@@ -89,12 +89,14 @@ void Game::mousePressed(uint32_t x, uint32_t y) {
 }
 
 void Game::connectToServer() {
-    client.connect(address, 28097, &map, username, password);
+    client.connect(address, 5555, &map, username, password);
 }
 
 int pixelToInt(olc::Pixel p) {
     return (p.r << 16) | (p.g << 8) | p.b;
 }
+
+bool continue_loading = false;
 
 bool Game::OnUserUpdate(float fElapsedTime) {
     /*if (planetView) {
@@ -180,10 +182,14 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     if (GetKey(olc::Key::L).bPressed) {
         std::cout << "L pressed\n";
     }
+    
+	if (GetKey(olc::Key::H).bPressed) continue_loading = true;
+	if (GetKey(olc::Key::J).bPressed) continue_loading = false;
 
-	if (GetKey(olc::Key::T).bPressed) {
+	if (GetKey(olc::Key::T).bPressed || continue_loading) {
 		loadSprites();
 	}
+
 
     if (GetKey(olc::Key::ESCAPE).bPressed) {
         if (planetView) {

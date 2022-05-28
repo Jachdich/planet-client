@@ -96,8 +96,8 @@ TileSprite::TileSprite(std::string fName) {
         state.drawGround = (TileType)root["drawGround"].asInt();
 
         for (Json::Value t : root["textures"]) {
-            olc::Sprite * spr = load_sprite(texturedir + "/" + t["imageFile"].asString());
-            olc::Decal * dec = new olc::Decal(spr);
+            olc::Sprite *spr = load_sprite(texturedir + "/" + t["imageFile"].asString());
+            olc::Decal *dec = new olc::Decal(spr);
             bool tint = t["tint"].asDouble();
             uint32_t animationSpeed = t.get("animationSpeed", 1).asUInt();
             uint32_t width = t.get("width", 128).asInt();

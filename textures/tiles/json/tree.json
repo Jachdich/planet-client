@@ -5,6 +5,6 @@
       "tint": false},
      {"imageFile": "tiles/png/tree.png",
       "width": 48,
-      "tint": true}
+      "tint": false}
      ]
  }
