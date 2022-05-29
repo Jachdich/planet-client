@@ -26,18 +26,18 @@ struct AABB {
 };
 
 struct MenuComponent {
-	olc::Decal * decal;
+	olc::Decal *decal;
 	std::unordered_map<std::string, AABB> buttons;
 };
 
 struct UIComponent {
-	olc::Decal * decal;
+	olc::Decal *decal;
 	olc::vi2d textPos;
 	olc::vi2d size;
 };
 
 struct TileSpriteComponent {
-    olc::Decal * decal;
+    olc::Decal *decal;
     olc::Sprite *sprite;
     bool tint;
     uint32_t animationSpeed;
@@ -53,11 +53,11 @@ struct TileSpriteState {
 struct TileSprite {
     TileSprite(std::string fName);
     std::vector<TileSpriteState> states;
-	void draw(olc::PixelGameEngine * e, const CamParams &trx, const olc::vd2d &pos, const olc::Pixel &tint, uint16_t state_idx);
+	void draw(olc::PixelGameEngine *e, const CamParams &trx, const olc::vd2d &pos, const olc::Pixel &tint, uint16_t state_idx);
 };
 
 void loadSprites();
-extern std::vector<olc::Sprite *> sprites;
+extern std::vector<olc::Sprite*> sprites;
 extern std::vector<TileSprite> tileSprites;
 extern std::unordered_map<std::string, UIComponent> UIComponents;
 extern std::unordered_map<std::string, MenuComponent> menuComponents;
