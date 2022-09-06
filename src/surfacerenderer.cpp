@@ -35,13 +35,13 @@ public:
     CamParams trx = {0, 0, 1};
     Planet *planet = nullptr;
     PlanetSurface *surface = nullptr;
-	SurfaceRenderer() {}
+    SurfaceRenderer() {}
 
     
     void drawTile(int x, int y, int thing, olc::PixelGameEngine * e);
     void destruct();
-	bool OnUserCreate() {
-	    loadSprites();
+    bool OnUserCreate() {
+        loadSprites();
 
         std::string request;
         std::ifstream ifs("planet_s4.2_t2_p0.json");
@@ -50,7 +50,7 @@ public:
         request = sstr.str();
         ifs.close();
         std::cout << request << "\n";
-	    Json::CharReaderBuilder builder;
+        Json::CharReaderBuilder builder;
         Json::CharReader* reader = builder.newCharReader();
 
         Json::Value root;
@@ -63,12 +63,12 @@ public:
             &errors
         ) << "\n";
         delete reader;
-	    planet = new Planet(root, 0);
-	    //surface = new PlanetSurface()
-	    return true;
-	}
-	bool OnUserUpdate(float fElapsedTime) {
-	    if (GetMouse(1).bPressed) {
+        planet = new Planet(root, 0);
+        //surface = new PlanetSurface()
+        return true;
+    }
+    bool OnUserUpdate(float fElapsedTime) {
+        if (GetMouse(1).bPressed) {
             lastMouseX = GetMouseX();
             lastMouseY = GetMouseY();
         }
@@ -86,10 +86,10 @@ public:
             zoom(-count);
         }
         planet->draw(this, 0, 0, trx);
-	    totalTime += fElapsedTime;
+        totalTime += fElapsedTime;
         trx.animationStage = totalTime * 10;
         return true;
-	}
+    }
     void zoom(int count) {
         if (trx.zoom >= 8 && count < 0) {
             return;
@@ -107,23 +107,23 @@ public:
         trx.ty += GetMouseY();
     }
     
-	std::vector<int> getCurrentPlanetsurfaceLocator();
+    std::vector<int> getCurrentPlanetsurfaceLocator();
 };
 
 int main() {
 
-	pixelsPerPixel = {2, 2};
-	
+    pixelsPerPixel = {2, 2};
+    
     noiseGen.SetNoiseType(FastNoise::SimplexFractal);
     noiseGen.SetFractalType(FastNoise::FBM);
     noiseGen.SetFractalOctaves(5);
     noiseGen.SetFractalLacunarity(2);
     noiseGen.SetFractalGain(0.5);
     
-	SurfaceRenderer *app = new SurfaceRenderer();
-	if (app->Construct(1920/2, 1080/2, 2, 2, false))
-		app->Start();
-	else
-	    std::cout << "what\n";
+    SurfaceRenderer *app = new SurfaceRenderer();
+    if (app->Construct(1920/2, 1080/2, 2, 2, false))
+        app->Start();
+    else
+        std::cout << "what\n";
     return 0;
 }

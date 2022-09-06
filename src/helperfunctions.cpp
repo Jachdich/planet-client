@@ -20,19 +20,19 @@ Json::Value makeJSON(std::string x) {
     delete reader;
     //parsingSuccessful ??!??! std::cout << "Parsing error!\n";
     if (!parsingSuccessful) {
-    	return Json::Value(); //TODO error cos it didnt parse
+        return Json::Value(); //TODO error cos it didnt parse
     }
     return root;
 }
 
 olc::vf2d CamParams::toScreen(olc::vf2d pos) {
-	return (pos * zoom) + olc::vf2d(tx, ty);
+    return (pos * zoom) + olc::vf2d(tx, ty);
 }
 
 std::string toHexString(std::string initText, olc::Pixel colour) {
-	std::stringstream stream;
-	stream << initText << std::setfill('0') << std::setw(6) << std::hex << ((((colour.r << 8) | colour.g) << 8) | colour.b);
-	return stream.str();
+    std::stringstream stream;
+    stream << initText << std::setfill('0') << std::setw(6) << std::hex << ((((colour.r << 8) | colour.g) << 8) | colour.b);
+    return stream.str();
 }
 
 //.kick (what if they're the last player?)

@@ -27,7 +27,7 @@ olc::Sprite *load_sprite(const std::string &fname) {
 }
 
 Json::Value getJsonFromTextureFile(const std::string &fName) {
-	std::ifstream afile;
+    std::ifstream afile;
     afile.open(texturedir + "/" + fName);
 
     std::string content((std::istreambuf_iterator<char>(afile)), (std::istreambuf_iterator<char>()));
@@ -79,14 +79,14 @@ void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc:
 }
 
 TileSprite::TileSprite(std::string fName) {
-	Json::Value definition = getJsonFromTextureFile(fName);
+    Json::Value definition = getJsonFromTextureFile(fName);
 
     Json::Value e;
-	if (definition["states"].isNull()) {
-	    e["states"][0] = definition;
-	} else {
+    if (definition["states"].isNull()) {
+        e["states"][0] = definition;
+    } else {
         e = definition;
-	}
+    }
 
     for (Json::Value root : e["states"]) {
         TileSpriteState state;
@@ -115,24 +115,24 @@ void registerTileSprite(const std::string &x) {
 }
 
 void registerUISprite(const std::string &filename, const std::string &name, olc::vi2d text_offset) {
-	olc::Sprite * temp = load_sprite(texturedir + "/" + filename);
-	UIComponents[name] = {new olc::Decal(temp), text_offset};
-	sprites.push_back(temp);
+    olc::Sprite * temp = load_sprite(texturedir + "/" + filename);
+    UIComponents[name] = {new olc::Decal(temp), text_offset};
+    sprites.push_back(temp);
 }
 
 void registerMenuSprite(const std::string &filename, const std::string &name) {
-	Json::Value root = getJsonFromTextureFile(filename);
-	olc::Sprite * temp = load_sprite(texturedir + "/" + root["texture"].asString());
-	sprites.push_back(temp);
-	MenuComponent c;
-	c.decal = new olc::Decal(temp);
-	for (Json::Value v : root["buttons"]) {
-		c.buttons[v["name"].asString()] = AABB(v["pos_x"].asDouble(),
-								  			   v["pos_y"].asDouble(),
-											   v["width"].asDouble(),
-								  			   v["height"].asDouble());
-	}
-	menuComponents[name] = c;
+    Json::Value root = getJsonFromTextureFile(filename);
+    olc::Sprite * temp = load_sprite(texturedir + "/" + root["texture"].asString());
+    sprites.push_back(temp);
+    MenuComponent c;
+    c.decal = new olc::Decal(temp);
+    for (Json::Value v : root["buttons"]) {
+        c.buttons[v["name"].asString()] = AABB(v["pos_x"].asDouble(),
+                                               v["pos_y"].asDouble(),
+                                               v["width"].asDouble(),
+                                               v["height"].asDouble());
+    }
+    menuComponents[name] = c;
 }
 
 void registerIconSprite(const std::string &name) {
@@ -143,54 +143,54 @@ void registerIconSprite(const std::string &name) {
 }
 
 void loadSprites() {
-	for (TileSprite t : tileSprites) {
-	    for (TileSpriteState state: t.states) {
-    		for (TileSpriteComponent tc : state.components) {
-    			delete tc.decal;
-    		}
-		}
-	}
+    for (TileSprite t : tileSprites) {
+        for (TileSpriteState state: t.states) {
+            for (TileSpriteComponent tc : state.components) {
+                delete tc.decal;
+            }
+        }
+    }
 
-	for (std::pair<std::string, UIComponent> element : UIComponents) {
-		delete element.second.decal;
-	}
-	for (std::pair<std::string, MenuComponent> element : menuComponents) {
-		delete element.second.decal;
-	}
-	for (auto &[k, v] : icons) {
-	    delete v;
-	}
-	
-	tileSprites.clear();
-	UIComponents.clear();
-	menuComponents.clear();
-	icons.clear();
-	for (olc::Sprite * spr : sprites) {
-	    delete spr;
-	}
+    for (std::pair<std::string, UIComponent> element : UIComponents) {
+        delete element.second.decal;
+    }
+    for (std::pair<std::string, MenuComponent> element : menuComponents) {
+        delete element.second.decal;
+    }
+    for (auto &[k, v] : icons) {
+        delete v;
+    }
+    
+    tileSprites.clear();
+    UIComponents.clear();
+    menuComponents.clear();
+    icons.clear();
+    for (olc::Sprite * spr : sprites) {
+        delete spr;
+    }
 
-	sprites.clear();
-	std::string names[] = {"void.json", "ground.json", "bush.json", "tree.json", "pine.json",
-	                       "water.json", "rock.json", "house.json", "pineforest.json", "forest.json", "tonk.json",
-	                       "farm.json", "greenhouse.json", "waterpump.json", "mine.json", "blastfurnace.json", "warehouse.json", "forestry.json",
-	                       "capsule.json", "road.json", "pipe.json", "cable.json", "powerstation.json"};
-	//sidenote: what the fuck?
-	//the hell does this mean?
-	for (int i = 0; i < *(&names + 1) - names; i++) {
-		registerTileSprite("tiles/json/" + names[i]);
-	}
+    sprites.clear();
+    std::string names[] = {"void.json", "ground.json", "bush.json", "tree.json", "pine.json",
+                           "water.json", "rock.json", "house.json", "pineforest.json", "forest.json", "tonk.json",
+                           "farm.json", "greenhouse.json", "waterpump.json", "mine.json", "blastfurnace.json", "warehouse.json", "forestry.json",
+                           "capsule.json", "road.json", "pipe.json", "cable.json", "powerstation.json"};
+    //sidenote: what the fuck?
+    //the hell does this mean?
+    for (int i = 0; i < *(&names + 1) - names; i++) {
+        registerTileSprite("tiles/json/" + names[i]);
+    }
 
-	registerUISprite("hud/menu_closed.png", "menu_closed", olc::vi2d(3, 3));
-	registerUISprite("hud/menu_open.png", "menu_open", olc::vi2d(3, 3));
-	registerUISprite("hud/menu_item.png", "menu_item", olc::vi2d(6, 3));
-	registerUISprite("hud/error_popup.png", "error_popup", olc::vi2d(3, 3));
-	registerUISprite("menu/cursor.png", "cursor", olc::vi2d(0, 0));
+    registerUISprite("hud/menu_closed.png", "menu_closed", olc::vi2d(3, 3));
+    registerUISprite("hud/menu_open.png", "menu_open", olc::vi2d(3, 3));
+    registerUISprite("hud/menu_item.png", "menu_item", olc::vi2d(6, 3));
+    registerUISprite("hud/error_popup.png", "error_popup", olc::vi2d(3, 3));
+    registerUISprite("menu/cursor.png", "cursor", olc::vi2d(0, 0));
 
-	registerMenuSprite("menu/main/main.json", "main");
-	registerMenuSprite("menu/multiplayer/multiplayer.json", "multiplayer");
-	registerMenuSprite("menu/background.json", "background");
-	registerMenuSprite("menu/multiplayer/serverconnect.json", "serverconnect");
-	registerMenuSprite("menu/login/login.json", "login");
+    registerMenuSprite("menu/main/main.json", "main");
+    registerMenuSprite("menu/multiplayer/multiplayer.json", "multiplayer");
+    registerMenuSprite("menu/background.json", "background");
+    registerMenuSprite("menu/multiplayer/serverconnect.json", "serverconnect");
+    registerMenuSprite("menu/login/login.json", "login");
 
     for (int i = 0; i < NUM_RESOURCES; i++) {
         if (i == RES_PEOPLE_IDLE) continue;

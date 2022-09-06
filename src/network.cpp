@@ -29,7 +29,7 @@ void ClientNetwork::sendRequest(Json::Value request) {
 }
 
 void handleNetworkPacket(Json::Value root, SectorCache * cache) {
-	std::cout << root << "\n\n\n";
+    std::cout << root << "\n\n\n";
     if (root.get("status", 0).asInt() != 0) {
         std::cerr << "Server sent non-zero status: " << root["status"].asInt() << "\n";
         return;
@@ -53,9 +53,9 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
                 case ERR_INVALID_ACTION: {
                     PlanetSurface * surf = getSurfaceFromJson(req, cache);
                     if (surf == nullptr) {
-            	        std::cout << "[WARNING] discarding error packet on non-existant PlanetSurface\n";
-            	        return;
-            	    }
+                        std::cout << "[WARNING] discarding error packet on non-existant PlanetSurface\n";
+                        return;
+                    }
 
                     surf->hud->showPopup(res["error_message"].asString());
                 }
@@ -74,9 +74,9 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
             cache->setSectorAt(req["x"].asInt(), req["y"].asInt(), s);
             
         } else if (req["request"] == "getSurface") {
-        	SurfaceLocator loc = getSurfaceLocatorFromJson(req);
-        	Sector * sec = cache->getSectorAt(loc.sectorX, loc.sectorY);
-        	Star * s = &sec->stars[loc.starPos];
+            SurfaceLocator loc = getSurfaceLocatorFromJson(req);
+            Sector * sec = cache->getSectorAt(loc.sectorX, loc.sectorY);
+            Star * s = &sec->stars[loc.starPos];
             Planet * p = &s->planets[loc.planetPos];
             PlanetSurface * surf = new PlanetSurface(res["result"], p);
             p->surface = surf;
@@ -85,75 +85,75 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     }
 
     if (root.get("serverRequest", "NONE").asString() != "NONE") {
-    	if (root["serverRequest"].asString() == "setTimer") {
-    	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
-    	    if (surface == nullptr || !surface->generated) {
-    	        std::cout << "[WARNING] discarding setTimer packet on non-existant PlanetSurface\n";
-    	        return;
-    	    }
+        if (root["serverRequest"].asString() == "setTimer") {
+            PlanetSurface * surface = getSurfaceFromJson(root, cache);
+            if (surface == nullptr || !surface->generated) {
+                std::cout << "[WARNING] discarding setTimer packet on non-existant PlanetSurface\n";
+                return;
+            }
             Tile * target = &surface->tiles[root["tile"].asInt()];
             surface->data->timers.push_back((Timer){target, root["time"].asDouble()});
-    	}
-    	if (root["serverRequest"].asString() == "statsChange") {
-    	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
-    	    if (surface == nullptr || !surface->generated) {
-    	        std::cout << "[WARNING] discarding statsChange packet on non-existant or partially loaded PlanetSurface\n";
-    	        return;
-    	    }
-     	    for (auto &elem: root["resources"].getMemberNames()) {
-     	        int key = res_json_key_to_id(elem.c_str());
-     	        if (key < 0) {
+        }
+        if (root["serverRequest"].asString() == "statsChange") {
+            PlanetSurface * surface = getSurfaceFromJson(root, cache);
+            if (surface == nullptr || !surface->generated) {
+                std::cout << "[WARNING] discarding statsChange packet on non-existant or partially loaded PlanetSurface\n";
+                return;
+            }
+            for (auto &elem: root["resources"].getMemberNames()) {
+                int key = res_json_key_to_id(elem.c_str());
+                if (key < 0) {
                     //Server sent nonsense?
                     //ignore for now
-    	            std::cout << "[WARNING] resource key '" << elem << "' is not recognised. Ignoring\n";
-     	        } else {
-        	        surface->data->stats.values[key].value    = root["resources"][elem]["value"].asDouble();
-        	        surface->data->stats.values[key].capacity = root["resources"][elem]["capacity"].asDouble();
-        	    }
-    	    }
-    	}
-    	if (root["serverRequest"].asString() == "changeTile") {
-    	    PlanetSurface * surface = getSurfaceFromJson(root, cache);
-    	    if (surface == nullptr || !surface->generated) {
-    	        std::cout << "[WARNING] discarding changeTile packet on non-existant PlanetSurface\n";
-    	        return;
-    	    }
+                    std::cout << "[WARNING] resource key '" << elem << "' is not recognised. Ignoring\n";
+                } else {
+                    surface->data->stats.values[key].value    = root["resources"][elem]["value"].asDouble();
+                    surface->data->stats.values[key].capacity = root["resources"][elem]["capacity"].asDouble();
+                }
+            }
+        }
+        if (root["serverRequest"].asString() == "changeTile") {
+            PlanetSurface * surface = getSurfaceFromJson(root, cache);
+            if (surface == nullptr || !surface->generated) {
+                std::cout << "[WARNING] discarding changeTile packet on non-existant PlanetSurface\n";
+                return;
+            }
             surface->tiles[root["tilePos"].asInt()].type = (TileType)root["type"].asInt();
             surface->updateDirectionalTiles();
-    	}
+        }
 
-    	if (root["serverRequest"].asString() == "updateTileError") {
-    	    PlanetSurface *surf = getSurfaceFromJson(root, cache);
-    	    if (surf == nullptr || !surf->generated || surf->tiles.size() <= root["tileError"]["pos"].asUInt()) {
-     	        std::cout << "[WARNING] discarding updateTileError packet on non-existant or partially loaded PlanetSurface\n";
-     	        return;
-     	    }
+        if (root["serverRequest"].asString() == "updateTileError") {
+            PlanetSurface *surf = getSurfaceFromJson(root, cache);
+            if (surf == nullptr || !surf->generated || surf->tiles.size() <= root["tileError"]["pos"].asUInt()) {
+                std::cout << "[WARNING] discarding updateTileError packet on non-existant or partially loaded PlanetSurface\n";
+                return;
+            }
             surf->tiles[root["tileError"]["pos"].asUInt()].addError(root["tileError"]["msg"].asString());
-    	}
-    	
+        }
+        
     }
 }
 
 void sendUserAction(Tile * target, TaskType task) {
-	Json::Value json;
-	json["request"] = "userAction";
-	json["action"] = (int)task;
-	json["x"] = target->x;
-	json["y"] = target->y;
+    Json::Value json;
+    json["request"] = "userAction";
+    json["action"] = (int)task;
+    json["x"] = target->x;
+    json["y"] = target->y;
 
-	std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
-	json["secX"] = x[0];
-	json["secY"] = x[1];
-	json["planetPos"] = x[3];
-	json["starPos"] = x[2];
-	
-	app->client.sendRequest(json);
+    std::vector<int> x = app->getCurrentPlanetsurfaceLocator();
+    json["secX"] = x[0];
+    json["secY"] = x[1];
+    json["planetPos"] = x[3];
+    json["starPos"] = x[2];
+    
+    app->client.sendRequest(json);
 }
 
 void doUpdate(Json::Value root, SectorCache * cache) {
-	PlanetSurface * surf = getSurfaceFromJson(root, cache);
-	surf->tiles[root.get("y", 0).asInt() * surf->rad * 2 + root.get("x", 0).asInt()].type = (TileType)root["to"].asInt();
-	//Tile * a = &surf->tiles[root.get("y", 0).asInt() * surf->radius * 2 + root.get("x", 0).asInt()];
+    PlanetSurface * surf = getSurfaceFromJson(root, cache);
+    surf->tiles[root.get("y", 0).asInt() * surf->rad * 2 + root.get("x", 0).asInt()].type = (TileType)root["to"].asInt();
+    //Tile * a = &surf->tiles[root.get("y", 0).asInt() * surf->radius * 2 + root.get("x", 0).asInt()];
 }
 
 ClientNetwork::ClientNetwork() : ssl_ctx(asio::ssl::context::tls), socket(ctx, ssl_ctx) {
@@ -182,7 +182,7 @@ void ClientNetwork::connect(std::string address, uint16_t port, SectorCache * ca
 }
 
 void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
-    std::cout << bytes_transferred << "\n";
+    //std::cout << bytes_transferred << "\n";
     if (!ec) {
     
         std::string request(

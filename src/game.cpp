@@ -1,17 +1,17 @@
-#include "game.h"
+#include "../include/game.h"
 
-#include <asio.hpp>
+#include <../include/asio.hpp>
 #include <thread>
 
-#include "client.h"
-#include "helperfunctions.h"
-#include "network.h"
-#include "olcPixelGameEngine.h"
-#include "sector.h"
-#include "sectorcache.h"
-#include "sprites.h"
-#include "star.h"
-#include "planetdata.h"
+#include "../include/client.h"
+#include "../include/helperfunctions.h"
+#include "../include/network.h"
+#include "../include/olcPixelGameEngine.h"
+#include "../include/sector.h"
+#include "../include/sectorcache.h"
+#include "../include/sprites.h"
+#include "../include/star.h"
+#include "../include/planetdata.h"
 
 /*
 Client: "fell tree <surfaceLocator> <coords>"
@@ -55,7 +55,7 @@ bool Game::OnUserCreate() {
 }
 
 std::vector<int> Game::getCurrentPlanetsurfaceLocator() {
-	return std::vector<int>{lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar};
+    return std::vector<int>{lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar};
 }
 
 void Game::mousePressed(uint32_t x, uint32_t y) {
@@ -81,16 +81,16 @@ void Game::mousePressed(uint32_t x, uint32_t y) {
             starView = false;
             planetView = true;
             if (selectedPlanet->surface == nullptr || (!selectedPlanet->surface->generated && !selectedPlanet->surface->requested)) {
-        		selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
-        	}
+                selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
+            }
             trx = {0, 0, 0.3};
         }
     }
 }
 
 void Game::connectToServer() {
-    client.connect(address, 28097, &map, username, password);
-//    client.connect(address, 5555, &map, username, password);
+//    client.connect(address, 28097, &map, username, password);
+    client.connect(address, 5555, &map, username, password);
 }
 
 int pixelToInt(olc::Pixel p) {
@@ -101,22 +101,22 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     /*if (planetView) {
         Clear(olc::Pixel(50, 100, 160));
     } else {
-	}*/
-	Clear(olc::BLACK);
-	if (menuView) {
-	    return menu.draw(this);
-	}
+    }*/
+    Clear(olc::BLACK);
+    if (menuView) {
+        return menu.draw(this);
+    }
 
     if (galaxyView) {
         map.draw(this, trx);
     } else if (starView) {
         selectedStar->drawWithPlanets(this, fElapsedTime, trx);
     } else if (planetView) {
-    	if (selectedPlanet->surface->generated) {
-    	    selectedPlanet->surface->data->updateTimers(fElapsedTime);
-			selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, GetMouse(1).bPressed, trx);
-    		selectedPlanet->drawSurface(this, trx);
-    	}
+        if (selectedPlanet->surface->generated) {
+            selectedPlanet->surface->data->updateTimers(fElapsedTime);
+            selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, GetMouse(1).bPressed, trx);
+            selectedPlanet->drawSurface(this, trx);
+        }
     }
 
     if (GetKey(olc::Key::W).bHeld) trx.ty += fElapsedTime * 500;
@@ -182,13 +182,17 @@ bool Game::OnUserUpdate(float fElapsedTime) {
         std::cout << "L pressed\n";
     }
 
-	if (GetKey(olc::Key::T).bPressed) {
-		loadSprites();
-	}
+    if (GetKey(olc::Key::T).bPressed) {
+        loadSprites();
+    }
 
     if (GetKey(olc::Key::ESCAPE).bPressed) {
         if (planetView) {
-            if (selectedPlanet->surface->hud->popupMessage != "") {
+            if (!selectedPlanet->surface->generated) {
+                starView = true;
+                planetView = false;
+                trx = {0, 0, 1};
+            } else if (selectedPlanet->surface->hud->popupMessage != "") {
                 selectedPlanet->surface->hud->popupMessage = "";
             } else if (selectedPlanet->surface->hud->ddmenu != nullptr) {
                 selectedPlanet->surface->hud->closeClickMenu();
@@ -201,14 +205,14 @@ bool Game::OnUserUpdate(float fElapsedTime) {
                 trx = {0, 0, 1};
                 std::vector<int> surface = getCurrentPlanetsurfaceLocator();
                 Json::Value root;
-    		    root["request"] = "unloadSurface";
-    		    root["secX"] = surface[0];
-    		    root["secY"] = surface[1];
-    		    root["starPos"] = surface[2];
-    		    root["planetPos"] = surface[3];
-    		    client.sendRequest(root);
-    		    selectedPlanet->unloadSurface();
-		    }
+                root["request"] = "unloadSurface";
+                root["secX"] = surface[0];
+                root["secY"] = surface[1];
+                root["starPos"] = surface[2];
+                root["planetPos"] = surface[3];
+                client.sendRequest(root);
+                selectedPlanet->unloadSurface();
+            }
         } else if (starView) {
             starView = false;
             galaxyView = true;
@@ -219,16 +223,16 @@ bool Game::OnUserUpdate(float fElapsedTime) {
         }
     }
 
-	if (GetKey(olc::Key::F3).bPressed) {
-		debugMode = !debugMode;
-	}
+    if (GetKey(olc::Key::F3).bPressed) {
+        debugMode = !debugMode;
+    }
 
-	if (debugMode) {
-		DrawStringDecal({0, 0}, std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
-		DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
-		DrawStringDecal({0, 20}, std::to_string(1.0 / fElapsedTime), olc::Pixel(255, 255, 255));
-	}
-	SetPixelMode(olc::Pixel::ALPHA);
+    if (debugMode) {
+        DrawStringDecal({0, 0}, std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
+        DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
+        DrawStringDecal({0, 20}, std::to_string(1.0 / fElapsedTime), olc::Pixel(255, 255, 255));
+    }
+    SetPixelMode(olc::Pixel::ALPHA);
 
     DrawLine({WIDTH/2 - 10, HEIGHT/2}, {WIDTH/2 + 10, HEIGHT/2}, olc::WHITE);
     DrawLine({WIDTH/2, HEIGHT/2 - 10}, {WIDTH/2, HEIGHT/2 + 10}, olc::WHITE);
@@ -248,12 +252,12 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 }
 
 void Game::zoom(int count) {
-    if (trx.zoom >= 8 && count < 0) {
+    /*if (trx.zoom >= 8 && count < 0) {
         return;
     }
     if (trx.zoom <= 0.18 && count > 0) {
         return;
-    }
+    }*/
     trx.tx -= GetMouseX();
     trx.ty -= GetMouseY();
     double delta = count < 0 ? 1.05 : count > 0 ? 1.0/1.05 : 1.0;
