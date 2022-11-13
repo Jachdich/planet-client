@@ -1,16 +1,16 @@
-#include "network.h"
+#include "../include/network.h"
 
 #include <iostream>
 #include <chrono>
-#include "client.h"
-#include "planet.h"
-#include "planetsurface.h"
-#include "sector.h"
-#include "star.h"
-#include "tile.h"
-#include "planetdata.h"
-#include "common/surfacelocator.h"
-#include "common/surfacelocator_test.h"
+#include "../include/client.h"
+#include "../include/planet.h"
+#include "../include/planetsurface.h"
+#include "../include/sector.h"
+#include "../include/star.h"
+#include "../include/tile.h"
+#include "../include/planetdata.h"
+#include "../include/common/surfacelocator.h"
+#include "../include/common/surfacelocator_test.h"
 
 void ClientNetwork::sendRequest(Json::Value request) {
     Json::Value totalJSON;
@@ -29,15 +29,9 @@ void ClientNetwork::sendRequest(Json::Value request) {
 }
 
 void handleNetworkPacket(Json::Value root, SectorCache * cache) {
-    std::cout << root << "\n\n\n";
-    if (root.get("status", 0).asInt() != 0) {
-        std::cerr << "Server sent non-zero status: " << root["status"].asInt() << "\n";
-        return;
-    }
-    
-    for (uint32_t i = 0; i < root["requests"].size(); i++) {
-        Json::Value req = root["requests"][i];
+    for (uint32_t i = 0; i < root["results"].size(); i++) {
         Json::Value res = root["results"][i];
+        std::cout << res << "\n\n";
 
         if (res["status"].asInt() != 0) {
             int e = res["status"].asInt();
@@ -47,11 +41,11 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
                 case ERR_MALFORMED_JSON:
                 case ERR_INVALID_REQUEST:
                 case ERR_OUT_OF_BOUNDS:
-                    std::cerr << "Server sent non-zero status for request '" << req["request"]
+                    std::cerr << "Server sent non-zero status for request '" << res["request"]
                                           << "': " << res["status"].asInt() << "\n";
                     break;
                 case ERR_INVALID_ACTION: {
-                    PlanetSurface * surf = getSurfaceFromJson(req, cache);
+                    PlanetSurface * surf = getSurfaceFromJson(res, cache);
                     if (surf == nullptr) {
                         std::cout << "[WARNING] discarding error packet on non-existant PlanetSurface\n";
                         return;
@@ -69,12 +63,12 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
             continue;
         }
         
-        if (req["request"] == "getSector") {
+        if (res["request"] == "getSector") {
             Sector s(res["result"]);
-            cache->setSectorAt(req["x"].asInt(), req["y"].asInt(), s);
+            cache->setSectorAt(res["x"].asInt(), res["y"].asInt(), s);
             
-        } else if (req["request"] == "getSurface") {
-            SurfaceLocator loc = getSurfaceLocatorFromJson(req);
+        } else if (res["request"] == "getSurface") {
+            SurfaceLocator loc = getSurfaceLocatorFromJson(res["loc"]);
             Sector * sec = cache->getSectorAt(loc.sectorX, loc.sectorY);
             Star * s = &sec->stars[loc.starPos];
             Planet * p = &s->planets[loc.planetPos];

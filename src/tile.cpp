@@ -1,6 +1,6 @@
-#include "tile.h"
-#include "olcPixelGameEngine.h"
-#include "sprites.h"
+#include "../include/tile.h"
+#include "../include/olcPixelGameEngine.h"
+#include "../include/sprites.h"
 #include <stdio.h>
 Tile::Tile(TileType type, int z, int x, int y, olc::Pixel tint) {
     this->tint = tint;
