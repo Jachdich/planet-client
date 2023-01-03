@@ -13,7 +13,6 @@ class Planet;
 class PlanetSurface {
 public:
     std::vector<Tile> tiles;
-	int rad;
 	int pos;
 	int lastSelectX = 0;
 	int lastSelectY = 0;

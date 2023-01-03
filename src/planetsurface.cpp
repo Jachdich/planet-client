@@ -14,8 +14,8 @@
 #include "tile.h"
 
 int32_t PlanetSurface::getHeight(int32_t x, int32_t y) {
-    double xb = x - this->rad;
-    double yb = y - this->rad;
+    double xb = x - this->parent->radius;
+    double yb = y - this->parent->radius;
     double noise = noiseGen.GetNoise(xb / parent->generationNoise[0], yb / parent->generationNoise[0], (double)parent->generationZValues[0]);
     int32_t height = noise * 30;
     if (height < parent->seaLevel) height = parent->seaLevel;
@@ -90,9 +90,9 @@ bool isTileDirectional(const TileType &type) {
 }
 
 void PlanetSurface::updateDirectionalTiles() {
-    uint32_t width = rad * 2;
-    for (int i = 0; i < rad * 2; i++) {
-        for (int j = 0; j < rad * 2; j++) {
+    uint32_t width = parent->radius* 2;
+    for (int i = 0; i < parent->radius* 2; i++) {
+        for (int j = 0; j < parent->radius* 2; j++) {
             Tile &ctile = tiles[i * width + j];
             if (isTileDirectional(ctile.type)) {
                 if (getType(i + 1, j) == ctile.type) ctile.state = 0;
@@ -120,21 +120,20 @@ void PlanetSurface::updateDirectionalTiles() {
 
 //TODO fix the other function so this one doesnt commit the ABSOLUTE ATTROSITY of taking y before x
 TileType PlanetSurface::getType(int32_t y, int32_t x) {
-    if (x >= rad * 2 || y >= rad * 2 || x < 0 || y < 0) return TILE_AIR;
-    return tiles[y * rad * 2 + x].type;
+    if (x >= parent->radius* 2 || y >= parent->radius* 2 || x < 0 || y < 0) return TILE_AIR;
+    return tiles[y * parent->radius* 2 + x].type;
 }
 
 PlanetSurface::PlanetSurface(Json::Value root, Planet * p) {
     parent = p;
-    int width = root["rad"].asInt() * 2;
-    tiles.reserve(width * width);
-    rad = root["rad"].asInt();
+    tiles.reserve(p->radius* p->radius* 4);
 
-    for (int i = 0; i < root["rad"].asInt() * 2; i++) {
-        for (int j = 0; j < root["rad"].asInt() * 2; j++) {
-            uint64_t val = root["tiles"][j + i * root["rad"].asInt() * 2].asUInt64();
-            int32_t type = val & 0xFFFFFFFF;
-            int32_t z    = (val >> 32) & 0xFFFFFFFF;
+    for (int i = 0; i < p->radius* 2; i++) {
+        for (int j = 0; j < p->radius * 2; j++) {
+            Json::Value tile = root["tiles"][j + i * p->radius * 2];
+            
+            int32_t type = tile["ty"].asUInt();
+            int32_t z    = tile["z"].asUInt();
             if (rand() % 100000 == 0) {
                 type = (int)TILE_TONK;
             }
@@ -167,7 +166,7 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
     float mx = (max - trx.tx) / trx.zoom;
     float my = (may - trx.ty) / trx.zoom;
 
-    tiles[lastSelectY * rad * 2 + lastSelectX].hovered = false;
+    tiles[lastSelectY * parent->radius* 2 + lastSelectX].hovered = false;
 
 
     //float ax = /*WHY THE CINNAMON TOAST FUCK DO I NEED THIS?!*/// WIDTH - (mx - trx.tx) / trx.zoom;
@@ -197,14 +196,14 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
             int i = ia + wx;
             int j = ja + ia + wy;*/
 
-    for (int i = rad * 2 - 1; i >= 0; i--) {
-        for (int j = rad * 2 - 1; j >= 0; j--) {
-            if (((i - rad) * (i - rad) + (j - rad) * (j - rad)) >= (this->rad * this->rad)) {
+    for (int i = parent->radius* 2 - 1; i >= 0; i--) {
+        for (int j = parent->radius* 2 - 1; j >= 0; j--) {
+            if (((i - parent->radius) * (i - parent->radius) + (j - parent->radius) * (j - parent->radius)) >= (this->parent->radius * this->parent->radius)) {
                 continue;
             }
             int x = j * TEXTURE_W / 2;
             int y = i * TEXTURE_H;
-            int z = tiles[i * rad * 2 + j].z;
+            int z = tiles[i * parent->radius* 2 + j].z;
 
             float scx = (x - y);
             float scy = ((x + y - TEXTURE_Z * z) / 2);
@@ -213,16 +212,16 @@ void PlanetSurface::mouseOver(int max, int may, bool mouseClicked, bool mousePre
             double cy = abs(my - (scy + TEXTURE_H / 2 + TEXTURE_W / 2));
             double d  = cx / TEXTURE_W + cy / TEXTURE_H;
             if (d <= 0.5) {
-                tiles[i * rad * 2 + j].hovered = true;
+                tiles[i * parent->radius* 2 + j].hovered = true;
                 lastSelectX = j;
                 lastSelectY = i;
                 if (hud->selectedAction != TASK_NONE && mouseClicked) {
-                    data->dispatchTask(hud->selectedAction, &tiles[i * rad * 2 + j]);
+                    data->dispatchTask(hud->selectedAction, &tiles[i * parent->radius* 2 + j]);
                     return;
                 }
                 if (mouseClicked) {
-                    this->hud->showClickMenu(&tiles[i * rad * 2 + j]);
-                    selectedTile = &tiles[i * rad * 2 + j];
+                    this->hud->showClickMenu(&tiles[i * parent->radius* 2 + j]);
+                    selectedTile = &tiles[i * parent->radius* 2 + j];
                 }
                 return;
             }
