@@ -15,6 +15,124 @@ std::unordered_map<std::string, MenuComponent> menuComponents;
 std::unordered_map<std::string, olc::Decal*> icons;
 std::string texturedir = "textures";
 
+
+typedef struct {
+    double r;       // a fraction between 0 and 1
+    double g;       // a fraction between 0 and 1
+    double b;       // a fraction between 0 and 1
+} rgb;
+
+typedef struct {
+    double h;       // angle in degrees
+    double s;       // a fraction between 0 and 1
+    double v;       // a fraction between 0 and 1
+} hsv;
+
+static hsv   rgb2hsv(rgb in);
+static rgb   hsv2rgb(hsv in);
+
+hsv rgb2hsv(rgb in)
+{
+    hsv         out;
+    double      min, max, delta;
+
+    min = in.r < in.g ? in.r : in.g;
+    min = min  < in.b ? min  : in.b;
+
+    max = in.r > in.g ? in.r : in.g;
+    max = max  > in.b ? max  : in.b;
+
+    out.v = max;                                // v
+    delta = max - min;
+    if (delta < 0.00001)
+    {
+        out.s = 0;
+        out.h = 0; // undefined, maybe nan?
+        return out;
+    }
+    if( max > 0.0 ) { // NOTE: if Max is == 0, this divide would cause a crash
+        out.s = (delta / max);                  // s
+    } else {
+        // if max is 0, then r = g = b = 0              
+        // s = 0, h is undefined
+        out.s = 0.0;
+        out.h = NAN;                            // its now undefined
+        return out;
+    }
+    if( in.r >= max )                           // > is bogus, just keeps compilor happy
+        out.h = ( in.g - in.b ) / delta;        // between yellow & magenta
+    else
+    if( in.g >= max )
+        out.h = 2.0 + ( in.b - in.r ) / delta;  // between cyan & yellow
+    else
+        out.h = 4.0 + ( in.r - in.g ) / delta;  // between magenta & cyan
+
+    out.h *= 60.0;                              // degrees
+
+    if( out.h < 0.0 )
+        out.h += 360.0;
+
+    return out;
+}
+
+
+rgb hsv2rgb(hsv in)
+{
+    double      hh, p, q, t, ff;
+    long        i;
+    rgb         out;
+
+    if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
+        out.r = in.v;
+        out.g = in.v;
+        out.b = in.v;
+        return out;
+    }
+    hh = in.h;
+    if(hh >= 360.0) hh = 0.0;
+    hh /= 60.0;
+    i = (long)hh;
+    ff = hh - i;
+    p = in.v * (1.0 - in.s);
+    q = in.v * (1.0 - (in.s * ff));
+    t = in.v * (1.0 - (in.s * (1.0 - ff)));
+
+    switch(i) {
+    case 0:
+        out.r = in.v;
+        out.g = t;
+        out.b = p;
+        break;
+    case 1:
+        out.r = q;
+        out.g = in.v;
+        out.b = p;
+        break;
+    case 2:
+        out.r = p;
+        out.g = in.v;
+        out.b = t;
+        break;
+
+    case 3:
+        out.r = p;
+        out.g = q;
+        out.b = in.v;
+        break;
+    case 4:
+        out.r = t;
+        out.g = p;
+        out.b = in.v;
+        break;
+    case 5:
+    default:
+        out.r = in.v;
+        out.g = p;
+        out.b = q;
+        break;
+    }
+    return out;     
+}
 olc::Sprite *load_sprite(const std::string &fname) {
     olc::Sprite *spr = new olc::Sprite();
     olc::rcode status = spr->LoadFromFile(fname);
@@ -65,9 +183,37 @@ void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc:
     for (TileSpriteComponent &c : state.components) {
         float scl = trx.zoom / (c.width / 128.0f);
         if (c.tint) {
-            e->DrawPartialDecal(pos, c.decal,
-                olc::vi2d((trx.animationStage / c.animationSpeed) % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height},
-                {scl, scl}, tint);
+            olc::Sprite *s = new olc::Sprite(c.width, c.decal->sprite->height);
+            e->SetDrawTarget(s);
+            e->SetPixelMode(olc::Pixel::NORMAL);
+            e->DrawPartialSprite({0, 0}, c.decal->sprite,
+                olc::vi2d((trx.animationStage / c.animationSpeed) % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height});
+
+            hsv t_hsv = rgb2hsv(rgb { tint.r / 255.0, tint.g / 255.0, tint.b / 255.0 });
+
+            for (uint32_t x = 0; x < c.width; x++) {
+                for (int32_t y = 0; y < c.decal->sprite->height; y++) {
+                    olc::Pixel p = s->GetPixel(x, y);
+                    float dh = ((int)p.r - 128) / 127.0 * 360;
+                    float ds = ((int)p.g - 128) / 127.0;
+                    float dv = ((int)p.b - 128) / 127.0;
+                    float h = t_hsv.h + dh;
+                    float s_ = t_hsv.s + ds;
+                    float v = t_hsv.v + dv;
+                    if (h < 0) h = 0;
+                    if (h > 359) h = 359;
+                    if (s_ < 0) s_ = 0;
+                    if (s_ > 1) s_ = 1;
+                    if (v < 0) v = 0;
+                    if (v > 1) v = 1;
+                    hsv p_hsv = hsv { h, s_, v };
+                    rgb p_rgb = hsv2rgb(p_hsv);
+                    s->SetPixel(x, y, olc::Pixel(p_rgb.r * 255, p_rgb.g * 255, p_rgb.b * 255, p.a));
+                }
+            }
+            e->SetDrawTarget(nullptr);
+            olc::Decal *d = new olc::Decal(s);
+            e->DrawDecal(pos, d, {scl, scl});
             //e->DrawDecal(pos, c.decal, {scl, scl}, tint);
         } else {
             e->DrawPartialDecal(pos, c.decal,

@@ -14,11 +14,11 @@ surface_renderer: $(OBJECTS) obj/surfacerenderer.o
 
 obj/%.o: src/%.cpp $(HEADERS) $(COMMON_HEADERS)
 	@mkdir -p obj
-	g++ -c -o $@ $< -Wall -Werror -Wno-unknown-pragmas -g -ggdb -std=c++17 -Iinclude
+	g++ -c -o $@ $< -Wall -Wno-unknown-pragmas -O3 -g -ggdb -std=c++17 -Iinclude
 
 obj/optimised/%.o: src/%.cpp $(HEADERS) $(COMMON_HEADERS)
 	@mkdir -p obj/optimised
-	g++ -c -o $@ $< -Wall -Werror -Wno-unknown-pragmas -O3 -std=c++17 -Iinclude
+	g++ -c -o $@ $< -Wall -Wno-unknown-pragmas -O3 -std=c++17 -Iinclude
 
 debug: client
 	gdb --args client 127.0.0.1

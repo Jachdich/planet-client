@@ -24,12 +24,12 @@ void Tile::draw(olc::PixelGameEngine * e, const CamParams &trx) const {
     r = tint.r;
     g = tint.g;
     b = tint.b;
-    r += (r * (selected || hovered)) / 5;
-    g += (g * (selected || hovered)) / 5;
-    b += (b * (selected || hovered)) / 5;
-    if (r > 255) r = 255;
-    if (g > 255) g = 255;
-    if (b > 255) b = 255;
+    // r += (r * (selected || hovered)) / 5;
+    // g += (g * (selected || hovered)) / 5;
+    // b += (b * (selected || hovered)) / 5;
+    // if (r > 255) r = 255;
+    // if (g > 255) g = 255;
+    // if (b > 255) b = 255;
     olc::vd2d v = this->getTextureCoordinates(trx);
     tileSprites[(int)type].draw(e, trx, v, olc::Pixel(r, g, b), state);
     if (errMsg != "") {
