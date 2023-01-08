@@ -43,6 +43,7 @@ struct TileSpriteComponent {
     uint32_t animationSpeed;
     uint32_t width;
     uint32_t animations;
+	  uint32_t id;
 };
 
 struct TileSpriteState {
@@ -62,4 +63,5 @@ extern std::vector<TileSprite> tileSprites;
 extern std::unordered_map<std::string, UIComponent> UIComponents;
 extern std::unordered_map<std::string, MenuComponent> menuComponents;
 extern std::unordered_map<std::string, olc::Decal*> icons;
+extern std::vector<olc::Sprite*> cached_tinted_sprites;
 #endif

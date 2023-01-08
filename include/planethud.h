@@ -6,7 +6,6 @@
 #include <string>
 
 class Tile;
-class PlanetSurface;
 class PlanetData;
 
 class DropdownMenuItem {
@@ -38,16 +37,13 @@ private:
 	int wood;
 	int population;
 	Tile * selectedTile = nullptr;
-	PlanetSurface * parent;
-	PlanetData * data;
 public:
 	PlanetHUD();
-	PlanetHUD(PlanetSurface * parent, PlanetData * data);
 	bool mousePressed(int x, int y, bool right, CamParams &trx);
 	void closeClickMenu();
 	void sendChangeTileRequest(TileType to);
-	void draw(olc::PixelGameEngine * e, CamParams &trx);
-	void showClickMenu(Tile * t);
+	void draw(olc::PixelGameEngine * e, CamParams &trx, PlanetData *data, Tile *selectedTile);
+	void showClickMenu(Tile *t, PlanetData *data);
 	void showPopup(std::string message);
     std::string popupMessage = "";
 	DropdownMenu * ddmenu = nullptr;

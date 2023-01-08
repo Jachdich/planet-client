@@ -14,17 +14,16 @@ class PlanetSurface {
 public:
     std::vector<Tile> tiles;
 	int pos;
+    uint32_t radius;
 	int lastSelectX = 0;
 	int lastSelectY = 0;
 	Tile *selectedTile = nullptr;
-    bool generated = false;
-    bool requested = false;
-	Planet * parent;
-	PlanetHUD * hud;
-	PlanetData * data;
+	Planet *parent;
+	PlanetHUD *hud;
+	PlanetData *data;
 
     PlanetSurface();
-    PlanetSurface(Json::Value root, Planet * p);
+    PlanetSurface(Json::Value root, uint32_t rad);
 
     void drawTile(Tile t, olc::PixelGameEngine * e, CamParams trx);
     void draw(olc::PixelGameEngine * e, CamParams &trx);

@@ -2,19 +2,16 @@
 #include "common/enums.h"
 #include "tile.h"
 #include "olcPixelGameEngine.h"
-#include "planetsurface.h"
 #include "network.h"
 #include <chrono>
 #include <string>
 #include <iostream>
 //BUG: Tasks dont change if selected tile has a task and finishes the task
-class PlanetSurface;
 
 #define DEBUG(expr) std::cout << __FILE__ << ":" << __LINE__ << " " << expr
 
 PlanetData::PlanetData() {}
-PlanetData::PlanetData(PlanetSurface * surface, Json::Value root) {
-    this->surface = surface;
+PlanetData::PlanetData(Json::Value root) {
     stats = res_from_json(root["resources"]);
     timers.clear();
 }

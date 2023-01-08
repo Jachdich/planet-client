@@ -1,10 +1,11 @@
-#include "sprites.h"
-#include "common/resources.h"
+#include "../include/sprites.h"
+#include "../include/common/resources.h"
 
-#include "olcPixelGameEngine.h"
+#include "../include/olcPixelGameEngine.h"
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <fstream>
 #include <jsoncpp/json/json.h>
 
@@ -14,6 +15,9 @@ std::unordered_map<std::string, UIComponent> UIComponents;
 std::unordered_map<std::string, MenuComponent> menuComponents;
 std::unordered_map<std::string, olc::Decal*> icons;
 std::string texturedir = "textures";
+
+std::unordered_map<int64_t, olc::Decal*> cached_tinted_decals;
+std::vector<olc::Sprite*> cached_tinted_sprites;
 
 
 typedef struct {
@@ -183,37 +187,44 @@ void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc:
     for (TileSpriteComponent &c : state.components) {
         float scl = trx.zoom / (c.width / 128.0f);
         if (c.tint) {
-            olc::Sprite *s = new olc::Sprite(c.width, c.decal->sprite->height);
-            e->SetDrawTarget(s);
-            e->SetPixelMode(olc::Pixel::NORMAL);
-            e->DrawPartialSprite({0, 0}, c.decal->sprite,
-                olc::vi2d((trx.animationStage / c.animationSpeed) % c.animations, 0) * c.width, {(float)c.width, (float)c.decal->sprite->height});
+            uint64_t t_id = (uint64_t)c.id << 32 | tint.n;
+            if (cached_tinted_decals.count(t_id) != 0) {
+                e->DrawDecal(pos, cached_tinted_decals[t_id], {scl, scl});
+            } else {
+                olc::Sprite *s = new olc::Sprite(c.width, c.decal->sprite->height);
+                e->SetDrawTarget(s);
+                e->SetPixelMode(olc::Pixel::NORMAL);
+                e->DrawPartialSprite({0, 0}, c.decal->sprite,
+                    olc::vi2d((trx.animationStage / c.animationSpeed) % c.animations, 0) * c.width, {(int)c.width, (int)c.decal->sprite->height});
 
-            hsv t_hsv = rgb2hsv(rgb { tint.r / 255.0, tint.g / 255.0, tint.b / 255.0 });
+                hsv t_hsv = rgb2hsv(rgb { tint.r / 255.0, tint.g / 255.0, tint.b / 255.0 });
 
-            for (uint32_t x = 0; x < c.width; x++) {
-                for (int32_t y = 0; y < c.decal->sprite->height; y++) {
-                    olc::Pixel p = s->GetPixel(x, y);
-                    float dh = ((int)p.r - 128) / 127.0 * 360;
-                    float ds = ((int)p.g - 128) / 127.0;
-                    float dv = ((int)p.b - 128) / 127.0;
-                    float h = t_hsv.h + dh;
-                    float s_ = t_hsv.s + ds;
-                    float v = t_hsv.v + dv;
-                    if (h < 0) h = 0;
-                    if (h > 359) h = 359;
-                    if (s_ < 0) s_ = 0;
-                    if (s_ > 1) s_ = 1;
-                    if (v < 0) v = 0;
-                    if (v > 1) v = 1;
-                    hsv p_hsv = hsv { h, s_, v };
-                    rgb p_rgb = hsv2rgb(p_hsv);
-                    s->SetPixel(x, y, olc::Pixel(p_rgb.r * 255, p_rgb.g * 255, p_rgb.b * 255, p.a));
+                for (uint32_t x = 0; x < c.width; x++) {
+                    for (int32_t y = 0; y < c.decal->sprite->height; y++) {
+                        olc::Pixel p = s->GetPixel(x, y);
+                        float dh = ((int)p.r - 128) / 127.0 * 360;
+                        float ds = ((int)p.g - 128) / 127.0;
+                        float dv = ((int)p.b - 128) / 127.0;
+                        float h = t_hsv.h + dh;
+                        float s_ = t_hsv.s + ds;
+                        float v = t_hsv.v + dv;
+                        if (h < 0) h = 0;
+                        if (h > 359) h = 359;
+                        if (s_ < 0) s_ = 0;
+                        if (s_ > 1) s_ = 1;
+                        if (v < 0) v = 0;
+                        if (v > 1) v = 1;
+                        hsv p_hsv = hsv { h, s_, v };
+                        rgb p_rgb = hsv2rgb(p_hsv);
+                        s->SetPixel(x, y, olc::Pixel(p_rgb.r * 255, p_rgb.g * 255, p_rgb.b * 255, p.a));
+                    }
                 }
+                e->SetDrawTarget(nullptr);
+                olc::Decal *d = new olc::Decal(s);
+                cached_tinted_decals[t_id] = d;
+                cached_tinted_sprites.push_back(s);
+                e->DrawDecal(pos, d, {scl, scl});
             }
-            e->SetDrawTarget(nullptr);
-            olc::Decal *d = new olc::Decal(s);
-            e->DrawDecal(pos, d, {scl, scl});
             //e->DrawDecal(pos, c.decal, {scl, scl}, tint);
         } else {
             e->DrawPartialDecal(pos, c.decal,
@@ -223,6 +234,8 @@ void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc:
         }
     }
 }
+
+uint32_t sprite_component_id = 0;
 
 TileSprite::TileSprite(std::string fName) {
     Json::Value definition = getJsonFromTextureFile(fName);
@@ -250,14 +263,11 @@ TileSprite::TileSprite(std::string fName) {
             uint32_t realWidth = spr->width;
             uint32_t animations = realWidth / width;
             if (animations == 0) animations = 1;
-            state.components.push_back({dec, spr, tint, animationSpeed, width, animations});
+            state.components.push_back({dec, spr, tint, animationSpeed, width, animations, sprite_component_id++});
             sprites.push_back(spr);
         }
         states.push_back(state);
     }
-}
-void registerTileSprite(const std::string &x) {
-    tileSprites.push_back(TileSprite(x));
 }
 
 void registerUISprite(const std::string &filename, const std::string &name, olc::vi2d text_offset) {
@@ -323,7 +333,7 @@ void loadSprites() {
     //sidenote: what the fuck?
     //the hell does this mean?
     for (int i = 0; i < *(&names + 1) - names; i++) {
-        registerTileSprite("tiles/json/" + names[i]);
+        tileSprites.push_back(TileSprite("tiles/json/" + names[i]));
     }
 
     registerUISprite("hud/menu_closed.png", "menu_closed", olc::vi2d(3, 3));

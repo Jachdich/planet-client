@@ -17,12 +17,11 @@ struct Timer {
 
 class PlanetData {
 public:
-	PlanetSurface * surface;
 	std::vector<Timer> timers;
 	Resources stats;
 	
 	PlanetData();
-	PlanetData(PlanetSurface * surface, Json::Value root);
+	PlanetData(Json::Value root);
 
 	void updateTimers(float elapsedTime);
 	std::vector<TaskType> getPossibleTasks(Tile * target);

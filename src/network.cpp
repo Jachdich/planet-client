@@ -31,7 +31,7 @@ void ClientNetwork::sendRequest(Json::Value request) {
 void handleNetworkPacket(Json::Value root, SectorCache * cache) {
     for (uint32_t i = 0; i < root["results"].size(); i++) {
         Json::Value res = root["results"][i];
-        std::cout << res << "\n\n";
+        // std::cout << res << "\n\n";
 
         if (res["status"].asInt() != 0) {
             int e = res["status"].asInt();
@@ -66,34 +66,17 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
         if (res["request"] == "getSector") {
             Sector s(res["result"]);
             cache->setSectorAt(res["x"].asInt(), res["y"].asInt(), s);
-            
-        } else if (res["request"] == "getSurface") {
-            SurfaceLocator loc = getSurfaceLocatorFromJson(res["loc"]);
-            Sector * sec = cache->getSectorAt(loc.sectorX, loc.sectorY);
-            Star * s = &sec->stars[loc.starPos];
-            Planet * p = &s->planets[loc.planetPos];
-            PlanetSurface * surf = new PlanetSurface(res["result"], p);
-            p->surface = surf;
-
         }
     }
 
     if (root.get("serverRequest", "NONE").asString() != "NONE") {
         if (root["serverRequest"].asString() == "setTimer") {
-            PlanetSurface * surface = getSurfaceFromJson(root, cache);
-            if (surface == nullptr || !surface->generated) {
-                std::cout << "[WARNING] discarding setTimer packet on non-existant PlanetSurface\n";
-                return;
-            }
-            Tile * target = &surface->tiles[root["tile"].asInt()];
+            PlanetSurface *surface = getSurfaceFromJson(root, cache);
+            Tile *target = &surface->tiles[root["tile"].asInt()];
             surface->data->timers.push_back((Timer){target, root["time"].asDouble()});
         }
         if (root["serverRequest"].asString() == "statsChange") {
-            PlanetSurface * surface = getSurfaceFromJson(root, cache);
-            if (surface == nullptr || !surface->generated) {
-                std::cout << "[WARNING] discarding statsChange packet on non-existant or partially loaded PlanetSurface\n";
-                return;
-            }
+            PlanetSurface *surface = getSurfaceFromJson(root, cache);
             for (auto &elem: root["resources"].getMemberNames()) {
                 int key = res_json_key_to_id(elem.c_str());
                 if (key < 0) {
@@ -108,20 +91,12 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
         }
         if (root["serverRequest"].asString() == "changeTile") {
             PlanetSurface * surface = getSurfaceFromJson(root, cache);
-            if (surface == nullptr || !surface->generated) {
-                std::cout << "[WARNING] discarding changeTile packet on non-existant PlanetSurface\n";
-                return;
-            }
             surface->tiles[root["tilePos"].asInt()].type = (TileType)root["type"].asInt();
             surface->updateDirectionalTiles();
         }
 
         if (root["serverRequest"].asString() == "updateTileError") {
             PlanetSurface *surf = getSurfaceFromJson(root, cache);
-            if (surf == nullptr || !surf->generated || surf->tiles.size() <= root["tileError"]["pos"].asUInt()) {
-                std::cout << "[WARNING] discarding updateTileError packet on non-existant or partially loaded PlanetSurface\n";
-                return;
-            }
             surf->tiles[root["tileError"]["pos"].asUInt()].addError(root["tileError"]["msg"].asString());
         }
         
@@ -184,11 +159,6 @@ void ClientNetwork::handler(std::error_code ec, size_t bytes_transferred) {
                 buffers_begin(buf.data()) + (bytes_transferred
                   - 1));
 
-        /*
-        buf.commit(bytes_transferred);
-        std::istream is(&buf);
-        std::string request;
-        is >> request;*/
         buf.consume(bytes_transferred);
         readUntil();
 

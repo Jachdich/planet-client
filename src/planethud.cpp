@@ -1,7 +1,6 @@
 #include "planethud.h"
 #include "tile.h"
 #include "planet.h"
-#include "planetsurface.h"
 #include "helperfunctions.h"
 #include "planetdata.h"
 #include "olcPixelGameEngine.h"
@@ -84,16 +83,12 @@ bool DropdownMenu::click(olc::vf2d screenPos, bool right, CamParams &trx) {
 }
 
 PlanetHUD::PlanetHUD() {}
-PlanetHUD::PlanetHUD(PlanetSurface * parent, PlanetData * data) {
-    this->parent = parent;
-    this->data = data;
-}
 
-void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams &trx) {
+void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams &trx, PlanetData *data, Tile *selectedTile) {
     float n = 10;
     for (int r = 0; r < NUM_RESOURCES; r++) {
         if (r == RES_PEOPLE_IDLE) continue;
-        ResourceValue v = this->data->stats.values[r];
+        ResourceValue v = data->stats.values[r];
         e->DrawDecal({2, n + 12}, icons[std::string(res_names[r])]);
         if (r == RES_PEOPLE) {
             e->DrawStringDecal({16, n += 12}, std::to_string((int)data->stats.values[RES_PEOPLE_IDLE].value) + "/" + std::to_string((int)v.value) + "/" + std::to_string((int)v.capacity), olc::WHITE);
@@ -104,21 +99,21 @@ void PlanetHUD::draw(olc::PixelGameEngine * e, CamParams &trx) {
 
     n = 0;
     float xpos = WIDTH - 256;
-    if (parent->selectedTile != nullptr) {
-        olc::Pixel col = parent->selectedTile->tint;
+    if (selectedTile != nullptr) {
+        olc::Pixel col = selectedTile->tint;
         TileMinerals minerals = getTileMinerals(col.r << 16 | col.g << 8 | col.b);
-        e->DrawStringDecal({xpos, n += 10}, "Selected tile X: " + std::to_string(parent->selectedTile->x) + 
-                                                         " Y: " + std::to_string(parent->selectedTile->y) +
-                                                         " Z: " + std::to_string(parent->selectedTile->z));
+        e->DrawStringDecal({xpos, n += 10}, "Selected tile X: " + std::to_string(selectedTile->x) + 
+                                                         " Y: " + std::to_string(selectedTile->y) +
+                                                         " Z: " + std::to_string(selectedTile->z));
 
-        e->DrawStringDecal({xpos, n += 10}, "Type:       " + std::string(getTileTypeName(parent->selectedTile->type)));
-        e->DrawStringDecal({xpos, n += 10}, "Colour:     " + toHexString("#", parent->selectedTile->tint));
+        e->DrawStringDecal({xpos, n += 10}, "Type:       " + std::string(getTileTypeName(selectedTile->type)));
+        e->DrawStringDecal({xpos, n += 10}, "Colour:     " + toHexString("#", selectedTile->tint));
         e->DrawStringDecal({xpos, n += 10}, "Iron:       " + std::to_string(minerals.iron * 100) + "%");
         e->DrawStringDecal({xpos, n += 10}, "Copper:     " + std::to_string(minerals.copper * 100) + "%");
         e->DrawStringDecal({xpos, n += 10}, "Aluminium:  " + std::to_string(minerals.aluminium * 100) + "%");
         e->DrawStringDecal({xpos, n += 10}, "Sand:       " + std::to_string(minerals.sand * 100) + "%");
-        if (parent->selectedTile->errMsg != "") {
-            e->DrawStringDecal({xpos, n += 20}, "Tile Error: " + parent->selectedTile->errMsg);
+        if (selectedTile->errMsg != "") {
+            e->DrawStringDecal({xpos, n += 20}, "Tile Error: " + selectedTile->errMsg);
         }
         
         
@@ -177,7 +172,7 @@ bool PlanetHUD::mousePressed(int x, int y, bool right, CamParams &trx) {
     return false;
 }
 
-void PlanetHUD::showClickMenu(Tile * t) {
+void PlanetHUD::showClickMenu(Tile * t, PlanetData *data) {
     if (this->selectedTile != nullptr) {
         this->selectedTile->selected = false;
     }
@@ -203,7 +198,7 @@ void PlanetHUD::showClickMenu(Tile * t) {
                  TASK_BUILD_WAREHOUSE, TASK_BUILD_ROAD, TASK_BUILD_PIPE,
                  TASK_BUILD_CABLE, TASK_BUILD_WAREHOUSE}) {
             this->ddmenu[0].registerItem(DropdownMenuItem(getTaskTypeName(type),
-            [this, type](bool right) { 
+            [this, type, data](bool right) { 
                 if (right) {
                     if (this->selectedAction == type) {
                         this->selectedAction = TASK_NONE;
@@ -219,7 +214,7 @@ void PlanetHUD::showClickMenu(Tile * t) {
 
     for (TaskType type : v) {
         this->ddmenu[1].registerItem(DropdownMenuItem(getTaskTypeName(type),
-        [this, type](bool right) { 
+        [this, type, data](bool right) { 
             if (right) {
                 if (this->selectedAction == type) {
                     this->selectedAction = TASK_NONE;

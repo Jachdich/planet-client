@@ -60,8 +60,8 @@ std::vector<int> Game::getCurrentPlanetsurfaceLocator() {
 
 void Game::mousePressed(uint32_t x, uint32_t y) {
     if (galaxyView) {
-        Sector * s = map.getSectorAt(floor((x - trx.tx) / trx.zoom / 256),
-                                     floor((y - trx.ty) / trx.zoom / 256));
+        Sector *s = map.getSectorAt(floor((x - trx.tx) / trx.zoom / 256),
+                                    floor((y - trx.ty) / trx.zoom / 256));
         lastClickedSector = s;
  
         Star * st = s->getStarAt(x, y, trx);
@@ -80,9 +80,6 @@ void Game::mousePressed(uint32_t x, uint32_t y) {
             galaxyView = false;
             starView = false;
             planetView = true;
-            if (selectedPlanet->surface == nullptr || (!selectedPlanet->surface->generated && !selectedPlanet->surface->requested)) {
-                selectedPlanet->loadSurface(lastClickedSector->x, lastClickedSector->y, selectedStar->posInSector, selectedPlanet->posInStar);
-            }
             trx = {0, 0, 0.3};
         }
     }
@@ -112,11 +109,9 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     } else if (starView) {
         selectedStar->drawWithPlanets(this, fElapsedTime, trx);
     } else if (planetView) {
-        if (selectedPlanet->surface->generated) {
-            selectedPlanet->surface->data->updateTimers(fElapsedTime);
-            selectedPlanet->surface->mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, GetMouse(1).bPressed, trx);
-            selectedPlanet->drawSurface(this, trx);
-        }
+        selectedPlanet->surface.data->updateTimers(fElapsedTime);
+        selectedPlanet->surface.mouseOver(GetMouseX(), GetMouseY(), GetMouse(0).bPressed, GetMouse(0).bHeld, GetMouse(1).bPressed, trx);
+        selectedPlanet->drawSurface(this, trx);
     }
 
     if (GetKey(olc::Key::W).bHeld) trx.ty += fElapsedTime * 500;
@@ -148,24 +143,24 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     if (GetMouse(2).bPressed && debugMode && starView) {
         Planet * p = selectedStar->getPlanetAt(GetMouseX(), GetMouseY(), trx);
         if (p != nullptr) {
-            std::string fname = "planet_s" + std::to_string(lastClickedSector->x) + "." + std::to_string(lastClickedSector->y) + "_t" + std::to_string(selectedStar->posInSector) + "_p" + std::to_string(p->posInStar) + ".json";
-            message = "Saved as " + fname;
-            message_life = 5;
+            // std::string fname = "planet_s" + std::to_string(lastClickedSector->x) + "." + std::to_string(lastClickedSector->y) + "_t" + std::to_string(selectedStar->posInSector) + "_p" + std::to_string(p->posInStar) + ".json";
+            // message = "Saved as " + fname;
+            // message_life = 5;
 
-            Json::Value res;
-            res["baseColour"] = pixelToInt(p->baseColour);
-            res["numColours"] = p->numColours;
-            res["radius"] = p->radius;
-            for (int i = 0; i < p->numColours; i++) {
-                res["generationColours"].append(pixelToInt(p->generationColours[i]));
-                res["generationChances"].append(p->generationChances[i]);
-                res["generationZValues"].append(p->generationZValues[i]);
-                res["generationNoise"].append(  p->generationNoise[i]);
-            }
+            // Json::Value res;
+            // res["baseColour"] = pixelToInt(p->baseColour);
+            // res["numColours"] = p->numColours;
+            // res["radius"] = p->radius;
+            // for (int i = 0; i < p->numColours; i++) {
+            //     res["generationColours"].append(pixelToInt(p->generationColours[i]));
+            //     res["generationChances"].append(p->generationChances[i]);
+            //     res["generationZValues"].append(p->generationZValues[i]);
+            //     res["generationNoise"].append(  p->generationNoise[i]);
+            // }
 
-            std::ofstream os(fname);
-            os << res << "\n";
-            os.close();
+            // std::ofstream os(fname);
+            // os << res << "\n";
+            // os.close();
         }
     }
 
@@ -188,16 +183,12 @@ bool Game::OnUserUpdate(float fElapsedTime) {
 
     if (GetKey(olc::Key::ESCAPE).bPressed) {
         if (planetView) {
-            if (!selectedPlanet->surface->generated) {
-                starView = true;
-                planetView = false;
-                trx = {0, 0, 1};
-            } else if (selectedPlanet->surface->hud->popupMessage != "") {
-                selectedPlanet->surface->hud->popupMessage = "";
-            } else if (selectedPlanet->surface->hud->ddmenu != nullptr) {
-                selectedPlanet->surface->hud->closeClickMenu();
-            } else if (selectedPlanet->surface->hud->selectedAction != TASK_NONE) {
-                selectedPlanet->surface->hud->selectedAction = TASK_NONE;
+            if (selectedPlanet->surface.hud->popupMessage != "") {
+                selectedPlanet->surface.hud->popupMessage = "";
+            } else if (selectedPlanet->surface.hud->ddmenu != nullptr) {
+                selectedPlanet->surface.hud->closeClickMenu();
+            } else if (selectedPlanet->surface.hud->selectedAction != TASK_NONE) {
+                selectedPlanet->surface.hud->selectedAction = TASK_NONE;
             } else {
                 starView = true;
                 planetView = false;
@@ -211,7 +202,6 @@ bool Game::OnUserUpdate(float fElapsedTime) {
                 root["starPos"] = surface[2];
                 root["planetPos"] = surface[3];
                 client.sendRequest(root);
-                selectedPlanet->unloadSurface();
             }
         } else if (starView) {
             starView = false;
@@ -228,9 +218,10 @@ bool Game::OnUserUpdate(float fElapsedTime) {
     }
 
     if (debugMode) {
-        DrawStringDecal({0, 0}, std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
-        DrawStringDecal({0, 10}, std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
-        DrawStringDecal({0, 20}, std::to_string(1.0 / fElapsedTime), olc::Pixel(255, 255, 255));
+        DrawStringDecal({0, 0}, "S: " + std::to_string(map.secs.size()), olc::Pixel(255, 255, 255));
+        DrawStringDecal({0, 10}, "t: " + std::to_string(fElapsedTime * 1000), olc::Pixel(255, 255, 255));
+        DrawStringDecal({0, 20}, "FPS: " + std::to_string(1.0 / fElapsedTime), olc::Pixel(255, 255, 255));
+        DrawStringDecal({0, 30}, "T: " + std::to_string(cached_tinted_sprites.size()), olc::Pixel(255, 255, 255));
     }
     SetPixelMode(olc::Pixel::ALPHA);
 

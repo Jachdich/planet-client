@@ -7,7 +7,6 @@
 #include "FastNoiseLite.h"
 #include "game.h"
 
-extern FastNoiseLite noiseGen;
 extern uint16_t WIDTH;
 extern uint16_t HEIGHT;
 extern std::mutex cache_mutex;
@@ -15,6 +14,7 @@ extern bool debugMode;
 extern Game * app;
 extern olc::vi2d pixelsPerPixel;
 extern Json::Value configJson;
+extern FastNoiseLite noiseGen;
 
 Json::Value makeJSON(std::string x);
 #endif

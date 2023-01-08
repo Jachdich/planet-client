@@ -139,10 +139,24 @@ int main(int argc, char ** argv) {
     pixelsPerPixel = {scale, scale};
     
     noiseGen.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+    noiseGen.SetSeed(69);
     noiseGen.SetFractalType(FastNoiseLite::FractalType_FBm);
     noiseGen.SetFractalOctaves(5);
     noiseGen.SetFractalLacunarity(2);
     noiseGen.SetFractalGain(0.5);
+
+    // char chars[] = {' ', '.', '-', ':', '"', '<', '*', '+', '&', '$', '#', '@'};
+    // double scl = 0.07;
+    // for (int i = 0; i < 40; i++) {
+    //     for (int j = 0; j < 40; j++) {
+    //         double noise = (noiseGen.GetNoise(i / scl, j / scl, 0.0) + 1 ) / 2;
+    //         size_t idx = noise * 11.0 + 0.5;
+    //         printf("%c", chars[idx]);
+    //         // printf("%lf\n", noise);
+    //     }
+    //     printf("\n");
+    // }
+    // return 0;
     
     app = new Game(argc, argv);
     if (app->Construct(WIDTH, HEIGHT, scale, scale, fullScreen))
