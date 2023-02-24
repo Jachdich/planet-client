@@ -9,6 +9,7 @@
 class Planet {
 public:
     int radius;
+    bool loaded = false;
     std::vector<olc::Pixel> texture;
     olc::Sprite *surf = nullptr;
     olc::Decal  *dec;

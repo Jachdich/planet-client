@@ -29,6 +29,7 @@ void ClientNetwork::sendRequest(Json::Value request) {
 }
 
 void handleNetworkPacket(Json::Value root, SectorCache * cache) {
+    std::cout << root << "\n";
     for (uint32_t i = 0; i < root["results"].size(); i++) {
         Json::Value res = root["results"][i];
         // std::cout << res << "\n\n";
@@ -66,6 +67,13 @@ void handleNetworkPacket(Json::Value root, SectorCache * cache) {
         if (res["request"] == "getSector") {
             Sector s(res["result"]);
             cache->setSectorAt(res["x"].asInt(), res["y"].asInt(), s);
+        } else if (res["request"] == "getPlanets") {
+            SurfaceLocator loc = getSurfaceLocatorFromJson(res["loc"]);
+            Star *s = &cache->getSectorAt(loc.sectorX, loc.sectorY)->stars[loc.starPos];
+            for (uint32_t j = 0; j < res["result"].size(); j++) {
+                Json::Value planet = res["result"][j];
+                s->addPlanet(planet);
+            }
         }
     }
 

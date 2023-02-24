@@ -12,6 +12,7 @@
 #include "../include/sprites.h"
 #include "../include/star.h"
 #include "../include/planetdata.h"
+#include "../include/common/surfacelocator.h"
 
 /*
 Client: "fell tree <surfaceLocator> <coords>"
@@ -67,6 +68,11 @@ void Game::mousePressed(uint32_t x, uint32_t y) {
         Star * st = s->getStarAt(x, y, trx);
 
         if (st != nullptr) {
+            SurfaceLocator loc = SurfaceLocator{0, st->posInSector, s->x, s->y};
+            Json::Value request;
+            request["request"] = "getPlanets";
+            getJsonFromSurfaceLocator(&loc, request);
+            client.sendRequest(request);
             this->selectedStar = st;
             this->starView = true;
             this->galaxyView = false;

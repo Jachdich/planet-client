@@ -21,6 +21,7 @@ Planet::Planet(Json::Value res, int posInStar) {
     rotationalAngularVelocity = unif(re);
     this->posInStar = posInStar;
     surface = PlanetSurface(res["surface"], radius);
+    loaded = true;
 }
 
 void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams &trx) {

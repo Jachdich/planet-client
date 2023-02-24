@@ -30,7 +30,7 @@ public:
     
     Star();
     Star(Json::Value root, int posInSector);
-    
+    void addPlanet(Json::Value root);
     void drawWithPlanets(olc::PixelGameEngine * e, float fElapsedTime, CamParams &trx);
     void draw(olc::PixelGameEngine * e, CamParams &trx, int secOffsetX, int secOffsetY);
     void select();

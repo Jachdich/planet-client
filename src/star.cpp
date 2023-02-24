@@ -15,9 +15,6 @@ Star::Star(Json::Value root, int posInSector) {
     int col = root["colour"].asInt();
     colour = olc::Pixel(col >> 16, (col >> 8) & 0xFF, col & 0xFF);
     radius = root["radius"].asInt();
-    for (int i = 0; i < num; i++) {
-        planets.push_back(Planet(root["planets"][i], (int)planets.size()));
-    }
     this->selected = false;
     randomDissapearChance = 10 - (radius - 4);
     this->posInSector = posInSector;
@@ -28,6 +25,10 @@ Star::Star(Json::Value root, int posInSector) {
 
     factionColour = olc::Pixel(rand() % 256, rand() % 256, rand() % 256);
     isInFaction = false;
+}
+
+void Star::addPlanet(Json::Value root) {
+    planets.push_back(Planet(root, (int)planets.size()));
 }
 
 //fun algorithm, makes cool shapes gonna keep for reference maybe makin planets
