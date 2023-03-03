@@ -38,7 +38,6 @@ void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams &trx) 
                     continue;
                 }
                 olc::Pixel tint = surface.tiles[ya * radius * 2 + xa].tint;
-                printf("%x %x %x %x\n", tint.n, tint.r, tint.g, tint.b);
                 e->Draw(xa, ya, tint);
             }
         }
@@ -46,8 +45,9 @@ void Planet::draw(olc::PixelGameEngine * e, double x, double y, CamParams &trx) 
         e->SetDrawTarget(nullptr);
         
         this->dec = new olc::Decal(this->surf);
+    } else {
+        e->DrawRotatedDecal({(float)(x * trx.zoom + trx.tx), (float)(y * trx.zoom + trx.ty)}, this->dec, this->rotationTheta, {(float)radius, (float)radius}, {trx.zoom, trx.zoom});
     }
-    e->DrawRotatedDecal({(float)(x * trx.zoom + trx.tx), (float)(y * trx.zoom + trx.ty)}, this->dec, this->rotationTheta, {(float)radius, (float)radius}, {trx.zoom, trx.zoom});
 }
 
 void Planet::drawSurface(olc::PixelGameEngine * e, CamParams &trx) {
