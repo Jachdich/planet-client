@@ -1,6 +1,7 @@
 SOURCES := src/game.cpp src/helperfunctions.cpp src/menu.cpp src/network.cpp src/planet.cpp src/planetdata.cpp src/planethud.cpp src/planetsurface.cpp src/sector.cpp src/sectorcache.cpp src/sprites.cpp src/star.cpp src/tile.cpp
+C_SOURCES := $(shell find src -type f -name *.c)
 HEADERS := include/client.h include/game.h include/helperfunctions.h include/menu.h include/network.h include/olcPixelGameEngine.h include/planet.h include/planetdata.h include/planethud.h include/planetsurface.h include/sector.h include/sectorcache.h include/sprites.h include/star.h include/tile.h
-OBJECTS := $(patsubst src/%,obj/%,$(SOURCES:.cpp=.o))
+OBJECTS := $(patsubst src/%,obj/%,$(SOURCES:.cpp=.o)) $(patsubst src/%,obj/%,$(C_SOURCES:.c=.o))
 OBJECTS_OPTIMISED := $(patsubst src/%,obj/optimised/%,$(SOURCES:.cpp=.o)) obj/optimised/client.o
 COMMON_HEADERS := $(find include/common -name *.h)
 
@@ -19,6 +20,10 @@ obj/%.o: src/%.cpp $(HEADERS) $(COMMON_HEADERS)
 obj/optimised/%.o: src/%.cpp $(HEADERS) $(COMMON_HEADERS)
 	@mkdir -p obj/optimised
 	g++ -c -o $@ $< -Wall -Werror -Wno-unknown-pragmas -O3 -std=c++17 -Iinclude
+
+obj/%.o: src/%.c $(HEADERS)
+	@mkdir -p obj
+	gcc -c -o $@ $< -Wall -O3 -g -ggdb -Iinclude
 
 debug: client
 	gdb --args client 127.0.0.1

@@ -1,7 +1,6 @@
-#include "sprites.h"
-#include "common/resources.h"
-
-#include "olcPixelGameEngine.h"
+#include "../include/sprites.h"
+#include "../include/common/resources.h"
+#include "../include/olcPixelGameEngine.h"
 
 #include <string>
 #include <vector>
@@ -78,6 +77,10 @@ void TileSprite::draw(olc::PixelGameEngine * e, const CamParams &trx, const olc:
     }
 }
 
+extern "C" {
+  #include "../include/treegen.h"
+}
+
 TileSprite::TileSprite(std::string fName) {
 	Json::Value definition = getJsonFromTextureFile(fName);
 
@@ -88,27 +91,55 @@ TileSprite::TileSprite(std::string fName) {
         e = definition;
 	}
 
-    for (Json::Value root : e["states"]) {
-        TileSpriteState state;
-        //TODO this is a very bad idea!
-        //TODO figure out why it's a bad idea?
-        //TODO the analysis is severely limited by my lack of understandinmg of what I am doing
-        state.drawGround = (TileType)root["drawGround"].asInt();
+    if (fName == "tiles/json/forest.json" || fName == "tiles/json/tree.json") {
+      uint32_t buf[64 * 64];
+      Arena a = arena_new(2000000);
+      make_tree(&a, buf);
+      free(a.buffer);
+      TileSpriteState state;
+      state.drawGround = TileType::TILE_GRASS;
+      olc::Sprite *spr = new olc::Sprite(64, 64);
+      for (int y = 0; y < 64; y++) {
+        for (int x = 0; x < 64; x++) {
+      		int v = buf[y * 64 + x];
+      		int r = (v >> 16) & 0xFF;
+      		int g = (v >> 8) & 0xFF;
+      		int b = (v >> 0) & 0xFF;
 
-        for (Json::Value t : root["textures"]) {
-            olc::Sprite * spr = load_sprite(texturedir + "/" + t["imageFile"].asString());
-            olc::Decal * dec = new olc::Decal(spr);
-            bool tint = t["tint"].asDouble();
-            uint32_t animationSpeed = t.get("animationSpeed", 1).asUInt();
-            uint32_t width = t.get("width", 128).asInt();
-            uint32_t realWidth = spr->width;
-            uint32_t animations = realWidth / width;
-            if (animations == 0) animations = 1;
-            state.components.push_back({dec, spr, tint, animationSpeed, width, animations});
-            sprites.push_back(spr);
+      		int a = 0xff;
+      		if (v == 0) a = 0x00;
+          spr->SetPixel(x, y, olc::Pixel(r, g, b, a));
         }
-        states.push_back(state);
+      }
+      olc::Decal *dec = new olc::Decal(spr);
+      sprites.push_back(spr);
+      state.components.push_back({dec, spr, false, 1, 64, 1});
+      states.push_back(state);
+      
+    } else {
+      for (Json::Value root : e["states"]) {
+          TileSpriteState state;
+          //TODO this is a very bad idea!
+          //TODO figure out why it's a bad idea?
+          //TODO the analysis is severely limited by my lack of understandinmg of what I am doing
+          state.drawGround = (TileType)root["drawGround"].asInt();
+
+          for (Json::Value t : root["textures"]) {
+              olc::Sprite * spr = load_sprite(texturedir + "/" + t["imageFile"].asString());
+              olc::Decal * dec = new olc::Decal(spr);
+              bool tint = t["tint"].asDouble();
+              uint32_t animationSpeed = t.get("animationSpeed", 1).asUInt();
+              uint32_t width = t.get("width", 128).asInt();
+              uint32_t realWidth = spr->width;
+              uint32_t animations = realWidth / width;
+              if (animations == 0) animations = 1;
+              state.components.push_back({dec, spr, tint, animationSpeed, width, animations});
+              sprites.push_back(spr);
+          }
+          states.push_back(state);
+      }
     }
+
 }
 void registerTileSprite(const std::string &x) {
     tileSprites.push_back(TileSprite(x));
